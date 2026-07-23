@@ -50,7 +50,9 @@
     "format": "prettier . --check",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "check": "npm run typecheck && npm run lint && npm run format && npm run test"
+    "check": "npm run typecheck && npm run lint && npm run format && npm run test",
+    "release": "npm run build && changeset publish",
+    "prepublishOnly": "npm run build"
   },
   "peerDependencies": {
     "preact": "^10.0.0",
@@ -91,7 +93,8 @@
     "unified": "^11.0.5",
     "unist-util-visit": "^5.1.0",
     "vfile": "^6.0.3",
-    "vitest": "^2.1.9"
+    "vitest": "^2.1.9",
+    "@changesets/cli": "^2.29.0"
   },
   "quartz": {
     "name": "plugin-template",
@@ -124,5 +127,8 @@
   "engines": {
     "node": ">=22",
     "npm": ">=10.9.2"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

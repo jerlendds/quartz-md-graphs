@@ -177,8 +177,23 @@ npm run format
 
 ## Publishing
 
-Tags matching `v*` trigger the GitHub Actions publish workflow. Ensure `NPM_TOKEN` is set in the
-repository secrets.
+This template uses [Changesets](https://github.com/changesets/changesets) for version management and publishing.
+
+1. Make your changes and create a changeset:
+
+   ```bash
+   npx changeset
+   ```
+
+   Select the bump type (patch/minor/major) and describe the change.
+
+2. Commit the changeset file along with your code changes.
+
+3. When merged to `main`, the Changesets GitHub Action will open a "Version Package" PR that bumps the version and updates the changelog.
+
+4. Merging the version PR automatically publishes to npm.
+
+Ensure `NPM_TOKEN` is set in the repository secrets (or as a GitHub org-level secret).
 
 ## Component Plugins (UI Components)
 
