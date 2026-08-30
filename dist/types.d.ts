@@ -45,6 +45,10 @@ interface MdGraphsOptions {
     accentColor2: string;
     /** Third CSS color used by trio palettes. */
     accentColor3: string;
+    /** CSS color used for primary text and neutral values. */
+    inkColor: string;
+    /** CSS color used for secondary text, tracks, and frame lines. */
+    mutedColor: string;
     /** Default frame treatment. */
     frame: "ascii" | "none";
     /** Default series palette; a block-level palette attribute takes precedence. */

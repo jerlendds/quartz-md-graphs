@@ -58,6 +58,19 @@ accent3: lab(77.5288% -33.8221 -35.2522);
 
 The title gradient always uses all three supplied accents. The selected palette mode independently controls series coloring.
 
+Every graph accepts either a named palette from `src/palettes.ts` or a custom YAML palette list. A custom list requires three hex colors in accent, accent2, and accent3 order, followed by optional muted and ink colors:
+
+```yaml
+palette:
+  -  #b7ff21
+  -  #21ffc4
+  -  #21c4ff
+  -  #777777
+  -  #d7d7d7
+```
+
+Three-, four-, six-, and eight-digit hex colors are accepted. Custom palettes use trio series behavior. When muted or ink are omitted, the plugin-level `mutedColor` and `inkColor` remain in effect for that graph.
+
 `inkColor` controls primary text and neutral values. `mutedColor` controls secondary labels, empty tracks, separators, and frame borders. Their defaults continue to follow Quartz's `--darkgray` and `--dark` theme variables. They can be configured alongside the other plugin options in `quartz.config.yml`.
 
 Flow graphs accept repeated structured `nodes` groups. A node's `tone` can be `default`, `accent`, or `muted`; `stretch: true` stretches the connector entering that node. The legacy `a -> b` syntax remains supported.

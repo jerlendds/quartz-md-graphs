@@ -39,6 +39,31 @@ describe("MdGraphs", () => {
     expect(css).toContain("--md-graph-ink:#eeeeee");
     expect(css).toContain("--md-graph-muted:#555555");
   });
+  it("applies named and custom list palettes to every graph", () => {
+    const named = render('```graph/frame title="NAMED"\npalette: orange\ncontent: hello\n```')
+      .children[0];
+    expect(named.properties.dataPalette).toBe("orange");
+    expect(named.properties.dataPaletteMode).toBe("trio");
+
+    const source = "palette:\n  - #112233\n  - #445566\n  - #778899\n  - #aabbcc\n  - #ddeeff";
+    for (const type of supportedGraphTypes) {
+      const figure = render(
+        `\`\`\`graph/${type} title="CUSTOM"\n${source}\nvalue: 73\nitem = 42\n\`\`\``,
+      ).children[0];
+      expect(figure.properties.dataPalette).toBe("custom");
+      expect(figure.properties.dataPaletteMode).toBe("trio");
+      expect(figure.properties.style).toContain("--graph-accent-light:#112233");
+      expect(figure.properties.style).toContain("--graph-accent-2-light:#445566");
+      expect(figure.properties.style).toContain("--graph-accent-3-light:#778899");
+      expect(figure.properties.style).toContain("--md-graph-muted:#aabbcc");
+      expect(figure.properties.style).toContain("--md-graph-ink:#ddeeff");
+    }
+
+    const accentsOnly = render("```graph/flow\npalette:\n  - #111\n  - #222\n  - #333\na -> b\n```")
+      .children[0];
+    expect(accentsOnly.properties.style).not.toContain("--md-graph-muted:");
+    expect(accentsOnly.properties.style).not.toContain("--md-graph-ink:");
+  });
   it("parses quoted and token attributes", () =>
     expect(parseGraphMeta('title="SHIP WEEK" palette=duo aria-label=chart')).toEqual({
       title: "SHIP WEEK",

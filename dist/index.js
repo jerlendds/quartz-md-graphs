@@ -4609,12 +4609,14 @@ var defaultOptions = {
   accentColor: defaultAccents[0],
   accentColor2: defaultAccents[1],
   accentColor3: defaultAccents[2],
+  inkColor: "var(--darkgray, #d7d7d7)",
+  mutedColor: "var(--dark, #777)",
   frame: "ascii",
   palette: "duo",
   strict: false,
   limits: defaultGraphLimits
 };
-var graphCss = (accents2) => `.md-graph {
+var graphCss = (accents2, ink, muted) => `.md-graph {
     --graph-accent-light:${accents2[0]};
     --graph-accent-2-light:${accents2[1]};
     --graph-accent-3-light:${accents2[2]};
@@ -4628,8 +4630,8 @@ var graphCss = (accents2) => `.md-graph {
     --md-graph-secondary:var(--graph-accent-2);
     --md-graph-tertiary:var(--graph-accent-3);
     --md-graph-title-gradient:linear-gradient(90deg, var(--md-graph-accent), var(--md-graph-secondary), var(--md-graph-tertiary));
-    --md-graph-ink:var(--darkgray, #d7d7d7);
-    --md-graph-muted:var(--dark, #777);
+    --md-graph-ink:${ink};
+    --md-graph-muted:${muted};
     position:relative;
     box-sizing:border-box;
     margin:1.5rem 0;
@@ -6369,6 +6371,21 @@ var bodyOptions = (source) => Object.fromEntries(
     return match?.[1] && match[2] ? [[match[1].toLowerCase(), match[2]]] : [];
   })
 );
+var customPalette = (source) => {
+  const lines = source.split(/\r?\n/);
+  const start = lines.findIndex((line) => /^palette[ \t]*:[ \t]*$/.test(line));
+  if (start < 0) return void 0;
+  const colors = [];
+  for (let index = start + 1; index < lines.length; index++) {
+    const line = lines[index];
+    if (line && !/^[ \t]+/.test(line)) break;
+    const value = /^[ \t]+-[ \t]+(#[0-9a-f]+)[ \t]*$/i.exec(line)?.[1];
+    if (value) colors.push(value);
+  }
+  if (colors.length < 3 || colors.length > 5 || colors.some((color2) => !/^#[0-9a-f]{3}(?:[0-9a-f]{1}|[0-9a-f]{3}|[0-9a-f]{5})?$/i.test(color2)))
+    return void 0;
+  return colors;
+};
 var safeCssColor = (value, fallback) => {
   const color2 = value?.trim().replace(/;+\s*$/, "") ?? "";
   return color2 && !/[;{}<>]/.test(color2) ? color2 : fallback;
@@ -6381,8 +6398,9 @@ var graphElement = (node, graph, options) => {
   const bodyTitle = /^\s*title\s*:\s*(.+?)\s*$/im.exec(node.value)?.[1]?.replace(/^(?:"([\s\S]*)"|'([\s\S]*)')$/, "$1$2");
   const title = type === "timer" && bodyTitle ? bodyTitle : type === "frame" ? attrs.title ?? "" : attrs.title || type;
   const body = bodyOptions(node.value);
+  const listedPalette = customPalette(node.value);
   const requestedPalette = (body.palette || attrs.palette || options.palette).toLowerCase();
-  const palette = ["solid", "mono", "duo", "trio", "multi", ...Object.keys(graphPalettes)].includes(
+  const palette = listedPalette ? "trio" : ["solid", "mono", "duo", "trio", "multi", ...Object.keys(graphPalettes)].includes(
     requestedPalette
   ) ? requestedPalette : options.palette;
   const configuredAccents = [
@@ -6390,8 +6408,9 @@ var graphElement = (node, graph, options) => {
     options.accentColor2,
     options.accentColor3
   ];
-  const presetAccents = paletteAccents(palette, configuredAccents);
-  const presetDarkAccents = paletteDarkAccents(palette, configuredAccents);
+  const listedAccents = listedPalette ? [listedPalette[0], listedPalette[1], listedPalette[2]] : void 0;
+  const presetAccents = listedAccents ?? paletteAccents(palette, configuredAccents);
+  const presetDarkAccents = listedAccents ?? paletteDarkAccents(palette, configuredAccents);
   const accentIsData = type === "stack" || type === "compare" || type === "matrix";
   const accents2 = [
     safeCssColor(accentIsData ? void 0 : body.accent, presetAccents[0]),
@@ -6416,9 +6435,9 @@ var graphElement = (node, graph, options) => {
       className,
       dataGraph: type,
       dataFrame: attrs.frame || options.frame,
-      dataPalette: palette,
+      dataPalette: listedPalette ? "custom" : palette,
       dataPaletteMode: paletteMode(palette),
-      style: `--graph-accent-light:${accents2[0]};--graph-accent-2-light:${accents2[1]};--graph-accent-3-light:${accents2[2]};--graph-accent-dark:${darkAccents[0]};--graph-accent-2-dark:${darkAccents[1]};--graph-accent-3-dark:${darkAccents[2]}`,
+      style: `--graph-accent-light:${accents2[0]};--graph-accent-2-light:${accents2[1]};--graph-accent-3-light:${accents2[2]};--graph-accent-dark:${darkAccents[0]};--graph-accent-2-dark:${darkAccents[1]};--graph-accent-3-dark:${darkAccents[2]}${listedPalette?.[3] ? `;--md-graph-muted:${listedPalette[3]}` : ""}${listedPalette?.[4] ? `;--md-graph-ink:${listedPalette[4]}` : ""}`,
       dataStretch: attrs.stretch === "true" || /^\s*stretch\s*:\s*true\s*$/m.test(node.value),
       ...attrs.id ? { id: attrs.id } : {},
       ...attrs["aria-label"] ? { ariaLabel: attrs["aria-label"] } : {}
@@ -6444,7 +6463,7 @@ var graphElement = (node, graph, options) => {
         node.value,
         palette,
         supportedGraphTypes.includes(type) && !(options.strict && graph.diagnostics.some(({ severity }) => severity === "error")),
-        Boolean(body.palette || attrs.palette),
+        Boolean(listedPalette || body.palette || attrs.palette),
         body.glyphs || attrs.glyphs
       ),
       ...attrs.caption ? [
@@ -6522,7 +6541,11 @@ var MdGraphs = (userOptions = {}) => {
     externalResources: () => ({
       css: [
         {
-          content: graphCss([options.accentColor, options.accentColor2, options.accentColor3]),
+          content: graphCss(
+            [options.accentColor, options.accentColor2, options.accentColor3],
+            safeCssColor(options.inkColor, defaultOptions.inkColor),
+            safeCssColor(options.mutedColor, defaultOptions.mutedColor)
+          ),
           inline: true
         }
       ],

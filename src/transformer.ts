@@ -1792,6 +1792,28 @@ const bodyOptions = (source: string): Record<string, string> =>
     }),
   );
 
+const customPalette = (
+  source: string,
+): readonly [string, string, string, string?, string?] | undefined => {
+  const lines = source.split(/\r?\n/);
+  const start = lines.findIndex((line) => /^palette[ \t]*:[ \t]*$/.test(line));
+  if (start < 0) return undefined;
+  const colors: string[] = [];
+  for (let index = start + 1; index < lines.length; index++) {
+    const line = lines[index]!;
+    if (line && !/^[ \t]+/.test(line)) break;
+    const value = /^[ \t]+-[ \t]+(#[0-9a-f]+)[ \t]*$/i.exec(line)?.[1];
+    if (value) colors.push(value);
+  }
+  if (
+    colors.length < 3 ||
+    colors.length > 5 ||
+    colors.some((color) => !/^#[0-9a-f]{3}(?:[0-9a-f]{1}|[0-9a-f]{3}|[0-9a-f]{5})?$/i.test(color))
+  )
+    return undefined;
+  return colors as unknown as readonly [string, string, string, string?, string?];
+};
+
 const safeCssColor = (value: string | undefined, fallback: string): string => {
   const color = value?.trim().replace(/;+\s*$/, "") ?? "";
   return color && !/[;{}<>]/.test(color) ? color : fallback;
@@ -1812,21 +1834,25 @@ const graphElement = (node: Code, graph: GraphNode, options: MdGraphsOptions): E
         ? (attrs.title ?? "")
         : attrs.title || type;
   const body = bodyOptions(node.value);
+  const listedPalette = customPalette(node.value);
   const requestedPalette = (body.palette || attrs.palette || options.palette).toLowerCase();
-  const palette = (
-    ["solid", "mono", "duo", "trio", "multi", ...Object.keys(graphPalettes)].includes(
-      requestedPalette,
-    )
-      ? requestedPalette
-      : options.palette
-  ) as GraphPalette;
+  const palette = listedPalette
+    ? ("trio" as GraphPalette)
+    : ((["solid", "mono", "duo", "trio", "multi", ...Object.keys(graphPalettes)].includes(
+        requestedPalette,
+      )
+        ? requestedPalette
+        : options.palette) as GraphPalette);
   const configuredAccents = [
     options.accentColor,
     options.accentColor2,
     options.accentColor3,
   ] as const;
-  const presetAccents = paletteAccents(palette, configuredAccents);
-  const presetDarkAccents = paletteDarkAccents(palette, configuredAccents);
+  const listedAccents = listedPalette
+    ? ([listedPalette[0], listedPalette[1], listedPalette[2]] as const)
+    : undefined;
+  const presetAccents = listedAccents ?? paletteAccents(palette, configuredAccents);
+  const presetDarkAccents = listedAccents ?? paletteDarkAccents(palette, configuredAccents);
   const accentIsData = type === "stack" || type === "compare" || type === "matrix";
   const accents = [
     safeCssColor(accentIsData ? undefined : body.accent, presetAccents[0]),
@@ -1851,9 +1877,9 @@ const graphElement = (node: Code, graph: GraphNode, options: MdGraphsOptions): E
       className,
       dataGraph: type,
       dataFrame: attrs.frame || options.frame,
-      dataPalette: palette,
+      dataPalette: listedPalette ? "custom" : palette,
       dataPaletteMode: paletteMode(palette),
-      style: `--graph-accent-light:${accents[0]};--graph-accent-2-light:${accents[1]};--graph-accent-3-light:${accents[2]};--graph-accent-dark:${darkAccents[0]};--graph-accent-2-dark:${darkAccents[1]};--graph-accent-3-dark:${darkAccents[2]}`,
+      style: `--graph-accent-light:${accents[0]};--graph-accent-2-light:${accents[1]};--graph-accent-3-light:${accents[2]};--graph-accent-dark:${darkAccents[0]};--graph-accent-2-dark:${darkAccents[1]};--graph-accent-3-dark:${darkAccents[2]}${listedPalette?.[3] ? `;--md-graph-muted:${listedPalette[3]}` : ""}${listedPalette?.[4] ? `;--md-graph-ink:${listedPalette[4]}` : ""}`,
       dataStretch: attrs.stretch === "true" || /^\s*stretch\s*:\s*true\s*$/m.test(node.value),
       ...(attrs.id ? { id: attrs.id } : {}),
       ...(attrs["aria-label"] ? { ariaLabel: attrs["aria-label"] } : {}),
@@ -1880,7 +1906,7 @@ const graphElement = (node: Code, graph: GraphNode, options: MdGraphsOptions): E
         palette,
         supportedGraphTypes.includes(type as (typeof supportedGraphTypes)[number]) &&
           !(options.strict && graph.diagnostics.some(({ severity }) => severity === "error")),
-        Boolean(body.palette || attrs.palette),
+        Boolean(listedPalette || body.palette || attrs.palette),
         body.glyphs || attrs.glyphs,
       ),
       ...(attrs.caption
