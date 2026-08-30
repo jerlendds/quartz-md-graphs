@@ -1,6 +1,6 @@
 {
   "name": "@quartz-community/md-graphs",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "ASCII-framed semantic graph blocks for Quartz 5.",
   "type": "module",
   "license": "MIT",
