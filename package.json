@@ -1,23 +1,21 @@
 {
-  "name": "@quartz-community/plugin-template",
+  "name": "@quartz-community/md-graphs",
   "version": "0.1.0",
-  "description": "Template repository for Quartz community plugins.",
+  "description": "ASCII-framed semantic graph blocks for Quartz 5.",
   "type": "module",
   "license": "MIT",
-  "author": "Quartz Community",
+  "author": "cypherlab",
   "homepage": "https://quartz.jzhao.xyz",
   "repository": {
     "type": "git",
-    "url": "https://github.com/quartz-community/plugin-template"
+    "url": "https://github.com/cypherlab/md-graphs"
   },
   "keywords": [
     "quartz",
     "quartz-plugin",
-    "plugin-template",
-    "remark",
-    "rehype",
-    "mdast",
-    "hast"
+    "markdown-graphs",
+    "charts",
+    "visualization"
   ],
   "files": [
     "dist",
@@ -34,10 +32,6 @@
       "types": "./dist/types.d.ts",
       "import": "./dist/types.js"
     },
-    "./components": {
-      "types": "./dist/components/index.d.ts",
-      "import": "./dist/components/index.js"
-    },
     "./package.json": "./package.json"
   },
   "main": "./dist/index.js",
@@ -51,6 +45,7 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "check": "npm run typecheck && npm run lint && npm run format && npm run test",
+    "visual:fixture": "npm run build && node scripts/render-visual-fixtures.mjs",
     "release": "npm run build && changeset publish",
     "prepublishOnly": "npm run build"
   },
@@ -97,30 +92,82 @@
     "@changesets/cli": "^2.29.0"
   },
   "quartz": {
-    "name": "plugin-template",
-    "displayName": "Plugin Template",
+    "name": "md-graphs",
+    "displayName": "Markdown Graphs",
     "category": "transformer",
     "version": "1.0.0",
     "quartzVersion": ">=5.0.0",
     "dependencies": [],
     "defaultOrder": 50,
     "defaultEnabled": true,
-    "defaultOptions": {},
-    "optionSchema": {
-      "highlightToken": {
-        "type": "enum",
-        "values": [
-          "==",
-          "**",
-          "~~"
-        ]
+    "defaultOptions": {
+      "accentColor": "lab(92.9449% -44.411 80.292)",
+      "accentColor2": "lab(89.622% -60.7933 21.1414)",
+      "accentColor3": "lab(77.5288% -33.8221 -35.2522)",
+      "frame": "ascii",
+      "palette": "duo",
+      "strict": false,
+      "limits": {
+        "maxBlockBytes": 65536,
+        "maxRows": 1000,
+        "maxColumns": 100,
+        "maxPoints": 10000,
+        "maxNodes": 2000,
+        "maxEdges": 5000,
+        "maxDepth": 100
       }
     },
-    "components": {
-      "ExampleComponent": {
-        "displayName": "Example Component",
-        "defaultPosition": "right",
-        "defaultPriority": 50
+    "optionSchema": {
+      "palette": {
+        "type": "enum",
+        "values": [
+          "solid",
+          "duo",
+          "trio",
+          "greenday",
+          "orange",
+          "smelly",
+          "bluebee",
+          "indigosea",
+          "purple",
+          "pink",
+          "fire",
+          "deepsea",
+          "pinkteam",
+          "burning",
+          "blueteam",
+          "theme",
+          "mint",
+          "green",
+          "cyan",
+          "blue",
+          "sunset",
+          "ocean",
+          "neon",
+          "aurora",
+          "prism",
+          "mono",
+          "multi"
+        ]
+      },
+      "accentColor": {
+        "type": "string"
+      },
+      "accentColor2": {
+        "type": "string"
+      },
+      "accentColor3": {
+        "type": "string"
+      },
+      "frame": {
+        "type": "enum",
+        "values": [
+          "ascii",
+          "none"
+        ]
+      },
+      "strict": {
+        "type": "boolean"
       }
     }
   },

@@ -1,62 +1,86 @@
-export type {
-  BuildCtx,
-  ChangeEvent,
-  CSSResource,
-  JSResource,
-  ProcessedContent,
-  QuartzEmitterPlugin,
-  QuartzEmitterPluginInstance,
-  QuartzFilterPlugin,
-  QuartzFilterPluginInstance,
-  QuartzPluginData,
-  QuartzTransformerPlugin,
-  QuartzTransformerPluginInstance,
-  StaticResources,
-  PageMatcher,
-  PageGenerator,
-  VirtualPage,
-  QuartzPageTypePlugin,
-  QuartzPageTypePluginInstance,
-} from "@quartz-community/types";
+export type GraphPaletteName =
+  | "greenday"
+  | "orange"
+  | "smelly"
+  | "bluebee"
+  | "indigosea"
+  | "purple"
+  | "pink"
+  | "fire"
+  | "deepsea"
+  | "pinkteam"
+  | "burning"
+  | "blueteam"
+  | "theme"
+  | "mint"
+  | "green"
+  | "cyan"
+  | "blue"
+  | "sunset"
+  | "ocean"
+  | "neon"
+  | "aurora"
+  | "prism";
 
-export interface ExampleTransformerOptions {
-  /** Token used to highlight text, defaults to ==highlight== */
-  highlightToken: string;
-  /** Add a CSS class to all headings in the rendered HTML. */
-  headingClass: string;
-  /** Enable remark-gfm for tables/task lists. */
-  enableGfm: boolean;
-  /** Enable adding slug IDs to headings. */
-  addHeadingSlugs: boolean;
+export type GraphPalette =
+  | "solid"
+  | "duo"
+  | "trio"
+  | GraphPaletteName
+  /** @deprecated Use solid. */
+  | "mono"
+  /** @deprecated Use trio. */
+  | "multi";
+
+export type GraphScalar = string | number | boolean | null | GraphScalar[];
+
+export interface GraphDiagnostic {
+  severity: "error" | "warning" | "info";
+  code: string;
+  message: string;
+  line?: number;
+  hint?: string;
 }
 
-export interface ExampleFilterOptions {
-  /** Allow pages marked draft: true to publish. */
-  allowDrafts: boolean;
-  /** Exclude pages that contain any of these frontmatter tags. */
-  excludeTags: string[];
-  /** Exclude paths that start with any of these prefixes (relative to content root). */
-  excludePathPrefixes: string[];
+export interface GraphLimits {
+  maxBlockBytes: number;
+  maxRows: number;
+  maxColumns: number;
+  maxPoints: number;
+  maxNodes: number;
+  maxEdges: number;
+  maxDepth: number;
 }
 
-export interface ExampleEmitterOptions {
-  /** Filename to emit at the site root. */
-  manifestSlug: string;
-  /** Whether to include the frontmatter block in the manifest. */
-  includeFrontmatter: boolean;
-  /** Extra metadata to write at the top level of the manifest. */
-  metadata: Record<string, unknown>;
-  /** Optional hook to transform the emitted manifest JSON string. */
-  transformManifest?: (json: string) => string;
-  /** Add a custom class to the emitted manifest <script> tag if used in HTML. */
-  manifestScriptClass?: string;
+export interface GraphAnnotation {
+  name: string;
+  target?: string;
+  args: Record<string, GraphScalar>;
 }
 
-export interface ExampleComponentOptions {
-  /** Text to prefix before the title */
-  prefix?: string;
-  /** Text to suffix after the title */
-  suffix?: string;
-  /** CSS class name to apply */
-  className?: string;
+export interface GraphNode {
+  kind: "graph";
+  type: string;
+  attributes: Record<string, GraphScalar>;
+  data: { kind: "opaque"; raw: string };
+  annotations: GraphAnnotation[];
+  diagnostics: GraphDiagnostic[];
+  raw: string;
+}
+
+export interface MdGraphsOptions {
+  /** CSS color used for titles and highlighted data. */
+  accentColor: string;
+  /** Second CSS color used by duo and trio palettes. */
+  accentColor2: string;
+  /** Third CSS color used by trio palettes. */
+  accentColor3: string;
+  /** Default frame treatment. */
+  frame: "ascii" | "none";
+  /** Default series palette; a block-level palette attribute takes precedence. */
+  palette: GraphPalette;
+  /** Treat unknown profiles, attributes, and invalid records as errors. */
+  strict: boolean;
+  /** Bounds applied before parsing or rendering document-controlled data. */
+  limits: GraphLimits;
 }

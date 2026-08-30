@@ -1,63 +1,6 @@
 import { createRequire } from 'module';
-import path2 from 'path';
-import fs from 'fs/promises';
 
 createRequire(import.meta.url);
-
-// node_modules/ccount/index.js
-function ccount(value, character) {
-  const source = String(value);
-  if (typeof character !== "string") {
-    throw new TypeError("Expected character");
-  }
-  let count = 0;
-  let index = source.indexOf(character);
-  while (index !== -1) {
-    count++;
-    index = source.indexOf(character, index + character.length);
-  }
-  return count;
-}
-
-// node_modules/devlop/lib/default.js
-function ok() {
-}
-
-// node_modules/micromark-util-character/index.js
-var asciiAlpha = regexCheck(/[A-Za-z]/);
-var asciiAlphanumeric = regexCheck(/[\dA-Za-z]/);
-function asciiControl(code3) {
-  return (
-    // Special whitespace codes (which have negative values), C0 and Control
-    // character DEL
-    code3 !== null && (code3 < 32 || code3 === 127)
-  );
-}
-function markdownLineEnding(code3) {
-  return code3 !== null && code3 < -2;
-}
-function markdownLineEndingOrSpace(code3) {
-  return code3 !== null && (code3 < 0 || code3 === 32);
-}
-function markdownSpace(code3) {
-  return code3 === -2 || code3 === -1 || code3 === 32;
-}
-var unicodePunctuation = regexCheck(/\p{P}|\p{S}/u);
-var unicodeWhitespace = regexCheck(/\s/);
-function regexCheck(regex2) {
-  return check;
-  function check(code3) {
-    return code3 !== null && code3 > -1 && regex2.test(String.fromCharCode(code3));
-  }
-}
-
-// node_modules/mdast-util-find-and-replace/node_modules/escape-string-regexp/index.js
-function escapeStringRegexp(string) {
-  if (typeof string !== "string") {
-    throw new TypeError("Expected a string");
-  }
-  return string.replace(/[|\\{}()[\]^$+*?.]/g, "\\$&").replace(/-/g, "\\x2d");
-}
 
 // node_modules/unist-util-is/lib/index.js
 var convert = (
@@ -77,7 +20,7 @@ var convert = (
    */
   (function(test) {
     if (test === null || test === void 0) {
-      return ok2;
+      return ok;
     }
     if (typeof test === "function") {
       return castFactory(test);
@@ -118,12 +61,12 @@ function propertiesFactory(check) {
     /** @type {Record<string, unknown>} */
     check
   );
-  return castFactory(all3);
-  function all3(node2) {
+  return castFactory(all);
+  function all(node) {
     const nodeAsRecord = (
       /** @type {Record<string, unknown>} */
       /** @type {unknown} */
-      node2
+      node
     );
     let key;
     for (key in check) {
@@ -134,8 +77,8 @@ function propertiesFactory(check) {
 }
 function typeFactory(check) {
   return castFactory(type);
-  function type(node2) {
-    return node2 && node2.type === check;
+  function type(node) {
+    return node && node.type === check;
   }
 }
 function castFactory(testFunction) {
@@ -151,7 +94,7 @@ function castFactory(testFunction) {
     );
   }
 }
-function ok2() {
+function ok() {
   return true;
 }
 function looksLikeANode(value) {
@@ -159,8 +102,8 @@ function looksLikeANode(value) {
 }
 
 // node_modules/unist-util-visit-parents/lib/color.node.js
-function color(d2) {
-  return "\x1B[33m" + d2 + "\x1B[39m";
+function color(d) {
+  return "\x1B[33m" + d + "\x1B[39m";
 }
 
 // node_modules/unist-util-visit-parents/lib/index.js
@@ -179,10 +122,10 @@ function visitParents(tree, test, visitor, reverse) {
   const is2 = convert(check);
   const step = reverse ? -1 : 1;
   factory(tree, void 0, [])();
-  function factory(node2, index, parents) {
+  function factory(node, index, parents) {
     const value = (
       /** @type {Record<string, unknown>} */
-      node2 && typeof node2 === "object" ? node2 : {}
+      node && typeof node === "object" ? node : {}
     );
     if (typeof value.type === "string") {
       const name = (
@@ -193,7 +136,7 @@ function visitParents(tree, test, visitor, reverse) {
         )
       );
       Object.defineProperty(visit2, "name", {
-        value: "node (" + color(node2.type + (name ? "<" + name + ">" : "")) + ")"
+        value: "node (" + color(node.type + (name ? "<" + name + ">" : "")) + ")"
       });
     }
     return visit2;
@@ -202,16 +145,16 @@ function visitParents(tree, test, visitor, reverse) {
       let subresult;
       let offset;
       let grandparents;
-      if (!test || is2(node2, index, parents[parents.length - 1] || void 0)) {
-        result = toResult(visitor(node2, parents));
+      if (!test || is2(node, index, parents[parents.length - 1] || void 0)) {
+        result = toResult(visitor(node, parents));
         if (result[0] === EXIT) {
           return result;
         }
       }
-      if ("children" in node2 && node2.children) {
+      if ("children" in node && node.children) {
         const nodeAsParent = (
           /** @type {UnistParent} */
-          node2
+          node
         );
         if (nodeAsParent.children && result[0] !== SKIP) {
           offset = (reverse ? nodeAsParent.children.length : -1) + step;
@@ -240,892 +183,6 @@ function toResult(value) {
   return value === null || value === void 0 ? empty : [value];
 }
 
-// node_modules/mdast-util-find-and-replace/lib/index.js
-function findAndReplace(tree, list2, options) {
-  const settings = options || {};
-  const ignored = convert(settings.ignore || []);
-  const pairs = toPairs(list2);
-  let pairIndex = -1;
-  while (++pairIndex < pairs.length) {
-    visitParents(tree, "text", visitor);
-  }
-  function visitor(node2, parents) {
-    let index = -1;
-    let grandparent;
-    while (++index < parents.length) {
-      const parent = parents[index];
-      const siblings = grandparent ? grandparent.children : void 0;
-      if (ignored(
-        parent,
-        siblings ? siblings.indexOf(parent) : void 0,
-        grandparent
-      )) {
-        return;
-      }
-      grandparent = parent;
-    }
-    if (grandparent) {
-      return handler(node2, parents);
-    }
-  }
-  function handler(node2, parents) {
-    const parent = parents[parents.length - 1];
-    const find = pairs[pairIndex][0];
-    const replace2 = pairs[pairIndex][1];
-    let start = 0;
-    const siblings = parent.children;
-    const index = siblings.indexOf(node2);
-    let change = false;
-    let nodes = [];
-    find.lastIndex = 0;
-    let match = find.exec(node2.value);
-    while (match) {
-      const position = match.index;
-      const matchObject = {
-        index: match.index,
-        input: match.input,
-        stack: [...parents, node2]
-      };
-      let value = replace2(...match, matchObject);
-      if (typeof value === "string") {
-        value = value.length > 0 ? { type: "text", value } : void 0;
-      }
-      if (value === false) {
-        find.lastIndex = position + 1;
-      } else {
-        if (start !== position) {
-          nodes.push({
-            type: "text",
-            value: node2.value.slice(start, position)
-          });
-        }
-        if (Array.isArray(value)) {
-          nodes.push(...value);
-        } else if (value) {
-          nodes.push(value);
-        }
-        start = position + match[0].length;
-        change = true;
-      }
-      if (!find.global) {
-        break;
-      }
-      match = find.exec(node2.value);
-    }
-    if (change) {
-      if (start < node2.value.length) {
-        nodes.push({ type: "text", value: node2.value.slice(start) });
-      }
-      parent.children.splice(index, 1, ...nodes);
-    } else {
-      nodes = [node2];
-    }
-    return index + nodes.length;
-  }
-}
-function toPairs(tupleOrList) {
-  const result = [];
-  if (!Array.isArray(tupleOrList)) {
-    throw new TypeError("Expected find and replace tuple or list of tuples");
-  }
-  const list2 = !tupleOrList[0] || Array.isArray(tupleOrList[0]) ? tupleOrList : [tupleOrList];
-  let index = -1;
-  while (++index < list2.length) {
-    const tuple = list2[index];
-    result.push([toExpression(tuple[0]), toFunction(tuple[1])]);
-  }
-  return result;
-}
-function toExpression(find) {
-  return typeof find === "string" ? new RegExp(escapeStringRegexp(find), "g") : find;
-}
-function toFunction(replace2) {
-  return typeof replace2 === "function" ? replace2 : function() {
-    return replace2;
-  };
-}
-
-// node_modules/mdast-util-gfm-autolink-literal/lib/index.js
-var inConstruct = "phrasing";
-var notInConstruct = ["autolink", "link", "image", "label"];
-function gfmAutolinkLiteralFromMarkdown() {
-  return {
-    transforms: [transformGfmAutolinkLiterals],
-    enter: {
-      literalAutolink: enterLiteralAutolink,
-      literalAutolinkEmail: enterLiteralAutolinkValue,
-      literalAutolinkHttp: enterLiteralAutolinkValue,
-      literalAutolinkWww: enterLiteralAutolinkValue
-    },
-    exit: {
-      literalAutolink: exitLiteralAutolink,
-      literalAutolinkEmail: exitLiteralAutolinkEmail,
-      literalAutolinkHttp: exitLiteralAutolinkHttp,
-      literalAutolinkWww: exitLiteralAutolinkWww
-    }
-  };
-}
-function gfmAutolinkLiteralToMarkdown() {
-  return {
-    unsafe: [
-      {
-        character: "@",
-        before: "[+\\-.\\w]",
-        after: "[\\-.\\w]",
-        inConstruct,
-        notInConstruct
-      },
-      {
-        character: ".",
-        before: "[Ww]",
-        after: "[\\-.\\w]",
-        inConstruct,
-        notInConstruct
-      },
-      {
-        character: ":",
-        before: "[ps]",
-        after: "\\/",
-        inConstruct,
-        notInConstruct
-      }
-    ]
-  };
-}
-function enterLiteralAutolink(token) {
-  this.enter({ type: "link", title: null, url: "", children: [] }, token);
-}
-function enterLiteralAutolinkValue(token) {
-  this.config.enter.autolinkProtocol.call(this, token);
-}
-function exitLiteralAutolinkHttp(token) {
-  this.config.exit.autolinkProtocol.call(this, token);
-}
-function exitLiteralAutolinkWww(token) {
-  this.config.exit.data.call(this, token);
-  const node2 = this.stack[this.stack.length - 1];
-  ok(node2.type === "link");
-  node2.url = "http://" + this.sliceSerialize(token);
-}
-function exitLiteralAutolinkEmail(token) {
-  this.config.exit.autolinkEmail.call(this, token);
-}
-function exitLiteralAutolink(token) {
-  this.exit(token);
-}
-function transformGfmAutolinkLiterals(tree) {
-  findAndReplace(
-    tree,
-    [
-      [/(https?:\/\/|www(?=\.))([-.\w]+)([^ \t\r\n]*)/gi, findUrl],
-      [/(?<=^|\s|\p{P}|\p{S})([-.\w+]+)@([-\w]+(?:\.[-\w]+)+)/gu, findEmail]
-    ],
-    { ignore: ["link", "linkReference"] }
-  );
-}
-function findUrl(_, protocol, domain2, path3, match) {
-  let prefix = "";
-  if (!previous(match)) {
-    return false;
-  }
-  if (/^w/i.test(protocol)) {
-    domain2 = protocol + domain2;
-    protocol = "";
-    prefix = "http://";
-  }
-  if (!isCorrectDomain(domain2)) {
-    return false;
-  }
-  const parts = splitUrl(domain2 + path3);
-  if (!parts[0]) return false;
-  const result = {
-    type: "link",
-    title: null,
-    url: prefix + protocol + parts[0],
-    children: [{ type: "text", value: protocol + parts[0] }]
-  };
-  if (parts[1]) {
-    return [result, { type: "text", value: parts[1] }];
-  }
-  return result;
-}
-function findEmail(_, atext, label, match) {
-  if (
-    // Not an expected previous character.
-    !previous(match, true) || // Label ends in not allowed character.
-    /[-\d_]$/.test(label)
-  ) {
-    return false;
-  }
-  return {
-    type: "link",
-    title: null,
-    url: "mailto:" + atext + "@" + label,
-    children: [{ type: "text", value: atext + "@" + label }]
-  };
-}
-function isCorrectDomain(domain2) {
-  const parts = domain2.split(".");
-  if (parts.length < 2 || parts[parts.length - 1] && (/_/.test(parts[parts.length - 1]) || !/[a-zA-Z\d]/.test(parts[parts.length - 1])) || parts[parts.length - 2] && (/_/.test(parts[parts.length - 2]) || !/[a-zA-Z\d]/.test(parts[parts.length - 2]))) {
-    return false;
-  }
-  return true;
-}
-function splitUrl(url) {
-  const trailExec = /[!"&'),.:;<>?\]}]+$/.exec(url);
-  if (!trailExec) {
-    return [url, void 0];
-  }
-  url = url.slice(0, trailExec.index);
-  let trail2 = trailExec[0];
-  let closingParenIndex = trail2.indexOf(")");
-  const openingParens = ccount(url, "(");
-  let closingParens = ccount(url, ")");
-  while (closingParenIndex !== -1 && openingParens > closingParens) {
-    url += trail2.slice(0, closingParenIndex + 1);
-    trail2 = trail2.slice(closingParenIndex + 1);
-    closingParenIndex = trail2.indexOf(")");
-    closingParens++;
-  }
-  return [url, trail2];
-}
-function previous(match, email) {
-  const code3 = match.input.charCodeAt(match.index - 1);
-  return (match.index === 0 || unicodeWhitespace(code3) || unicodePunctuation(code3)) && // If it’s an email, the previous character should not be a slash.
-  (!email || code3 !== 47);
-}
-
-// node_modules/micromark-util-normalize-identifier/index.js
-function normalizeIdentifier(value) {
-  return value.replace(/[\t\n\r ]+/g, " ").replace(/^ | $/g, "").toLowerCase().toUpperCase();
-}
-
-// node_modules/mdast-util-gfm-footnote/lib/index.js
-footnoteReference.peek = footnoteReferencePeek;
-function enterFootnoteCallString() {
-  this.buffer();
-}
-function enterFootnoteCall(token) {
-  this.enter({ type: "footnoteReference", identifier: "", label: "" }, token);
-}
-function enterFootnoteDefinitionLabelString() {
-  this.buffer();
-}
-function enterFootnoteDefinition(token) {
-  this.enter(
-    { type: "footnoteDefinition", identifier: "", label: "", children: [] },
-    token
-  );
-}
-function exitFootnoteCallString(token) {
-  const label = this.resume();
-  const node2 = this.stack[this.stack.length - 1];
-  ok(node2.type === "footnoteReference");
-  node2.identifier = normalizeIdentifier(
-    this.sliceSerialize(token)
-  ).toLowerCase();
-  node2.label = label;
-}
-function exitFootnoteCall(token) {
-  this.exit(token);
-}
-function exitFootnoteDefinitionLabelString(token) {
-  const label = this.resume();
-  const node2 = this.stack[this.stack.length - 1];
-  ok(node2.type === "footnoteDefinition");
-  node2.identifier = normalizeIdentifier(
-    this.sliceSerialize(token)
-  ).toLowerCase();
-  node2.label = label;
-}
-function exitFootnoteDefinition(token) {
-  this.exit(token);
-}
-function footnoteReferencePeek() {
-  return "[";
-}
-function footnoteReference(node2, _, state, info) {
-  const tracker = state.createTracker(info);
-  let value = tracker.move("[^");
-  const exit2 = state.enter("footnoteReference");
-  const subexit = state.enter("reference");
-  value += tracker.move(
-    state.safe(state.associationId(node2), { after: "]", before: value })
-  );
-  subexit();
-  exit2();
-  value += tracker.move("]");
-  return value;
-}
-function gfmFootnoteFromMarkdown() {
-  return {
-    enter: {
-      gfmFootnoteCallString: enterFootnoteCallString,
-      gfmFootnoteCall: enterFootnoteCall,
-      gfmFootnoteDefinitionLabelString: enterFootnoteDefinitionLabelString,
-      gfmFootnoteDefinition: enterFootnoteDefinition
-    },
-    exit: {
-      gfmFootnoteCallString: exitFootnoteCallString,
-      gfmFootnoteCall: exitFootnoteCall,
-      gfmFootnoteDefinitionLabelString: exitFootnoteDefinitionLabelString,
-      gfmFootnoteDefinition: exitFootnoteDefinition
-    }
-  };
-}
-function gfmFootnoteToMarkdown(options) {
-  let firstLineBlank = false;
-  if (options && options.firstLineBlank) {
-    firstLineBlank = true;
-  }
-  return {
-    handlers: { footnoteDefinition, footnoteReference },
-    // This is on by default already.
-    unsafe: [{ character: "[", inConstruct: ["label", "phrasing", "reference"] }]
-  };
-  function footnoteDefinition(node2, _, state, info) {
-    const tracker = state.createTracker(info);
-    let value = tracker.move("[^");
-    const exit2 = state.enter("footnoteDefinition");
-    const subexit = state.enter("label");
-    value += tracker.move(
-      state.safe(state.associationId(node2), { before: value, after: "]" })
-    );
-    subexit();
-    value += tracker.move("]:");
-    if (node2.children && node2.children.length > 0) {
-      tracker.shift(4);
-      value += tracker.move(
-        (firstLineBlank ? "\n" : " ") + state.indentLines(
-          state.containerFlow(node2, tracker.current()),
-          firstLineBlank ? mapAll : mapExceptFirst
-        )
-      );
-    }
-    exit2();
-    return value;
-  }
-}
-function mapExceptFirst(line, index, blank) {
-  return index === 0 ? line : mapAll(line, index, blank);
-}
-function mapAll(line, index, blank) {
-  return (blank ? "" : "    ") + line;
-}
-
-// node_modules/mdast-util-gfm-strikethrough/lib/index.js
-var constructsWithoutStrikethrough = [
-  "autolink",
-  "destinationLiteral",
-  "destinationRaw",
-  "reference",
-  "titleQuote",
-  "titleApostrophe"
-];
-handleDelete.peek = peekDelete;
-function gfmStrikethroughFromMarkdown() {
-  return {
-    canContainEols: ["delete"],
-    enter: { strikethrough: enterStrikethrough },
-    exit: { strikethrough: exitStrikethrough }
-  };
-}
-function gfmStrikethroughToMarkdown() {
-  return {
-    unsafe: [
-      {
-        character: "~",
-        inConstruct: "phrasing",
-        notInConstruct: constructsWithoutStrikethrough
-      }
-    ],
-    handlers: { delete: handleDelete }
-  };
-}
-function enterStrikethrough(token) {
-  this.enter({ type: "delete", children: [] }, token);
-}
-function exitStrikethrough(token) {
-  this.exit(token);
-}
-function handleDelete(node2, _, state, info) {
-  const tracker = state.createTracker(info);
-  const exit2 = state.enter("strikethrough");
-  let value = tracker.move("~~");
-  value += state.containerPhrasing(node2, {
-    ...tracker.current(),
-    before: value,
-    after: "~"
-  });
-  value += tracker.move("~~");
-  exit2();
-  return value;
-}
-function peekDelete() {
-  return "~";
-}
-
-// node_modules/markdown-table/index.js
-function defaultStringLength(value) {
-  return value.length;
-}
-function markdownTable(table, options) {
-  const settings = options || {};
-  const align = (settings.align || []).concat();
-  const stringLength = settings.stringLength || defaultStringLength;
-  const alignments = [];
-  const cellMatrix = [];
-  const sizeMatrix = [];
-  const longestCellByColumn = [];
-  let mostCellsPerRow = 0;
-  let rowIndex = -1;
-  while (++rowIndex < table.length) {
-    const row2 = [];
-    const sizes2 = [];
-    let columnIndex2 = -1;
-    if (table[rowIndex].length > mostCellsPerRow) {
-      mostCellsPerRow = table[rowIndex].length;
-    }
-    while (++columnIndex2 < table[rowIndex].length) {
-      const cell = serialize(table[rowIndex][columnIndex2]);
-      if (settings.alignDelimiters !== false) {
-        const size = stringLength(cell);
-        sizes2[columnIndex2] = size;
-        if (longestCellByColumn[columnIndex2] === void 0 || size > longestCellByColumn[columnIndex2]) {
-          longestCellByColumn[columnIndex2] = size;
-        }
-      }
-      row2.push(cell);
-    }
-    cellMatrix[rowIndex] = row2;
-    sizeMatrix[rowIndex] = sizes2;
-  }
-  let columnIndex = -1;
-  if (typeof align === "object" && "length" in align) {
-    while (++columnIndex < mostCellsPerRow) {
-      alignments[columnIndex] = toAlignment(align[columnIndex]);
-    }
-  } else {
-    const code3 = toAlignment(align);
-    while (++columnIndex < mostCellsPerRow) {
-      alignments[columnIndex] = code3;
-    }
-  }
-  columnIndex = -1;
-  const row = [];
-  const sizes = [];
-  while (++columnIndex < mostCellsPerRow) {
-    const code3 = alignments[columnIndex];
-    let before = "";
-    let after = "";
-    if (code3 === 99) {
-      before = ":";
-      after = ":";
-    } else if (code3 === 108) {
-      before = ":";
-    } else if (code3 === 114) {
-      after = ":";
-    }
-    let size = settings.alignDelimiters === false ? 1 : Math.max(
-      1,
-      longestCellByColumn[columnIndex] - before.length - after.length
-    );
-    const cell = before + "-".repeat(size) + after;
-    if (settings.alignDelimiters !== false) {
-      size = before.length + size + after.length;
-      if (size > longestCellByColumn[columnIndex]) {
-        longestCellByColumn[columnIndex] = size;
-      }
-      sizes[columnIndex] = size;
-    }
-    row[columnIndex] = cell;
-  }
-  cellMatrix.splice(1, 0, row);
-  sizeMatrix.splice(1, 0, sizes);
-  rowIndex = -1;
-  const lines = [];
-  while (++rowIndex < cellMatrix.length) {
-    const row2 = cellMatrix[rowIndex];
-    const sizes2 = sizeMatrix[rowIndex];
-    columnIndex = -1;
-    const line = [];
-    while (++columnIndex < mostCellsPerRow) {
-      const cell = row2[columnIndex] || "";
-      let before = "";
-      let after = "";
-      if (settings.alignDelimiters !== false) {
-        const size = longestCellByColumn[columnIndex] - (sizes2[columnIndex] || 0);
-        const code3 = alignments[columnIndex];
-        if (code3 === 114) {
-          before = " ".repeat(size);
-        } else if (code3 === 99) {
-          if (size % 2) {
-            before = " ".repeat(size / 2 + 0.5);
-            after = " ".repeat(size / 2 - 0.5);
-          } else {
-            before = " ".repeat(size / 2);
-            after = before;
-          }
-        } else {
-          after = " ".repeat(size);
-        }
-      }
-      if (settings.delimiterStart !== false && !columnIndex) {
-        line.push("|");
-      }
-      if (settings.padding !== false && // Don’t add the opening space if we’re not aligning and the cell is
-      // empty: there will be a closing space.
-      !(settings.alignDelimiters === false && cell === "") && (settings.delimiterStart !== false || columnIndex)) {
-        line.push(" ");
-      }
-      if (settings.alignDelimiters !== false) {
-        line.push(before);
-      }
-      line.push(cell);
-      if (settings.alignDelimiters !== false) {
-        line.push(after);
-      }
-      if (settings.padding !== false) {
-        line.push(" ");
-      }
-      if (settings.delimiterEnd !== false || columnIndex !== mostCellsPerRow - 1) {
-        line.push("|");
-      }
-    }
-    lines.push(
-      settings.delimiterEnd === false ? line.join("").replace(/ +$/, "") : line.join("")
-    );
-  }
-  return lines.join("\n");
-}
-function serialize(value) {
-  return value === null || value === void 0 ? "" : String(value);
-}
-function toAlignment(value) {
-  const code3 = typeof value === "string" ? value.codePointAt(0) : 0;
-  return code3 === 67 || code3 === 99 ? 99 : code3 === 76 || code3 === 108 ? 108 : code3 === 82 || code3 === 114 ? 114 : 0;
-}
-
-// node_modules/mdast-util-to-markdown/lib/handle/blockquote.js
-function blockquote(node2, _, state, info) {
-  const exit2 = state.enter("blockquote");
-  const tracker = state.createTracker(info);
-  tracker.move("> ");
-  tracker.shift(2);
-  const value = state.indentLines(
-    state.containerFlow(node2, tracker.current()),
-    map
-  );
-  exit2();
-  return value;
-}
-function map(line, _, blank) {
-  return ">" + (blank ? "" : " ") + line;
-}
-
-// node_modules/mdast-util-to-markdown/lib/util/pattern-in-scope.js
-function patternInScope(stack, pattern) {
-  return listInScope(stack, pattern.inConstruct, true) && !listInScope(stack, pattern.notInConstruct, false);
-}
-function listInScope(stack, list2, none) {
-  if (typeof list2 === "string") {
-    list2 = [list2];
-  }
-  if (!list2 || list2.length === 0) {
-    return none;
-  }
-  let index = -1;
-  while (++index < list2.length) {
-    if (stack.includes(list2[index])) {
-      return true;
-    }
-  }
-  return false;
-}
-
-// node_modules/mdast-util-to-markdown/lib/handle/break.js
-function hardBreak(_, _1, state, info) {
-  let index = -1;
-  while (++index < state.unsafe.length) {
-    if (state.unsafe[index].character === "\n" && patternInScope(state.stack, state.unsafe[index])) {
-      return /[ \t]/.test(info.before) ? "" : " ";
-    }
-  }
-  return "\\\n";
-}
-
-// node_modules/longest-streak/index.js
-function longestStreak(value, substring) {
-  const source = String(value);
-  let index = source.indexOf(substring);
-  let expected = index;
-  let count = 0;
-  let max = 0;
-  if (typeof substring !== "string") {
-    throw new TypeError("Expected substring");
-  }
-  while (index !== -1) {
-    if (index === expected) {
-      if (++count > max) {
-        max = count;
-      }
-    } else {
-      count = 1;
-    }
-    expected = index + substring.length;
-    index = source.indexOf(substring, expected);
-  }
-  return max;
-}
-
-// node_modules/mdast-util-to-markdown/lib/util/format-code-as-indented.js
-function formatCodeAsIndented(node2, state) {
-  return Boolean(
-    state.options.fences === false && node2.value && // If there’s no info…
-    !node2.lang && // And there’s a non-whitespace character…
-    /[^ \r\n]/.test(node2.value) && // And the value doesn’t start or end in a blank…
-    !/^[\t ]*(?:[\r\n]|$)|(?:^|[\r\n])[\t ]*$/.test(node2.value)
-  );
-}
-
-// node_modules/mdast-util-to-markdown/lib/util/check-fence.js
-function checkFence(state) {
-  const marker = state.options.fence || "`";
-  if (marker !== "`" && marker !== "~") {
-    throw new Error(
-      "Cannot serialize code with `" + marker + "` for `options.fence`, expected `` ` `` or `~`"
-    );
-  }
-  return marker;
-}
-
-// node_modules/mdast-util-to-markdown/lib/handle/code.js
-function code(node2, _, state, info) {
-  const marker = checkFence(state);
-  const raw = node2.value || "";
-  const suffix = marker === "`" ? "GraveAccent" : "Tilde";
-  if (formatCodeAsIndented(node2, state)) {
-    const exit3 = state.enter("codeIndented");
-    const value2 = state.indentLines(raw, map2);
-    exit3();
-    return value2;
-  }
-  const tracker = state.createTracker(info);
-  const sequence = marker.repeat(Math.max(longestStreak(raw, marker) + 1, 3));
-  const exit2 = state.enter("codeFenced");
-  let value = tracker.move(sequence);
-  if (node2.lang) {
-    const subexit = state.enter(`codeFencedLang${suffix}`);
-    value += tracker.move(
-      state.safe(node2.lang, {
-        before: value,
-        after: " ",
-        encode: ["`"],
-        ...tracker.current()
-      })
-    );
-    subexit();
-  }
-  if (node2.lang && node2.meta) {
-    const subexit = state.enter(`codeFencedMeta${suffix}`);
-    value += tracker.move(" ");
-    value += tracker.move(
-      state.safe(node2.meta, {
-        before: value,
-        after: "\n",
-        encode: ["`"],
-        ...tracker.current()
-      })
-    );
-    subexit();
-  }
-  value += tracker.move("\n");
-  if (raw) {
-    value += tracker.move(raw + "\n");
-  }
-  value += tracker.move(sequence);
-  exit2();
-  return value;
-}
-function map2(line, _, blank) {
-  return (blank ? "" : "    ") + line;
-}
-
-// node_modules/mdast-util-to-markdown/lib/util/check-quote.js
-function checkQuote(state) {
-  const marker = state.options.quote || '"';
-  if (marker !== '"' && marker !== "'") {
-    throw new Error(
-      "Cannot serialize title with `" + marker + "` for `options.quote`, expected `\"`, or `'`"
-    );
-  }
-  return marker;
-}
-
-// node_modules/mdast-util-to-markdown/lib/handle/definition.js
-function definition(node2, _, state, info) {
-  const quote = checkQuote(state);
-  const suffix = quote === '"' ? "Quote" : "Apostrophe";
-  const exit2 = state.enter("definition");
-  let subexit = state.enter("label");
-  const tracker = state.createTracker(info);
-  let value = tracker.move("[");
-  value += tracker.move(
-    state.safe(state.associationId(node2), {
-      before: value,
-      after: "]",
-      ...tracker.current()
-    })
-  );
-  value += tracker.move("]: ");
-  subexit();
-  if (
-    // If there’s no url, or…
-    !node2.url || // If there are control characters or whitespace.
-    /[\0- \u007F]/.test(node2.url)
-  ) {
-    subexit = state.enter("destinationLiteral");
-    value += tracker.move("<");
-    value += tracker.move(
-      state.safe(node2.url, { before: value, after: ">", ...tracker.current() })
-    );
-    value += tracker.move(">");
-  } else {
-    subexit = state.enter("destinationRaw");
-    value += tracker.move(
-      state.safe(node2.url, {
-        before: value,
-        after: node2.title ? " " : "\n",
-        ...tracker.current()
-      })
-    );
-  }
-  subexit();
-  if (node2.title) {
-    subexit = state.enter(`title${suffix}`);
-    value += tracker.move(" " + quote);
-    value += tracker.move(
-      state.safe(node2.title, {
-        before: value,
-        after: quote,
-        ...tracker.current()
-      })
-    );
-    value += tracker.move(quote);
-    subexit();
-  }
-  exit2();
-  return value;
-}
-
-// node_modules/mdast-util-to-markdown/lib/util/check-emphasis.js
-function checkEmphasis(state) {
-  const marker = state.options.emphasis || "*";
-  if (marker !== "*" && marker !== "_") {
-    throw new Error(
-      "Cannot serialize emphasis with `" + marker + "` for `options.emphasis`, expected `*`, or `_`"
-    );
-  }
-  return marker;
-}
-
-// node_modules/mdast-util-to-markdown/lib/util/encode-character-reference.js
-function encodeCharacterReference(code3) {
-  return "&#x" + code3.toString(16).toUpperCase() + ";";
-}
-
-// node_modules/micromark-util-classify-character/index.js
-function classifyCharacter(code3) {
-  if (code3 === null || markdownLineEndingOrSpace(code3) || unicodeWhitespace(code3)) {
-    return 1;
-  }
-  if (unicodePunctuation(code3)) {
-    return 2;
-  }
-}
-
-// node_modules/mdast-util-to-markdown/lib/util/encode-info.js
-function encodeInfo(outside, inside, marker) {
-  const outsideKind = classifyCharacter(outside);
-  const insideKind = classifyCharacter(inside);
-  if (outsideKind === void 0) {
-    return insideKind === void 0 ? (
-      // Letter inside:
-      // we have to encode *both* letters for `_` as it is looser.
-      // it already forms for `*` (and GFMs `~`).
-      marker === "_" ? { inside: true, outside: true } : { inside: false, outside: false }
-    ) : insideKind === 1 ? (
-      // Whitespace inside: encode both (letter, whitespace).
-      { inside: true, outside: true }
-    ) : (
-      // Punctuation inside: encode outer (letter)
-      { inside: false, outside: true }
-    );
-  }
-  if (outsideKind === 1) {
-    return insideKind === void 0 ? (
-      // Letter inside: already forms.
-      { inside: false, outside: false }
-    ) : insideKind === 1 ? (
-      // Whitespace inside: encode both (whitespace).
-      { inside: true, outside: true }
-    ) : (
-      // Punctuation inside: already forms.
-      { inside: false, outside: false }
-    );
-  }
-  return insideKind === void 0 ? (
-    // Letter inside: already forms.
-    { inside: false, outside: false }
-  ) : insideKind === 1 ? (
-    // Whitespace inside: encode inner (whitespace).
-    { inside: true, outside: false }
-  ) : (
-    // Punctuation inside: already forms.
-    { inside: false, outside: false }
-  );
-}
-
-// node_modules/mdast-util-to-markdown/lib/handle/emphasis.js
-emphasis.peek = emphasisPeek;
-function emphasis(node2, _, state, info) {
-  const marker = checkEmphasis(state);
-  const exit2 = state.enter("emphasis");
-  const tracker = state.createTracker(info);
-  const before = tracker.move(marker);
-  let between = tracker.move(
-    state.containerPhrasing(node2, {
-      after: marker,
-      before,
-      ...tracker.current()
-    })
-  );
-  const betweenHead = between.charCodeAt(0);
-  const open = encodeInfo(
-    info.before.charCodeAt(info.before.length - 1),
-    betweenHead,
-    marker
-  );
-  if (open.inside) {
-    between = encodeCharacterReference(betweenHead) + between.slice(1);
-  }
-  const betweenTail = between.charCodeAt(between.length - 1);
-  const close = encodeInfo(info.after.charCodeAt(0), betweenTail, marker);
-  if (close.inside) {
-    between = between.slice(0, -1) + encodeCharacterReference(betweenTail);
-  }
-  const after = tracker.move(marker);
-  exit2();
-  state.attentionEncodeSurroundingInfo = {
-    after: close.outside,
-    before: open.outside
-  };
-  return before + between + after;
-}
-function emphasisPeek(_, _1, state) {
-  return state.options.emphasis || "*";
-}
-
 // node_modules/unist-util-visit/lib/index.js
 function visit(tree, testOrVisitor, visitorOrReverse, maybeReverse) {
   let reverse;
@@ -1141,2639 +198,6401 @@ function visit(tree, testOrVisitor, visitorOrReverse, maybeReverse) {
     reverse = maybeReverse;
   }
   visitParents(tree, test, overload, reverse);
-  function overload(node2, parents) {
+  function overload(node, parents) {
     const parent = parents[parents.length - 1];
-    const index = parent ? parent.children.indexOf(node2) : void 0;
-    return visitor(node2, index, parent);
+    const index = parent ? parent.children.indexOf(node) : void 0;
+    return visitor(node, index, parent);
   }
 }
 
-// node_modules/mdast-util-to-string/lib/index.js
-var emptyOptions = {};
-function toString(value, options) {
-  const settings = emptyOptions;
-  const includeImageAlt = typeof settings.includeImageAlt === "boolean" ? settings.includeImageAlt : true;
-  const includeHtml = typeof settings.includeHtml === "boolean" ? settings.includeHtml : true;
-  return one(value, includeImageAlt, includeHtml);
-}
-function one(value, includeImageAlt, includeHtml) {
-  if (node(value)) {
-    if ("value" in value) {
-      return value.type === "html" && !includeHtml ? "" : value.value;
-    }
-    if (includeImageAlt && "alt" in value && value.alt) {
-      return value.alt;
-    }
-    if ("children" in value) {
-      return all(value.children, includeImageAlt, includeHtml);
-    }
+// src/accents.ts
+var DEFAULT_ACCENT_ID = "ocean";
+var gradientSwatch = (angle, a, b, c, mid) => `linear-gradient(${angle}deg, ${a} 0%, ${b} ${mid}%, ${c} 100%)`;
+var legacyAccentIds = {
+  paper: "theme",
+  gold: "sunset",
+  lime: "neon",
+  sky: "ocean",
+  dusk: "aurora",
+  coral: "fire",
+  mist: "prism"
+};
+var accents = [
+  {
+    id: "theme",
+    label: "Theme",
+    kind: "solid",
+    light: "var(--dark)",
+    dark: "var(--light)",
+    swatch: "var(--darkgray)",
+    duo: { light: "var(--darkgray)", dark: "var(--gray)" },
+    tri: { light: "var(--gray)", dark: "var(--darkgray)" }
+  },
+  {
+    id: "mint",
+    label: "Mint",
+    kind: "solid",
+    light: "oklch(0.52 0.14 163)",
+    dark: "oklch(0.77 0.15 163)",
+    swatch: "oklch(0.77 0.15 163)",
+    duo: { light: "oklch(0.58 0.1 163)", dark: "oklch(0.68 0.1 163)" },
+    tri: { light: "oklch(0.45 0.08 163)", dark: "oklch(0.58 0.08 163)" }
+  },
+  {
+    id: "orange",
+    label: "Orange",
+    kind: "solid",
+    light: "oklch(0.58 0.16 55)",
+    dark: "oklch(0.76 0.14 55)",
+    swatch: "oklch(0.76 0.14 55)",
+    duo: { light: "oklch(0.5 0.12 55)", dark: "oklch(0.66 0.12 55)" },
+    tri: { light: "oklch(0.42 0.08 55)", dark: "oklch(0.55 0.08 55)" }
+  },
+  {
+    id: "green",
+    label: "Green",
+    kind: "solid",
+    light: "oklch(0.5 0.14 145)",
+    dark: "oklch(0.74 0.14 145)",
+    swatch: "oklch(0.74 0.14 145)",
+    duo: { light: "oklch(0.58 0.1 145)", dark: "oklch(0.64 0.1 145)" },
+    tri: { light: "oklch(0.42 0.08 145)", dark: "oklch(0.55 0.08 145)" }
+  },
+  {
+    id: "cyan",
+    label: "Cyan",
+    kind: "solid",
+    light: "oklch(0.5 0.1 210)",
+    dark: "oklch(0.76 0.1 210)",
+    swatch: "oklch(0.76 0.1 210)",
+    duo: { light: "oklch(0.58 0.08 210)", dark: "oklch(0.66 0.08 210)" },
+    tri: { light: "oklch(0.42 0.06 210)", dark: "oklch(0.55 0.06 210)" }
+  },
+  {
+    id: "blue",
+    label: "Blue",
+    kind: "solid",
+    light: "oklch(0.5 0.18 255)",
+    dark: "oklch(0.7 0.12 255)",
+    swatch: "oklch(0.7 0.12 255)",
+    duo: { light: "oklch(0.58 0.12 255)", dark: "oklch(0.62 0.1 255)" },
+    tri: { light: "oklch(0.42 0.1 255)", dark: "oklch(0.52 0.08 255)" }
+  },
+  {
+    id: "purple",
+    label: "Purple",
+    kind: "solid",
+    light: "oklch(0.5 0.16 300)",
+    dark: "oklch(0.72 0.12 300)",
+    swatch: "oklch(0.72 0.12 300)",
+    duo: { light: "oklch(0.58 0.12 300)", dark: "oklch(0.62 0.1 300)" },
+    tri: { light: "oklch(0.42 0.08 300)", dark: "oklch(0.55 0.08 300)" }
+  },
+  {
+    id: "pink",
+    label: "Pink",
+    kind: "solid",
+    light: "oklch(0.55 0.18 8)",
+    dark: "oklch(0.74 0.14 8)",
+    swatch: "oklch(0.74 0.14 8)",
+    duo: { light: "oklch(0.5 0.12 8)", dark: "oklch(0.64 0.1 8)" },
+    tri: { light: "oklch(0.42 0.08 8)", dark: "oklch(0.55 0.08 8)" }
+  },
+  {
+    id: "sunset",
+    label: "Sunset",
+    kind: "gradient",
+    light: "oklch(0.55 0.18 19)",
+    dark: "oklch(0.7 0.19 19)",
+    swatch: gradientSwatch(
+      135,
+      "oklch(0.7 0.19 19)",
+      "oklch(0.86 0.12 74)",
+      "oklch(0.92 0.1 89)",
+      52
+    ),
+    duo: { light: "oklch(0.55 0.14 74)", dark: "oklch(0.86 0.12 74)" },
+    tri: { light: "oklch(0.52 0.12 89)", dark: "oklch(0.92 0.1 89)" }
+  },
+  {
+    id: "ocean",
+    label: "Ocean",
+    kind: "gradient",
+    light: "oklch(0.5 0.14 228)",
+    dark: "oklch(0.77 0.15 228)",
+    swatch: gradientSwatch(
+      140,
+      "oklch(0.77 0.15 228)",
+      "oklch(0.59 0.23 259)",
+      "oklch(0.72 0.15 248)",
+      48
+    ),
+    duo: { light: "oklch(0.48 0.18 259)", dark: "oklch(0.68 0.18 259)" },
+    tri: { light: "oklch(0.5 0.14 248)", dark: "oklch(0.72 0.15 248)" }
+  },
+  {
+    id: "neon",
+    label: "Neon",
+    kind: "gradient",
+    light: "oklch(0.48 0.16 129)",
+    dark: "oklch(0.92 0.23 129)",
+    swatch: gradientSwatch(
+      145,
+      "oklch(0.92 0.23 129)",
+      "oklch(0.89 0.18 162)",
+      "oklch(0.8 0.15 220)",
+      46
+    ),
+    duo: { light: "oklch(0.48 0.14 162)", dark: "oklch(0.89 0.18 162)" },
+    tri: { light: "oklch(0.5 0.12 220)", dark: "oklch(0.8 0.15 220)" }
+  },
+  {
+    id: "aurora",
+    label: "Aurora",
+    kind: "gradient",
+    light: "oklch(0.55 0.2 351)",
+    dark: "oklch(0.68 0.25 351)",
+    swatch: gradientSwatch(
+      145,
+      "oklch(0.68 0.25 351)",
+      "oklch(0.5 0.14 307)",
+      "oklch(0.6 0.13 244)",
+      45
+    ),
+    duo: { light: "oklch(0.5 0.14 307)", dark: "oklch(0.7 0.14 307)" },
+    tri: { light: "oklch(0.48 0.14 244)", dark: "oklch(0.7 0.13 244)" }
+  },
+  {
+    id: "fire",
+    label: "Fire",
+    kind: "gradient",
+    light: "oklch(0.55 0.18 33)",
+    dark: "oklch(0.67 0.22 33)",
+    swatch: gradientSwatch(
+      145,
+      "oklch(0.67 0.22 33)",
+      "oklch(0.59 0.22 1)",
+      "oklch(0.82 0.15 72)",
+      45
+    ),
+    duo: { light: "oklch(0.52 0.18 1)", dark: "oklch(0.68 0.2 1)" },
+    tri: { light: "oklch(0.55 0.14 72)", dark: "oklch(0.82 0.15 72)" }
+  },
+  {
+    id: "prism",
+    label: "Prism",
+    kind: "gradient",
+    light: "oklch(0.5 0.12 220)",
+    dark: "oklch(0.75 0.14 220)",
+    swatch: gradientSwatch(
+      145,
+      "oklch(0.75 0.14 220)",
+      "oklch(0.69 0.19 313)",
+      "oklch(0.66 0.2 21)",
+      45
+    ),
+    duo: { light: "oklch(0.52 0.16 313)", dark: "oklch(0.69 0.19 313)" },
+    tri: { light: "oklch(0.55 0.18 21)", dark: "oklch(0.66 0.2 21)" }
   }
-  if (Array.isArray(value)) {
-    return all(value, includeImageAlt, includeHtml);
-  }
-  return "";
-}
-function all(values, includeImageAlt, includeHtml) {
-  const result = [];
-  let index = -1;
-  while (++index < values.length) {
-    result[index] = one(values[index], includeImageAlt, includeHtml);
-  }
-  return result.join("");
-}
-function node(value) {
-  return Boolean(value && typeof value === "object");
-}
-
-// node_modules/mdast-util-to-markdown/lib/util/format-heading-as-setext.js
-function formatHeadingAsSetext(node2, state) {
-  let literalWithBreak = false;
-  visit(node2, function(node3) {
-    if ("value" in node3 && /\r?\n|\r/.test(node3.value) || node3.type === "break") {
-      literalWithBreak = true;
-      return EXIT;
-    }
-  });
-  return Boolean(
-    (!node2.depth || node2.depth < 3) && toString(node2) && (state.options.setext || literalWithBreak)
-  );
-}
-
-// node_modules/mdast-util-to-markdown/lib/handle/heading.js
-function heading(node2, _, state, info) {
-  const rank = Math.max(Math.min(6, node2.depth || 1), 1);
-  const tracker = state.createTracker(info);
-  if (formatHeadingAsSetext(node2, state)) {
-    const exit3 = state.enter("headingSetext");
-    const subexit2 = state.enter("phrasing");
-    const value2 = state.containerPhrasing(node2, {
-      ...tracker.current(),
-      before: "\n",
-      after: "\n"
-    });
-    subexit2();
-    exit3();
-    return value2 + "\n" + (rank === 1 ? "=" : "-").repeat(
-      // The whole size…
-      value2.length - // Minus the position of the character after the last EOL (or
-      // 0 if there is none)…
-      (Math.max(value2.lastIndexOf("\r"), value2.lastIndexOf("\n")) + 1)
-    );
-  }
-  const sequence = "#".repeat(rank);
-  const exit2 = state.enter("headingAtx");
-  const subexit = state.enter("phrasing");
-  tracker.move(sequence + " ");
-  let value = state.containerPhrasing(node2, {
-    before: "# ",
-    after: "\n",
-    ...tracker.current()
-  });
-  if (/^[\t ]/.test(value)) {
-    value = encodeCharacterReference(value.charCodeAt(0)) + value.slice(1);
-  }
-  value = value ? sequence + " " + value : sequence;
-  if (state.options.closeAtx) {
-    value += " " + sequence;
-  }
-  subexit();
-  exit2();
-  return value;
-}
-
-// node_modules/mdast-util-to-markdown/lib/handle/html.js
-html.peek = htmlPeek;
-function html(node2) {
-  return node2.value || "";
-}
-function htmlPeek() {
-  return "<";
-}
-
-// node_modules/mdast-util-to-markdown/lib/handle/image.js
-image.peek = imagePeek;
-function image(node2, _, state, info) {
-  const quote = checkQuote(state);
-  const suffix = quote === '"' ? "Quote" : "Apostrophe";
-  const exit2 = state.enter("image");
-  let subexit = state.enter("label");
-  const tracker = state.createTracker(info);
-  let value = tracker.move("![");
-  value += tracker.move(
-    state.safe(node2.alt, { before: value, after: "]", ...tracker.current() })
-  );
-  value += tracker.move("](");
-  subexit();
-  if (
-    // If there’s no url but there is a title…
-    !node2.url && node2.title || // If there are control characters or whitespace.
-    /[\0- \u007F]/.test(node2.url)
-  ) {
-    subexit = state.enter("destinationLiteral");
-    value += tracker.move("<");
-    value += tracker.move(
-      state.safe(node2.url, { before: value, after: ">", ...tracker.current() })
-    );
-    value += tracker.move(">");
-  } else {
-    subexit = state.enter("destinationRaw");
-    value += tracker.move(
-      state.safe(node2.url, {
-        before: value,
-        after: node2.title ? " " : ")",
-        ...tracker.current()
-      })
-    );
-  }
-  subexit();
-  if (node2.title) {
-    subexit = state.enter(`title${suffix}`);
-    value += tracker.move(" " + quote);
-    value += tracker.move(
-      state.safe(node2.title, {
-        before: value,
-        after: quote,
-        ...tracker.current()
-      })
-    );
-    value += tracker.move(quote);
-    subexit();
-  }
-  value += tracker.move(")");
-  exit2();
-  return value;
-}
-function imagePeek() {
-  return "!";
-}
-
-// node_modules/mdast-util-to-markdown/lib/handle/image-reference.js
-imageReference.peek = imageReferencePeek;
-function imageReference(node2, _, state, info) {
-  const type = node2.referenceType;
-  const exit2 = state.enter("imageReference");
-  let subexit = state.enter("label");
-  const tracker = state.createTracker(info);
-  let value = tracker.move("![");
-  const alt = state.safe(node2.alt, {
-    before: value,
-    after: "]",
-    ...tracker.current()
-  });
-  value += tracker.move(alt + "][");
-  subexit();
-  const stack = state.stack;
-  state.stack = [];
-  subexit = state.enter("reference");
-  const reference = state.safe(state.associationId(node2), {
-    before: value,
-    after: "]",
-    ...tracker.current()
-  });
-  subexit();
-  state.stack = stack;
-  exit2();
-  if (type === "full" || !alt || alt !== reference) {
-    value += tracker.move(reference + "]");
-  } else if (type === "shortcut") {
-    value = value.slice(0, -1);
-  } else {
-    value += tracker.move("]");
-  }
-  return value;
-}
-function imageReferencePeek() {
-  return "!";
-}
-
-// node_modules/mdast-util-to-markdown/lib/handle/inline-code.js
-inlineCode.peek = inlineCodePeek;
-function inlineCode(node2, _, state) {
-  let value = node2.value || "";
-  let sequence = "`";
-  let index = -1;
-  while (new RegExp("(^|[^`])" + sequence + "([^`]|$)").test(value)) {
-    sequence += "`";
-  }
-  if (/[^ \r\n]/.test(value) && (/^[ \r\n]/.test(value) && /[ \r\n]$/.test(value) || /^`|`$/.test(value))) {
-    value = " " + value + " ";
-  }
-  while (++index < state.unsafe.length) {
-    const pattern = state.unsafe[index];
-    const expression = state.compilePattern(pattern);
-    let match;
-    if (!pattern.atBreak) continue;
-    while (match = expression.exec(value)) {
-      let position = match.index;
-      if (value.charCodeAt(position) === 10 && value.charCodeAt(position - 1) === 13) {
-        position--;
-      }
-      value = value.slice(0, position) + " " + value.slice(match.index + 1);
-    }
-  }
-  return sequence + value + sequence;
-}
-function inlineCodePeek() {
-  return "`";
-}
-
-// node_modules/mdast-util-to-markdown/lib/util/format-link-as-autolink.js
-function formatLinkAsAutolink(node2, state) {
-  const raw = toString(node2);
-  return Boolean(
-    !state.options.resourceLink && // If there’s a url…
-    node2.url && // And there’s a no title…
-    !node2.title && // And the content of `node` is a single text node…
-    node2.children && node2.children.length === 1 && node2.children[0].type === "text" && // And if the url is the same as the content…
-    (raw === node2.url || "mailto:" + raw === node2.url) && // And that starts w/ a protocol…
-    /^[a-z][a-z+.-]+:/i.test(node2.url) && // And that doesn’t contain ASCII control codes (character escapes and
-    // references don’t work), space, or angle brackets…
-    !/[\0- <>\u007F]/.test(node2.url)
-  );
-}
-
-// node_modules/mdast-util-to-markdown/lib/handle/link.js
-link.peek = linkPeek;
-function link(node2, _, state, info) {
-  const quote = checkQuote(state);
-  const suffix = quote === '"' ? "Quote" : "Apostrophe";
-  const tracker = state.createTracker(info);
-  let exit2;
-  let subexit;
-  if (formatLinkAsAutolink(node2, state)) {
-    const stack = state.stack;
-    state.stack = [];
-    exit2 = state.enter("autolink");
-    let value2 = tracker.move("<");
-    value2 += tracker.move(
-      state.containerPhrasing(node2, {
-        before: value2,
-        after: ">",
-        ...tracker.current()
-      })
-    );
-    value2 += tracker.move(">");
-    exit2();
-    state.stack = stack;
-    return value2;
-  }
-  exit2 = state.enter("link");
-  subexit = state.enter("label");
-  let value = tracker.move("[");
-  value += tracker.move(
-    state.containerPhrasing(node2, {
-      before: value,
-      after: "](",
-      ...tracker.current()
-    })
-  );
-  value += tracker.move("](");
-  subexit();
-  if (
-    // If there’s no url but there is a title…
-    !node2.url && node2.title || // If there are control characters or whitespace.
-    /[\0- \u007F]/.test(node2.url)
-  ) {
-    subexit = state.enter("destinationLiteral");
-    value += tracker.move("<");
-    value += tracker.move(
-      state.safe(node2.url, { before: value, after: ">", ...tracker.current() })
-    );
-    value += tracker.move(">");
-  } else {
-    subexit = state.enter("destinationRaw");
-    value += tracker.move(
-      state.safe(node2.url, {
-        before: value,
-        after: node2.title ? " " : ")",
-        ...tracker.current()
-      })
-    );
-  }
-  subexit();
-  if (node2.title) {
-    subexit = state.enter(`title${suffix}`);
-    value += tracker.move(" " + quote);
-    value += tracker.move(
-      state.safe(node2.title, {
-        before: value,
-        after: quote,
-        ...tracker.current()
-      })
-    );
-    value += tracker.move(quote);
-    subexit();
-  }
-  value += tracker.move(")");
-  exit2();
-  return value;
-}
-function linkPeek(node2, _, state) {
-  return formatLinkAsAutolink(node2, state) ? "<" : "[";
-}
-
-// node_modules/mdast-util-to-markdown/lib/handle/link-reference.js
-linkReference.peek = linkReferencePeek;
-function linkReference(node2, _, state, info) {
-  const type = node2.referenceType;
-  const exit2 = state.enter("linkReference");
-  let subexit = state.enter("label");
-  const tracker = state.createTracker(info);
-  let value = tracker.move("[");
-  const text3 = state.containerPhrasing(node2, {
-    before: value,
-    after: "]",
-    ...tracker.current()
-  });
-  value += tracker.move(text3 + "][");
-  subexit();
-  const stack = state.stack;
-  state.stack = [];
-  subexit = state.enter("reference");
-  const reference = state.safe(state.associationId(node2), {
-    before: value,
-    after: "]",
-    ...tracker.current()
-  });
-  subexit();
-  state.stack = stack;
-  exit2();
-  if (type === "full" || !text3 || text3 !== reference) {
-    value += tracker.move(reference + "]");
-  } else if (type === "shortcut") {
-    value = value.slice(0, -1);
-  } else {
-    value += tracker.move("]");
-  }
-  return value;
-}
-function linkReferencePeek() {
-  return "[";
-}
-
-// node_modules/mdast-util-to-markdown/lib/util/check-bullet.js
-function checkBullet(state) {
-  const marker = state.options.bullet || "*";
-  if (marker !== "*" && marker !== "+" && marker !== "-") {
-    throw new Error(
-      "Cannot serialize items with `" + marker + "` for `options.bullet`, expected `*`, `+`, or `-`"
-    );
-  }
-  return marker;
-}
-
-// node_modules/mdast-util-to-markdown/lib/util/check-bullet-other.js
-function checkBulletOther(state) {
-  const bullet = checkBullet(state);
-  const bulletOther = state.options.bulletOther;
-  if (!bulletOther) {
-    return bullet === "*" ? "-" : "*";
-  }
-  if (bulletOther !== "*" && bulletOther !== "+" && bulletOther !== "-") {
-    throw new Error(
-      "Cannot serialize items with `" + bulletOther + "` for `options.bulletOther`, expected `*`, `+`, or `-`"
-    );
-  }
-  if (bulletOther === bullet) {
-    throw new Error(
-      "Expected `bullet` (`" + bullet + "`) and `bulletOther` (`" + bulletOther + "`) to be different"
-    );
-  }
-  return bulletOther;
-}
-
-// node_modules/mdast-util-to-markdown/lib/util/check-bullet-ordered.js
-function checkBulletOrdered(state) {
-  const marker = state.options.bulletOrdered || ".";
-  if (marker !== "." && marker !== ")") {
-    throw new Error(
-      "Cannot serialize items with `" + marker + "` for `options.bulletOrdered`, expected `.` or `)`"
-    );
-  }
-  return marker;
-}
-
-// node_modules/mdast-util-to-markdown/lib/util/check-rule.js
-function checkRule(state) {
-  const marker = state.options.rule || "*";
-  if (marker !== "*" && marker !== "-" && marker !== "_") {
-    throw new Error(
-      "Cannot serialize rules with `" + marker + "` for `options.rule`, expected `*`, `-`, or `_`"
-    );
-  }
-  return marker;
-}
-
-// node_modules/mdast-util-to-markdown/lib/handle/list.js
-function list(node2, parent, state, info) {
-  const exit2 = state.enter("list");
-  const bulletCurrent = state.bulletCurrent;
-  let bullet = node2.ordered ? checkBulletOrdered(state) : checkBullet(state);
-  const bulletOther = node2.ordered ? bullet === "." ? ")" : "." : checkBulletOther(state);
-  let useDifferentMarker = parent && state.bulletLastUsed ? bullet === state.bulletLastUsed : false;
-  if (!node2.ordered) {
-    const firstListItem = node2.children ? node2.children[0] : void 0;
-    if (
-      // Bullet could be used as a thematic break marker:
-      (bullet === "*" || bullet === "-") && // Empty first list item:
-      firstListItem && (!firstListItem.children || !firstListItem.children[0]) && // Directly in two other list items:
-      state.stack[state.stack.length - 1] === "list" && state.stack[state.stack.length - 2] === "listItem" && state.stack[state.stack.length - 3] === "list" && state.stack[state.stack.length - 4] === "listItem" && // That are each the first child.
-      state.indexStack[state.indexStack.length - 1] === 0 && state.indexStack[state.indexStack.length - 2] === 0 && state.indexStack[state.indexStack.length - 3] === 0
-    ) {
-      useDifferentMarker = true;
-    }
-    if (checkRule(state) === bullet && firstListItem) {
-      let index = -1;
-      while (++index < node2.children.length) {
-        const item = node2.children[index];
-        if (item && item.type === "listItem" && item.children && item.children[0] && item.children[0].type === "thematicBreak") {
-          useDifferentMarker = true;
-          break;
-        }
-      }
-    }
-  }
-  if (useDifferentMarker) {
-    bullet = bulletOther;
-  }
-  state.bulletCurrent = bullet;
-  const value = state.containerFlow(node2, info);
-  state.bulletLastUsed = bullet;
-  state.bulletCurrent = bulletCurrent;
-  exit2();
-  return value;
-}
-
-// node_modules/mdast-util-to-markdown/lib/util/check-list-item-indent.js
-function checkListItemIndent(state) {
-  const style = state.options.listItemIndent || "one";
-  if (style !== "tab" && style !== "one" && style !== "mixed") {
-    throw new Error(
-      "Cannot serialize items with `" + style + "` for `options.listItemIndent`, expected `tab`, `one`, or `mixed`"
-    );
-  }
-  return style;
-}
-
-// node_modules/mdast-util-to-markdown/lib/handle/list-item.js
-function listItem(node2, parent, state, info) {
-  const listItemIndent = checkListItemIndent(state);
-  let bullet = state.bulletCurrent || checkBullet(state);
-  if (parent && parent.type === "list" && parent.ordered) {
-    bullet = (typeof parent.start === "number" && parent.start > -1 ? parent.start : 1) + (state.options.incrementListMarker === false ? 0 : parent.children.indexOf(node2)) + bullet;
-  }
-  let size = bullet.length + 1;
-  if (listItemIndent === "tab" || listItemIndent === "mixed" && (parent && parent.type === "list" && parent.spread || node2.spread)) {
-    size = Math.ceil(size / 4) * 4;
-  }
-  const tracker = state.createTracker(info);
-  tracker.move(bullet + " ".repeat(size - bullet.length));
-  tracker.shift(size);
-  const exit2 = state.enter("listItem");
-  const value = state.indentLines(
-    state.containerFlow(node2, tracker.current()),
-    map3
-  );
-  exit2();
-  return value;
-  function map3(line, index, blank) {
-    if (index) {
-      return (blank ? "" : " ".repeat(size)) + line;
-    }
-    return (blank ? bullet : bullet + " ".repeat(size - bullet.length)) + line;
-  }
-}
-
-// node_modules/mdast-util-to-markdown/lib/handle/paragraph.js
-function paragraph(node2, _, state, info) {
-  const exit2 = state.enter("paragraph");
-  const subexit = state.enter("phrasing");
-  const value = state.containerPhrasing(node2, info);
-  subexit();
-  exit2();
-  return value;
-}
-
-// node_modules/mdast-util-phrasing/lib/index.js
-var phrasing = (
-  /** @type {(node?: unknown) => node is Exclude<PhrasingContent, Html>} */
-  convert([
-    "break",
-    "delete",
-    "emphasis",
-    // To do: next major: removed since footnotes were added to GFM.
-    "footnote",
-    "footnoteReference",
-    "image",
-    "imageReference",
-    "inlineCode",
-    // Enabled by `mdast-util-math`:
-    "inlineMath",
-    "link",
-    "linkReference",
-    // Enabled by `mdast-util-mdx`:
-    "mdxJsxTextElement",
-    // Enabled by `mdast-util-mdx`:
-    "mdxTextExpression",
-    "strong",
-    "text",
-    // Enabled by `mdast-util-directive`:
-    "textDirective"
-  ])
-);
-
-// node_modules/mdast-util-to-markdown/lib/handle/root.js
-function root(node2, _, state, info) {
-  const hasPhrasing = node2.children.some(function(d2) {
-    return phrasing(d2);
-  });
-  const container = hasPhrasing ? state.containerPhrasing : state.containerFlow;
-  return container.call(state, node2, info);
-}
-
-// node_modules/mdast-util-to-markdown/lib/util/check-strong.js
-function checkStrong(state) {
-  const marker = state.options.strong || "*";
-  if (marker !== "*" && marker !== "_") {
-    throw new Error(
-      "Cannot serialize strong with `" + marker + "` for `options.strong`, expected `*`, or `_`"
-    );
-  }
-  return marker;
-}
-
-// node_modules/mdast-util-to-markdown/lib/handle/strong.js
-strong.peek = strongPeek;
-function strong(node2, _, state, info) {
-  const marker = checkStrong(state);
-  const exit2 = state.enter("strong");
-  const tracker = state.createTracker(info);
-  const before = tracker.move(marker + marker);
-  let between = tracker.move(
-    state.containerPhrasing(node2, {
-      after: marker,
-      before,
-      ...tracker.current()
-    })
-  );
-  const betweenHead = between.charCodeAt(0);
-  const open = encodeInfo(
-    info.before.charCodeAt(info.before.length - 1),
-    betweenHead,
-    marker
-  );
-  if (open.inside) {
-    between = encodeCharacterReference(betweenHead) + between.slice(1);
-  }
-  const betweenTail = between.charCodeAt(between.length - 1);
-  const close = encodeInfo(info.after.charCodeAt(0), betweenTail, marker);
-  if (close.inside) {
-    between = between.slice(0, -1) + encodeCharacterReference(betweenTail);
-  }
-  const after = tracker.move(marker + marker);
-  exit2();
-  state.attentionEncodeSurroundingInfo = {
-    after: close.outside,
-    before: open.outside
+];
+var accentById = new Map(accents.map((accent) => [accent.id, accent]));
+var resolveAccentId = (id) => legacyAccentIds[id] ?? id;
+var getAccent = (id) => accentById.get(resolveAccentId(id)) ?? accentById.get(DEFAULT_ACCENT_ID);
+var isAccentId = (value) => Boolean(value && accentById.has(resolveAccentId(value)));
+var accentSets = (id) => {
+  const accent = getAccent(id);
+  return {
+    light: [accent.light, accent.duo.light, accent.tri.light],
+    dark: [accent.dark, accent.duo.dark, accent.tri.dark]
   };
-  return before + between + after;
-}
-function strongPeek(_, _1, state) {
-  return state.options.strong || "*";
-}
-
-// node_modules/mdast-util-to-markdown/lib/handle/text.js
-function text(node2, _, state, info) {
-  return state.safe(node2.value, info);
-}
-
-// node_modules/mdast-util-to-markdown/lib/util/check-rule-repetition.js
-function checkRuleRepetition(state) {
-  const repetition = state.options.ruleRepetition || 3;
-  if (repetition < 3) {
-    throw new Error(
-      "Cannot serialize rules with repetition `" + repetition + "` for `options.ruleRepetition`, expected `3` or more"
-    );
-  }
-  return repetition;
-}
-
-// node_modules/mdast-util-to-markdown/lib/handle/thematic-break.js
-function thematicBreak(_, _1, state) {
-  const value = (checkRule(state) + (state.options.ruleSpaces ? " " : "")).repeat(checkRuleRepetition(state));
-  return state.options.ruleSpaces ? value.slice(0, -1) : value;
-}
-
-// node_modules/mdast-util-to-markdown/lib/handle/index.js
-var handle = {
-  blockquote,
-  break: hardBreak,
-  code,
-  definition,
-  emphasis,
-  hardBreak,
-  heading,
-  html,
-  image,
-  imageReference,
-  inlineCode,
-  link,
-  linkReference,
-  list,
-  listItem,
-  paragraph,
-  root,
-  strong,
-  text,
-  thematicBreak
 };
 
-// node_modules/mdast-util-gfm-table/lib/index.js
-function gfmTableFromMarkdown() {
-  return {
-    enter: {
-      table: enterTable,
-      tableData: enterCell,
-      tableHeader: enterCell,
-      tableRow: enterRow
-    },
-    exit: {
-      codeText: exitCodeText,
-      table: exitTable,
-      tableData: exit,
-      tableHeader: exit,
-      tableRow: exit
-    }
-  };
-}
-function enterTable(token) {
-  const align = token._align;
-  this.enter(
-    {
-      type: "table",
-      align: align.map(function(d2) {
-        return d2 === "none" ? null : d2;
-      }),
-      children: []
-    },
-    token
-  );
-  this.data.inTable = true;
-}
-function exitTable(token) {
-  this.exit(token);
-  this.data.inTable = void 0;
-}
-function enterRow(token) {
-  this.enter({ type: "tableRow", children: [] }, token);
-}
-function exit(token) {
-  this.exit(token);
-}
-function enterCell(token) {
-  this.enter({ type: "tableCell", children: [] }, token);
-}
-function exitCodeText(token) {
-  let value = this.resume();
-  if (this.data.inTable) {
-    value = value.replace(/\\([\\|])/g, replace);
-  }
-  const node2 = this.stack[this.stack.length - 1];
-  ok(node2.type === "inlineCode");
-  node2.value = value;
-  this.exit(token);
-}
-function replace($0, $1) {
-  return $1 === "|" ? $1 : $0;
-}
-function gfmTableToMarkdown(options) {
-  const settings = options || {};
-  const padding = settings.tableCellPadding;
-  const alignDelimiters = settings.tablePipeAlign;
-  const stringLength = settings.stringLength;
-  const around = padding ? " " : "|";
-  return {
-    unsafe: [
-      { character: "\r", inConstruct: "tableCell" },
-      { character: "\n", inConstruct: "tableCell" },
-      // A pipe, when followed by a tab or space (padding), or a dash or colon
-      // (unpadded delimiter row), could result in a table.
-      { atBreak: true, character: "|", after: "[	 :-]" },
-      // A pipe in a cell must be encoded.
-      { character: "|", inConstruct: "tableCell" },
-      // A colon must be followed by a dash, in which case it could start a
-      // delimiter row.
-      { atBreak: true, character: ":", after: "-" },
-      // A delimiter row can also start with a dash, when followed by more
-      // dashes, a colon, or a pipe.
-      // This is a stricter version than the built in check for lists, thematic
-      // breaks, and setex heading underlines though:
-      // <https://github.com/syntax-tree/mdast-util-to-markdown/blob/51a2038/lib/unsafe.js#L57>
-      { atBreak: true, character: "-", after: "[:|-]" }
-    ],
-    handlers: {
-      inlineCode: inlineCodeWithTable,
-      table: handleTable,
-      tableCell: handleTableCell,
-      tableRow: handleTableRow
-    }
-  };
-  function handleTable(node2, _, state, info) {
-    return serializeData(handleTableAsData(node2, state, info), node2.align);
-  }
-  function handleTableRow(node2, _, state, info) {
-    const row = handleTableRowAsData(node2, state, info);
-    const value = serializeData([row]);
-    return value.slice(0, value.indexOf("\n"));
-  }
-  function handleTableCell(node2, _, state, info) {
-    const exit2 = state.enter("tableCell");
-    const subexit = state.enter("phrasing");
-    const value = state.containerPhrasing(node2, {
-      ...info,
-      before: around,
-      after: around
-    });
-    subexit();
-    exit2();
-    return value;
-  }
-  function serializeData(matrix, align) {
-    return markdownTable(matrix, {
-      align,
-      // @ts-expect-error: `markdown-table` types should support `null`.
-      alignDelimiters,
-      // @ts-expect-error: `markdown-table` types should support `null`.
-      padding,
-      // @ts-expect-error: `markdown-table` types should support `null`.
-      stringLength
-    });
-  }
-  function handleTableAsData(node2, state, info) {
-    const children = node2.children;
-    let index = -1;
-    const result = [];
-    const subexit = state.enter("table");
-    while (++index < children.length) {
-      result[index] = handleTableRowAsData(children[index], state, info);
-    }
-    subexit();
-    return result;
-  }
-  function handleTableRowAsData(node2, state, info) {
-    const children = node2.children;
-    let index = -1;
-    const result = [];
-    const subexit = state.enter("tableRow");
-    while (++index < children.length) {
-      result[index] = handleTableCell(children[index], node2, state, info);
-    }
-    subexit();
-    return result;
-  }
-  function inlineCodeWithTable(node2, parent, state) {
-    let value = handle.inlineCode(node2, parent, state);
-    if (state.stack.includes("tableCell")) {
-      value = value.replace(/\|/g, "\\$&");
-    }
-    return value;
-  }
-}
+// src/palettes.ts
+var defaultAccents = [
+  "lab(92.9449% -44.411 80.292)",
+  "lab(89.622% -60.7933 21.1414)",
+  "lab(77.5288% -33.8221 -35.2522)"
+];
+var graphPalettes = {
+  greenday: [
+    "lab(75.3083% -50.8817 16.5941)",
+    "lab(64.2127% -33.5133 10.9937)",
+    "lab(52.3473% -26.752 8.78495)"
+  ],
+  orange: [
+    "lab(71.4857% 31.7395 50.6703)",
+    "lab(59.9849% 27.1583 43.2884)",
+    "lab(47.4458% 17.612 27.6482)"
+  ],
+  smelly: [
+    "lab(71.5613% -39.2213 32.0347)",
+    "lab(59.4864% -27.9865 22.5741)",
+    "lab(48.8016% -22.3829 17.9859)"
+  ],
+  bluebee: [
+    "lab(72.927% -27.9603 -18.655)",
+    "lab(61.1772% -22.4508 -14.9579)",
+    "lab(48.266% -16.9089 -11.2492)"
+  ],
+  indigosea: [
+    "lab(64.6212% -3.42974 -41.9226)",
+    "lab(55.4566% -3.21141 -35.0042)",
+    "lab(43.9603% -2.77504 -28.0458)"
+  ],
+  purple: [
+    "lab(65.9315% 23.8296 -37.7086)",
+    "lab(54.6046% 19.7722 -31.452)",
+    "lab(46.7671% 15.6163 -25.232)"
+  ],
+  pink: [
+    "lab(68.1924% 46.0132 8.22219)",
+    "lab(57.0643% 32.9593 5.82368)",
+    "lab(46.8598% 26.3926 4.64644)"
+  ],
+  fire: [
+    "lab(63.1816% 61.0248 26.574)",
+    "lab(83.7092% 15.1838 49.0253)",
+    "lab(91.052% 3.18348 41.0078)"
+  ],
+  deepsea: [
+    "lab(73.7018% -27.0253 -40.4936)",
+    "lab(61.4794% 5.08663 -63.0304)",
+    "lab(66.9883% -8.56626 -50.0439)"
+  ],
+  pinkteam: [
+    "lab(59.5163% 79.0474 -13.7787)",
+    "lab(63.2046% 32.0657 -40.4435)",
+    "lab(64.9393% -11.5563 -42.2452)"
+  ],
+  burning: [
+    "lab(59.7009% 67.0661 59.0563)",
+    "lab(60.382% 65.0115 2.28822)",
+    "lab(78.9059% 22.0683 64.7554)"
+  ],
+  blueteam: [
+    "lab(71.6811% -31.5902 -32.9072)",
+    "lab(61.1151% 48.3187 -49.9469)",
+    "lab(58.4679% 63.9384 31.5448)"
+  ],
+  theme: accentSets("theme").light,
+  mint: accentSets("mint").light,
+  green: accentSets("green").light,
+  cyan: accentSets("cyan").light,
+  blue: accentSets("blue").light,
+  sunset: accentSets("sunset").light,
+  ocean: accentSets("ocean").light,
+  neon: accentSets("neon").light,
+  aurora: accentSets("aurora").light,
+  prism: accentSets("prism").light
+};
+var darkGraphPalettes = Object.fromEntries(
+  ["theme", "mint", "green", "cyan", "blue", "sunset", "ocean", "neon", "aurora", "prism"].map(
+    (id) => [id, accentSets(id).dark]
+  )
+);
+var paletteMode = (palette) => palette === "solid" || palette === "mono" ? "solid" : palette === "duo" ? "duo" : "trio";
+var paletteAccents = (palette, fallback) => palette in graphPalettes ? graphPalettes[palette] : fallback;
+var paletteDarkAccents = (palette, fallback) => darkGraphPalettes[palette] ?? paletteAccents(palette, fallback);
 
-// node_modules/mdast-util-gfm-task-list-item/lib/index.js
-function gfmTaskListItemFromMarkdown() {
-  return {
-    exit: {
-      taskListCheckValueChecked: exitCheck,
-      taskListCheckValueUnchecked: exitCheck,
-      paragraph: exitParagraphWithTaskListItem
-    }
-  };
-}
-function gfmTaskListItemToMarkdown() {
-  return {
-    unsafe: [{ atBreak: true, character: "-", after: "[:|-]" }],
-    handlers: { listItem: listItemWithTaskListItem }
-  };
-}
-function exitCheck(token) {
-  const node2 = this.stack[this.stack.length - 2];
-  ok(node2.type === "listItem");
-  node2.checked = token.type === "taskListCheckValueChecked";
-}
-function exitParagraphWithTaskListItem(token) {
-  const parent = this.stack[this.stack.length - 2];
-  if (parent && parent.type === "listItem" && typeof parent.checked === "boolean") {
-    const node2 = this.stack[this.stack.length - 1];
-    ok(node2.type === "paragraph");
-    const head = node2.children[0];
-    if (head && head.type === "text") {
-      const siblings = parent.children;
-      let index = -1;
-      let firstParaghraph;
-      while (++index < siblings.length) {
-        const sibling = siblings[index];
-        if (sibling.type === "paragraph") {
-          firstParaghraph = sibling;
-          break;
-        }
-      }
-      if (firstParaghraph === node2) {
-        head.value = head.value.slice(1);
-        if (head.value.length === 0) {
-          node2.children.shift();
-        } else if (node2.position && head.position && typeof head.position.start.offset === "number") {
-          head.position.start.column++;
-          head.position.start.offset++;
-          node2.position.start = Object.assign({}, head.position.start);
-        }
-      }
-    }
-  }
-  this.exit(token);
-}
-function listItemWithTaskListItem(node2, parent, state, info) {
-  const head = node2.children[0];
-  const checkable = typeof node2.checked === "boolean" && head && head.type === "paragraph";
-  const checkbox = "[" + (node2.checked ? "x" : " ") + "] ";
-  const tracker = state.createTracker(info);
-  if (checkable) {
-    tracker.move(checkbox);
-  }
-  let value = handle.listItem(node2, parent, state, {
-    ...info,
-    ...tracker.current()
-  });
-  if (checkable) {
-    value = value.replace(/^(?:[*+-]|\d+\.)([\r\n]| {1,3})/, check);
-  }
-  return value;
-  function check($0) {
-    return $0 + checkbox;
-  }
-}
-
-// node_modules/mdast-util-gfm/lib/index.js
-function gfmFromMarkdown() {
+// src/ascii/frame.ts
+var MIN_INNER = 48;
+var widthOf = (value) => [...value].length;
+var padEnd = (value, size) => {
+  const extra = size - widthOf(value);
+  return extra > 0 ? value + " ".repeat(extra) : [...value].slice(0, size).join("");
+};
+var padStart = (value, size) => {
+  const extra = size - widthOf(value);
+  return extra > 0 ? " ".repeat(extra) + value : [...value].slice(-size).join("");
+};
+var dash = (count) => "-".repeat(Math.max(0, count));
+var rule = dash;
+var fillTrack = (filled, total, on = "=", off = "-") => {
+  const count = Math.min(total, Math.max(0, filled));
+  return on.repeat(count) + off.repeat(total - count);
+};
+var col = (value, size, align = "left") => align === "right" ? padStart(value, size) : padEnd(value, size);
+var colWidth = (values) => Math.max(0, ...values.map(widthOf));
+var frameAscii = (title, lines, minInner = MIN_INNER) => {
+  const caption = `[ ${title.trim().toUpperCase()} ]`;
+  const contentWidth = Math.max(0, ...lines.map(widthOf));
+  const inner = Math.max(minInner, contentWidth, caption.length + 4);
+  const span = inner + 2;
+  const label = ` ${caption} `;
+  const leftover = Math.max(0, span - label.length);
+  const left = Math.floor(leftover / 2);
+  const right = leftover - left;
+  const empty2 = `| ${" ".repeat(inner)} |`;
   return [
-    gfmAutolinkLiteralFromMarkdown(),
-    gfmFootnoteFromMarkdown(),
-    gfmStrikethroughFromMarkdown(),
-    gfmTableFromMarkdown(),
-    gfmTaskListItemFromMarkdown()
-  ];
-}
-function gfmToMarkdown(options) {
+    `+${dash(left)}${label}${dash(right)}+`,
+    empty2,
+    ...lines.map((line) => `| ${padEnd(line, inner)} |`),
+    empty2,
+    `+${dash(span)}+`
+  ].join("\n");
+};
+
+// src/ascii/graphs.ts
+var SPARK_GLYPHS = ["\u2581", "\u2582", "\u2583", "\u2584", "\u2585", "\u2586", "\u2587", "\u2588"];
+var STACK_GLYPHS = ["\u2588", "\u2593", "\u2592", "\u2591", "#", "=", "+", "-"];
+var GLYPH_PRESETS = {
+  shade: ["\xB7", "\u2591", "\u2592", "\u2593", "\u2588"],
+  ascii: [".", "-", "=", "#", "@"],
+  hash: [" ", "#"],
+  bar: [" ", "\u2588"]
+};
+var clamp01 = (value) => Math.min(1, Math.max(0, value));
+var glyphScale = (glyphs, fallback) => {
+  if (!glyphs) return fallback;
+  const preset = GLYPH_PRESETS[glyphs.trim().toLowerCase()];
+  if (preset) return preset;
+  const custom = /^\s*\[([\s\S]*)\]\s*$/.exec(glyphs)?.[1]?.split(",").map((entry) => {
+    const token = entry.trim();
+    const quoted = /^(?:"([\s\S]*)"|'([\s\S]*)')$/.exec(token);
+    return quoted ? quoted[1] ?? quoted[2] ?? "" : token;
+  });
+  return custom && custom.length >= 2 && custom.every((entry) => entry.length > 0) ? custom : fallback;
+};
+var glyphAt = (scale, ratio) => scale[Math.round(clamp01(ratio) * (scale.length - 1))] ?? scale.at(-1) ?? "\u2588";
+var sparkGlyphs = (values, glyphs) => {
+  const peak = Math.max(...values, 1);
+  const scale = glyphScale(glyphs, SPARK_GLYPHS);
+  return values.map((value) => glyphAt(scale, value / peak));
+};
+var meterTrack = (value, ticks, glyphs) => {
+  const scale = glyphScale(glyphs, ["-", "="]);
+  const active = scale.length > 2 ? scale.at(-2) : scale.at(-1);
+  return fillTrack(Math.round(clamp01(value) * ticks), ticks, active, scale[0]);
+};
+var miniBars = (values, height, glyphs) => {
+  const peak = Math.max(...values, 1);
+  const fill = glyphScale(glyphs, ["\u2588"]).at(-1);
+  return Array.from(
+    { length: height },
+    (_, row) => values.map((value) => {
+      const level = Math.round(value / peak * (height - 1));
+      return height - 1 - row <= level ? fill : " ";
+    }).join(" ")
+  );
+};
+
+// src/render.ts
+var supportedGraphTypes = [
+  "table",
+  "flow",
+  "bars",
+  "rank",
+  "cells",
+  "meter",
+  "spark",
+  "tree",
+  "timeline",
+  "stack",
+  "funnel",
+  "gantt",
+  "plot",
+  "waffle",
+  "diff",
+  "invoice",
+  "compare",
+  "stat",
+  "kpi",
+  "spec",
+  "activity",
+  "heatmap",
+  "calendar",
+  "waterfall",
+  "uptime",
+  "slope",
+  "bullet",
+  "timer",
+  "countdown",
+  "frame",
+  "matrix",
+  "check",
+  "sheet"
+];
+var text = (value) => ({ type: "text", value });
+var clamp = (value, min = 0, max = 1) => Math.min(max, Math.max(min, value));
+var number = (value) => Number(value.replace(/[,$%]/g, ""));
+var meaningful = (source) => source.split(/\r?\n/).map((line) => line.trimEnd()).filter((line) => line.trim() && !line.trimStart().startsWith("#"));
+var properties = (source) => {
+  const result = {};
+  for (const line of meaningful(source)) {
+    const match = /^([\w.-]+)\s*:\s*(.+)$/.exec(line.trim());
+    if (match?.[1] && match[2]) result[match[1]] = match[2];
+  }
+  return result;
+};
+var data = (source) => meaningful(source).flatMap((line) => {
+  const match = /^(.+?)\s*=\s*([+-]?[\d,.]+)(?:\s|$)/.exec(line.trim());
+  return match?.[1] && match[2] && Number.isFinite(number(match[2])) ? [{ label: match[1].trim(), value: number(match[2]) }] : [];
+});
+var rankData = (source) => {
+  if (!/^\s*items\s*:\s*$/im.test(source)) return data(source);
+  const items = [];
+  let item;
+  for (const line of source.split(/\r?\n/)) {
+    const label = /^\s*-\s*label\s*:\s*(.+?)\s*$/i.exec(line)?.[1];
+    if (label) {
+      item = { label };
+      items.push(item);
+      continue;
+    }
+    if (!item) continue;
+    const value = /^\s+value\s*:\s*([+-]?[\d,.]+)\s*$/i.exec(line)?.[1];
+    if (value && Number.isFinite(number(value))) item.value = number(value);
+    const display = /^\s+display\s*:\s*(.+?)\s*$/i.exec(line)?.[1];
+    if (display) item.display = display.replace(/^(?:"([\s\S]*)"|'([\s\S]*)')$/, "$1$2");
+  }
+  return items.filter(
+    (item2) => Boolean(item2.label) && Number.isFinite(item2.value)
+  );
+};
+var bar = (ratio, width = 24, glyphs) => {
+  const scale = glyphScale(glyphs, ["\xB7", "\u25A0"]);
+  const filled = Math.round(clamp(ratio) * width);
+  return `[${scale.at(-1).repeat(filled)}${scale[0].repeat(width - filled)}]`;
+};
+var asciiBar = (ratio, ticks, marker, glyphs) => {
+  const scale = glyphScale(glyphs, ["-", "="]);
+  const filled = Math.round(clamp(ratio) * ticks);
+  const markerIndex = marker === void 0 ? -1 : Math.round(clamp(marker) * ticks) - 1;
+  const cells = [...fillTrack(filled, ticks, scale.at(-1), scale[0])].map(
+    (cell, index) => index === markerIndex ? "|" : cell
+  );
+  return `[ ${cells.join(" ")} ]`;
+};
+var rankBar = (ratio, ticks, glyphs) => {
+  const scale = glyphScale(glyphs, ["-", "="]);
+  const empty2 = scale[0];
+  const filled = scale.at(-1);
+  const count = Math.round(clamp(ratio) * ticks);
+  return `[ ${[...Array(count).fill(filled), ...Array(ticks - count).fill(empty2)].join(" ")} ]`;
+};
+var aligned = (items, width = 24, glyphs) => {
+  const labelWidth = Math.max(1, colWidth(items.map(({ label }) => label)));
+  const max = Math.max(1, ...items.map(({ value }) => Math.abs(value)));
+  return items.map(
+    ({ label, value }) => `${col(label, labelWidth)}  ${bar(Math.abs(value) / max, width, glyphs)}  ${value.toLocaleString("en-US")}`
+  );
+};
+var spark = (values, glyphs) => {
+  const min = Math.min(...values);
+  const range = Math.max(1, Math.max(...values) - min);
+  const scale = glyphScale(glyphs, SPARK_GLYPHS);
+  return values.map((value) => glyphAt(scale, (value - min) / range)).join("");
+};
+var sparkData = (source) => {
+  const lines = source.split(/\r?\n/);
+  const dataIndex = lines.findIndex((line) => /^\s*data\s*:/i.test(line));
+  if (dataIndex >= 0) {
+    const inline = /^\s*data\s*:\s*\[([^\]]+)\]\s*$/i.exec(lines[dataIndex])?.[1];
+    if (inline) return [parseSequence(inline)];
+    const arrays = lines.slice(dataIndex + 1).flatMap((line) => {
+      const match = /^\s*-\s*\[([^\]]+)\]\s*$/.exec(line);
+      return match?.[1] ? [parseSequence(match[1])] : [];
+    });
+    if (arrays.length) return arrays.filter((values) => values.length);
+  }
+  return meaningful(source).flatMap((line) => {
+    const match = /^([^:]+):\s*(\[[^\]]+\]|[-+\d.,\s]+)$/.exec(line.trim());
+    if (!match?.[1] || !match[2] || /^(label|caption|glyphs|palette)$/i.test(match[1])) return [];
+    const values = parseSequence(match[2]);
+    return values.length ? [values] : [];
+  });
+};
+var sparkBody = (source, palette, glyphs) => {
+  const series = sparkData(source);
+  if (!series.length) return void 0;
+  const props = properties(source);
+  const mode = paletteMode(palette);
+  const explicitColor = /^(accent2|accent3)$/i.test(props.color ?? "") ? Number(props.color.slice(-1)) - 1 : props.color?.toLowerCase() === "accent" ? 0 : void 0;
   return {
-    extensions: [
-      gfmAutolinkLiteralToMarkdown(),
-      gfmFootnoteToMarkdown(options),
-      gfmStrikethroughToMarkdown(),
-      gfmTableToMarkdown(options),
-      gfmTaskListItemToMarkdown()
+    type: "element",
+    tagName: "div",
+    properties: { className: ["md-graph__body", "md-graph__body--spark"] },
+    children: [
+      ...series.map((values, seriesIndex) => {
+        const marks = sparkGlyphs(values, glyphs ?? props.glyphs);
+        const colorIndex = explicitColor ?? (mode === "solid" ? 0 : mode === "duo" ? seriesIndex % 2 : seriesIndex % 3);
+        return {
+          type: "element",
+          tagName: "div",
+          properties: { className: ["md-graph__sparkline"] },
+          children: marks.map((mark, index) => ({
+            type: "element",
+            tagName: "span",
+            properties: {
+              className: [
+                "md-graph__spark-mark",
+                ...index === marks.length - 1 ? ["md-graph__accent", `md-graph__color-${colorIndex}`] : ["md-graph__track"]
+              ]
+            },
+            children: [text(mark)]
+          }))
+        };
+      }),
+      ...props.label || props.caption ? [
+        {
+          type: "element",
+          tagName: "div",
+          properties: { className: ["md-graph__caption", "md-graph__spark-caption"] },
+          children: [text(props.label ?? props.caption)]
+        }
+      ] : []
     ]
   };
-}
-
-// node_modules/micromark-util-chunked/index.js
-function splice(list2, start, remove, items) {
-  const end = list2.length;
-  let chunkStart = 0;
-  let parameters;
-  if (start < 0) {
-    start = -start > end ? 0 : end + start;
-  } else {
-    start = start > end ? end : start;
+};
+var parseSequence = (value) => value.replace(/^\[|\]$/g, "").split(/[\s,]+/).map(number).filter(Number.isFinite);
+var durationSeconds = (value) => {
+  const units = { d: 86400, h: 3600, m: 60, s: 1 };
+  let seconds = 0;
+  for (const match of value.matchAll(/([\d.]+)\s*([dhms])/g))
+    seconds += Number(match[1]) * units[match[2]];
+  return seconds;
+};
+var clock = (seconds) => {
+  const safe = Math.max(0, Math.floor(seconds));
+  const hours = Math.floor(safe / 3600);
+  const minutes = Math.floor(safe % 3600 / 60);
+  const rest = safe % 60;
+  return `${hours ? `${hours}:` : ""}${String(minutes).padStart(hours ? 2 : 1, "0")}:${String(rest).padStart(2, "0")}`;
+};
+var tableLines = (source) => meaningful(source).filter((line) => line.includes("|")).filter((line) => !/^\s*\|?\s*:?-{3}/.test(line)).map(
+  (line) => line.replace(/^\s*\||\|\s*$/g, "").split("|").map((cell) => cell.trim()).join("  \u2502  ")
+);
+var yamlScalar = (value) => {
+  const trimmed = value.trim();
+  const quoted = /^(?:"([\s\S]*)"|'([\s\S]*)')$/.exec(trimmed);
+  return quoted ? quoted[1] ?? quoted[2] ?? "" : trimmed;
+};
+var yamlArray = (value) => {
+  const trimmed = value.trim();
+  if (!trimmed.startsWith("[") || !trimmed.endsWith("]")) return void 0;
+  try {
+    const parsed = JSON.parse(trimmed);
+    if (Array.isArray(parsed)) return parsed.map((cell2) => String(cell2));
+  } catch {
   }
-  remove = remove > 0 ? remove : 0;
-  if (items.length < 1e4) {
-    parameters = Array.from(items);
-    parameters.unshift(start, remove);
-    list2.splice(...parameters);
-  } else {
-    if (remove) list2.splice(start, remove);
-    while (chunkStart < items.length) {
-      parameters = items.slice(chunkStart, chunkStart + 1e4);
-      parameters.unshift(start, 0);
-      list2.splice(...parameters);
-      chunkStart += 1e4;
-      start += 1e4;
+  const cells = [];
+  let cell = "";
+  let quote = "";
+  for (const character of trimmed.slice(1, -1)) {
+    if (quote) {
+      if (character === quote) quote = "";
+      else cell += character;
+    } else if (character === '"' || character === "'") quote = character;
+    else if (character === ",") {
+      cells.push(yamlScalar(cell));
+      cell = "";
+    } else cell += character;
+  }
+  cells.push(yamlScalar(cell));
+  return cells;
+};
+var tableSection = (source, name) => {
+  const lines = source.split(/\r?\n/);
+  const start = lines.findIndex((line) => new RegExp(`^${name}\\s*:`, "i").test(line));
+  if (start < 0) return [];
+  const inline = lines[start].replace(new RegExp(`^${name}\\s*:\\s*`, "i"), "").trim();
+  if (inline) return [inline];
+  const values = [];
+  for (const line of lines.slice(start + 1)) {
+    if (/^[A-Za-z][\w-]*\s*:/.test(line)) break;
+    const item = /^\s+-\s*(.+?)\s*$/.exec(line)?.[1];
+    if (item) values.push(item);
+  }
+  return values;
+};
+var tableAlignmentConfig = (source) => {
+  const lines = source.split(/\r?\n/);
+  const start = lines.findIndex((line) => /^\s*align\s*:/i.test(line));
+  if (start < 0) return void 0;
+  const inline = lines[start].replace(/^\s*align\s*:\s*/i, "").trim();
+  const values = inline ? yamlArray(inline) ?? inline.replace(/^\[|\]$/g, "").split(",") : lines.slice(start + 1).flatMap((line) => {
+    const match = /^\s*-\s*(left|center|right)\s*$/i.exec(line);
+    return match?.[1] ? [match[1]] : [];
+  });
+  const alignments = values.map((value) => yamlScalar(value).trim().toLowerCase());
+  return alignments.every((value) => ["left", "center", "right"].includes(value)) ? alignments : void 0;
+};
+var splitTableRow = (line) => {
+  const cells = [];
+  let cell = "";
+  let escaped = false;
+  for (const character of line.trim().replace(/^\|/, "").replace(/\|$/, "")) {
+    if (escaped) {
+      cell += character;
+      escaped = false;
+    } else if (character === "\\") {
+      escaped = true;
+    } else if (character === "|") {
+      cells.push(cell.trim());
+      cell = "";
+    } else {
+      cell += character;
     }
   }
-}
-
-// node_modules/micromark-util-combine-extensions/index.js
-var hasOwnProperty = {}.hasOwnProperty;
-function combineExtensions(extensions) {
-  const all3 = {};
-  let index = -1;
-  while (++index < extensions.length) {
-    syntaxExtension(all3, extensions[index]);
+  if (escaped) cell += "\\";
+  cells.push(cell.trim());
+  return cells;
+};
+var parseTable = (source) => {
+  const structuredHeaders = tableSection(source, "headers");
+  if (structuredHeaders.length) {
+    const header2 = yamlArray(structuredHeaders[0]) ?? structuredHeaders.map(yamlScalar);
+    const rows2 = tableSection(source, "rows").flatMap((value) => {
+      const parsed = yamlArray(value);
+      return parsed ? [parsed] : [];
+    });
+    const footerValues = tableSection(source, "footer");
+    const footer = footerValues.length ? yamlArray(footerValues[0]) ?? footerValues.map(yamlScalar) : void 0;
+    const configuredAlignments2 = tableAlignmentConfig(source);
+    const alignments2 = configuredAlignments2?.length === header2.length ? configuredAlignments2 : header2.map((_, index) => index === 0 ? "left" : "right");
+    if (header2.length < 2 || !rows2.length || rows2.some((row) => row.length !== header2.length) || footer && footer.length !== header2.length)
+      return void 0;
+    return { header: header2, alignments: alignments2, rows: rows2, footer };
   }
-  return all3;
-}
-function syntaxExtension(all3, extension) {
-  let hook;
-  for (hook in extension) {
-    const maybe = hasOwnProperty.call(all3, hook) ? all3[hook] : void 0;
-    const left = maybe || (all3[hook] = {});
-    const right = extension[hook];
-    let code3;
-    if (right) {
-      for (code3 in right) {
-        if (!hasOwnProperty.call(left, code3)) left[code3] = [];
-        const value = right[code3];
-        constructs(
-          // @ts-expect-error Looks like a list.
-          left[code3],
-          Array.isArray(value) ? value : value ? [value] : []
-        );
+  const lines = meaningful(source).filter((line) => line.includes("|"));
+  if (lines.length < 2) return void 0;
+  const header = splitTableRow(lines[0]);
+  const divider = splitTableRow(lines[1]);
+  if (header.length < 2 || divider.length !== header.length || !divider.every((cell) => /^:?-{3,}:?$/.test(cell)))
+    return void 0;
+  const dividerAlignments = divider.map(
+    (cell) => cell.startsWith(":") && cell.endsWith(":") ? "center" : cell.endsWith(":") ? "right" : "left"
+  );
+  const rows = lines.slice(2).map(splitTableRow);
+  if (rows.some((row) => row.length !== header.length)) return void 0;
+  const configuredAlignments = tableAlignmentConfig(source);
+  const alignments = configuredAlignments?.length === header.length ? configuredAlignments : dividerAlignments;
+  return { header, alignments, rows, footer: void 0 };
+};
+var tableCell = (tagName, value, alignment) => ({
+  type: "element",
+  tagName,
+  properties: {
+    ...tagName === "th" ? { scope: "col" } : {},
+    ...alignment ? { dataAlign: alignment } : {}
+  },
+  children: [text(value)]
+});
+var tableBody = (source) => {
+  const parsed = parseTable(source);
+  if (!parsed) return void 0;
+  const row = (cells, header = false, summary = false) => ({
+    type: "element",
+    tagName: "tr",
+    properties: {
+      ...!header && (summary || /^(total|subtotal|net|grand total)$/i.test(cells[0]?.trim() ?? "")) ? { className: ["md-graph__table-summary"] } : {}
+    },
+    children: cells.map(
+      (cell, index) => tableCell(header ? "th" : "td", cell, parsed.alignments[index])
+    )
+  });
+  return {
+    type: "element",
+    tagName: "div",
+    properties: { className: ["md-graph__body", "md-graph__body--table"] },
+    children: [
+      {
+        type: "element",
+        tagName: "table",
+        properties: {
+          className: ["md-graph__table", ...parsed.footer ? ["md-graph__table--footer"] : []]
+        },
+        children: [
+          {
+            type: "element",
+            tagName: "thead",
+            properties: {},
+            children: [row(parsed.header, true)]
+          },
+          {
+            type: "element",
+            tagName: "tbody",
+            properties: {},
+            children: parsed.rows.map((cells) => row(cells))
+          },
+          ...parsed.footer ? [
+            {
+              type: "element",
+              tagName: "tfoot",
+              properties: {},
+              children: [row(parsed.footer, false, true)]
+            }
+          ] : []
+        ]
+      }
+    ]
+  };
+};
+var sheetSections = (source) => {
+  const sections = [];
+  let section;
+  let insideSections = false;
+  for (const line of source.split(/\r?\n/)) {
+    if (/^sections\s*:\s*$/i.test(line)) {
+      insideSections = true;
+      continue;
+    }
+    if (!insideSections) continue;
+    const title = /^\s{2}-\s*title\s*:\s*(.+?)\s*$/i.exec(line)?.[1];
+    if (title) {
+      section = { title: yamlScalar(title), rows: [] };
+      sections.push(section);
+      continue;
+    }
+    if (!section || /^\s+rows\s*:\s*$/i.test(line)) continue;
+    const row = /^\s{4,}-\s*(\[[\s\S]*\])\s*$/.exec(line)?.[1];
+    const cells = row ? yamlArray(row) : void 0;
+    if (cells) section.rows.push(cells);
+  }
+  return sections.filter(({ rows }) => rows.length);
+};
+var sheetBody = (source) => {
+  const headerValues = tableSection(source, "headers");
+  if (!headerValues.length) return void 0;
+  const header = yamlArray(headerValues[0]) ?? headerValues.map(yamlScalar);
+  const sections = sheetSections(source);
+  if (header.length < 2 || !sections.length || sections.some(({ rows }) => rows.some((row) => row.length !== header.length)))
+    return void 0;
+  const configured = tableAlignmentConfig(source);
+  const alignments = configured?.length === header.length ? configured : header.map((_, index) => index === 0 ? "left" : "right");
+  const cells = (values, tagName = "td") => values.map((value, index) => tableCell(tagName, value, alignments[index]));
+  return {
+    type: "element",
+    tagName: "div",
+    properties: { className: ["md-graph__body", "md-graph__body--sheet"] },
+    children: [
+      {
+        type: "element",
+        tagName: "table",
+        properties: { className: ["md-graph__table", "md-graph__sheet"] },
+        children: [
+          {
+            type: "element",
+            tagName: "thead",
+            properties: {},
+            children: [
+              { type: "element", tagName: "tr", properties: {}, children: cells(header, "th") }
+            ]
+          },
+          ...sections.map((section, index) => ({
+            type: "element",
+            tagName: "tbody",
+            properties: {
+              className: ["md-graph__sheet-section"],
+              dataSectionIndex: index
+            },
+            children: [
+              {
+                type: "element",
+                tagName: "tr",
+                properties: { className: ["md-graph__sheet-heading"] },
+                children: [
+                  {
+                    type: "element",
+                    tagName: "th",
+                    properties: { colSpan: header.length, scope: "rowgroup" },
+                    children: [text(section.title)]
+                  }
+                ]
+              },
+              ...section.rows.map((row) => ({
+                type: "element",
+                tagName: "tr",
+                properties: {},
+                children: cells(row)
+              }))
+            ]
+          }))
+        ]
+      }
+    ]
+  };
+};
+var parseFlowNodes = (source) => {
+  const rows = [];
+  let row;
+  let node;
+  for (const line of source.split(/\r?\n/)) {
+    if (/^\s*nodes\s*:\s*$/i.test(line)) {
+      row = [];
+      rows.push(row);
+      node = void 0;
+      continue;
+    }
+    const label = /^\s*-\s*label\s*:\s*(.+?)\s*$/i.exec(line)?.[1];
+    if (label && row) {
+      node = { label, tone: "default", stretch: false };
+      row.push(node);
+      continue;
+    }
+    const tone = /^\s*tone\s*:\s*(accent|muted|default)\s*$/i.exec(line)?.[1];
+    if (tone && node) node.tone = tone;
+    const stretch = /^\s*stretch\s*:\s*(true|false)\s*$/i.exec(line)?.[1];
+    if (stretch && node) node.stretch = stretch === "true";
+  }
+  return rows.length && rows.every((nodes) => nodes.length) ? rows : void 0;
+};
+var flowBody = (source) => {
+  const rows = parseFlowNodes(source);
+  if (!rows) return void 0;
+  return {
+    type: "element",
+    tagName: "div",
+    properties: { className: ["md-graph__body", "md-graph__body--flow"] },
+    children: rows.map((nodes) => ({
+      type: "element",
+      tagName: "div",
+      properties: { className: ["md-graph__flow-row"] },
+      children: nodes.flatMap((node, index) => [
+        ...index ? [
+          {
+            type: "element",
+            tagName: "span",
+            properties: {
+              className: [
+                "md-graph__flow-connector",
+                ...node.stretch ? ["md-graph__flow-connector--stretch"] : [],
+                ...node.tone === "accent" ? ["md-graph__flow-tone--accent"] : []
+              ]
+            },
+            children: node.stretch ? [] : [text("- - -\u25B6")]
+          }
+        ] : [],
+        {
+          type: "element",
+          tagName: "span",
+          properties: {
+            className: ["md-graph__flow-node", `md-graph__flow-tone--${node.tone}`]
+          },
+          children: [text(node.label)]
+        }
+      ])
+    }))
+  };
+};
+var textColorClasses = (color2) => {
+  if (!color2) return [];
+  if (color2 === "dark" || color2 === "light") return [`md-graph__tone--${color2}`];
+  const index = color2 === "accent" ? 0 : Number(color2.slice(-1)) - 1;
+  return ["md-graph__accent", `md-graph__color-${index}`];
+};
+var parseTreeNodes = (source) => {
+  if (!/^nodes\s*:\s*$/im.test(source)) return void 0;
+  const roots = [];
+  const stack = [];
+  let current;
+  for (const line of source.split(/\r?\n/)) {
+    const label = /^(\s*)-\s*label\s*:\s*(.+?)\s*$/i.exec(line);
+    if (label?.[2]) {
+      const indent = label[1].length;
+      const node = { label: yamlScalar(label[2]), children: [] };
+      while (stack.length && stack.at(-1).indent >= indent) stack.pop();
+      if (stack.length) stack.at(-1).node.children.push(node);
+      else roots.push(node);
+      stack.push({ indent, node });
+      current = node;
+      continue;
+    }
+    if (!current) continue;
+    const meta = /^\s+meta\s*:\s*(.+?)\s*$/i.exec(line)?.[1];
+    if (meta) current.meta = yamlScalar(meta);
+    const color2 = /^\s+color\s*:\s*(accent|accent2|accent3|dark|light)\s*$/i.exec(line)?.[1];
+    if (color2) current.color = color2;
+  }
+  return roots.length ? roots : void 0;
+};
+var flattenTree = (nodes, prefix = "", root = true) => {
+  const singleRoot = root && nodes.length === 1;
+  return nodes.flatMap((node, index) => {
+    const last = index === nodes.length - 1;
+    const branch = singleRoot ? "" : `${prefix}${last ? "\u2514\u2500 " : "\u251C\u2500 "}`;
+    const childPrefix = singleRoot ? "" : `${prefix}${last ? "   " : "\u2502  "}`;
+    return [{ ...node, branch }, ...flattenTree(node.children, childPrefix, false)];
+  });
+};
+var treeBody = (source) => {
+  const nodes = parseTreeNodes(source);
+  if (!nodes) return void 0;
+  return {
+    type: "element",
+    tagName: "div",
+    properties: { className: ["md-graph__body", "md-graph__body--tree"] },
+    children: flattenTree(nodes).map((node) => {
+      return {
+        type: "element",
+        tagName: "div",
+        properties: { className: ["md-graph__tree-row"] },
+        children: [
+          {
+            type: "element",
+            tagName: "span",
+            properties: { className: ["md-graph__tree-name"] },
+            children: [
+              {
+                type: "element",
+                tagName: "span",
+                properties: { className: ["md-graph__tree-branch"] },
+                children: [text(node.branch)]
+              },
+              {
+                type: "element",
+                tagName: "span",
+                properties: {
+                  className: ["md-graph__tree-label", ...textColorClasses(node.color)]
+                },
+                children: [text(node.label)]
+              }
+            ]
+          },
+          ...node.meta ? [
+            {
+              type: "element",
+              tagName: "span",
+              properties: { className: ["md-graph__tree-meta"] },
+              children: [text(node.meta)]
+            }
+          ] : []
+        ]
+      };
+    })
+  };
+};
+var timelineColorClasses = (color2 = "ink") => {
+  if (color2 === "muted" || color2 === "ink") return [`md-graph__tone--${color2}`];
+  return textColorClasses(color2);
+};
+var parseTimelineEvents = (source) => {
+  if (!/^events\s*:\s*$/im.test(source)) return void 0;
+  const events = [];
+  let event;
+  for (const line of source.split(/\r?\n/)) {
+    const date = /^\s*-\s*date\s*:\s*(.+?)\s*$/i.exec(line)?.[1];
+    if (date) {
+      event = { date: yamlScalar(date) };
+      events.push(event);
+      continue;
+    }
+    if (!event) continue;
+    const label = /^\s+label\s*:\s*(.+?)\s*$/i.exec(line)?.[1];
+    if (label) event.label = yamlScalar(label);
+    const color2 = /^\s+color\s*:\s*(accent|accent2|accent3|muted|ink)\s*$/i.exec(line)?.[1];
+    if (color2) event.color = color2;
+  }
+  const parsed = events.filter(
+    (event2) => Boolean(event2.date && event2.label)
+  );
+  return parsed.length ? parsed : void 0;
+};
+var timelineBody = (source) => {
+  const events = parseTimelineEvents(source);
+  if (!events) return void 0;
+  return {
+    type: "element",
+    tagName: "div",
+    properties: { className: ["md-graph__body", "md-graph__body--timeline"] },
+    children: events.map((event, index) => {
+      const color2 = event.color ?? "ink";
+      const colorClasses = timelineColorClasses(color2);
+      return {
+        type: "element",
+        tagName: "div",
+        properties: {
+          className: [
+            "md-graph__timeline-event",
+            ...colorClasses,
+            ...color2 === "muted" ? ["md-graph__timeline-event--muted"] : [],
+            ...index === events.length - 1 ? ["md-graph__timeline-event--last"] : []
+          ]
+        },
+        children: [
+          {
+            type: "element",
+            tagName: "span",
+            properties: { className: ["md-graph__timeline-marker"] },
+            children: [text(color2 === "muted" ? "\u25CB" : "\u25CF")]
+          },
+          {
+            type: "element",
+            tagName: "span",
+            properties: { className: ["md-graph__timeline-date"] },
+            children: [text(event.date)]
+          },
+          {
+            type: "element",
+            tagName: "span",
+            properties: { className: ["md-graph__timeline-label"] },
+            children: [text(event.label)]
+          }
+        ]
+      };
+    })
+  };
+};
+var parseCheckItems = (source) => {
+  if (!/^items\s*:\s*$/im.test(source)) return void 0;
+  const items = [];
+  let item;
+  for (const line of source.split(/\r?\n/)) {
+    const label = /^\s*-\s*label\s*:\s*(.+?)\s*$/i.exec(line)?.[1];
+    if (label) {
+      item = { label: yamlScalar(label), done: false };
+      items.push(item);
+      continue;
+    }
+    if (!item) continue;
+    const done = /^\s+done\s*:\s*(true|false)\s*$/i.exec(line)?.[1];
+    if (done) item.done = done.toLowerCase() === "true";
+    const note = /^\s+note\s*:\s*(.+?)\s*$/i.exec(line)?.[1];
+    if (note) item.note = yamlScalar(note);
+    const symbol = /^\s+symbol\s*:\s*(.+?)\s*$/i.exec(line)?.[1];
+    if (symbol) item.symbol = yamlScalar(symbol);
+    const colorSource = /^\s+color\s*:\s*(.+?)\s*$/i.exec(line)?.[1];
+    if (colorSource) {
+      const color2 = yamlScalar(colorSource);
+      if (/^(?:accent|accent2|accent3|muted|ink|#[0-9a-f]{3,4}|#[0-9a-f]{6}|#[0-9a-f]{8})$/i.test(
+        color2
+      )) {
+        item.color = color2;
       }
     }
   }
-}
-function constructs(existing, list2) {
-  let index = -1;
-  const before = [];
-  while (++index < list2.length) {
-    (list2[index].add === "after" ? existing : before).push(list2[index]);
-  }
-  splice(existing, 0, 0, before);
-}
-
-// node_modules/micromark-extension-gfm-autolink-literal/lib/syntax.js
-var wwwPrefix = {
-  tokenize: tokenizeWwwPrefix,
-  partial: true
+  return items.filter(({ label }) => Boolean(label)).length ? items : void 0;
 };
-var domain = {
-  tokenize: tokenizeDomain,
-  partial: true
-};
-var path = {
-  tokenize: tokenizePath,
-  partial: true
-};
-var trail = {
-  tokenize: tokenizeTrail,
-  partial: true
-};
-var emailDomainDotTrail = {
-  tokenize: tokenizeEmailDomainDotTrail,
-  partial: true
-};
-var wwwAutolink = {
-  name: "wwwAutolink",
-  tokenize: tokenizeWwwAutolink,
-  previous: previousWww
-};
-var protocolAutolink = {
-  name: "protocolAutolink",
-  tokenize: tokenizeProtocolAutolink,
-  previous: previousProtocol
-};
-var emailAutolink = {
-  name: "emailAutolink",
-  tokenize: tokenizeEmailAutolink,
-  previous: previousEmail
-};
-var text2 = {};
-function gfmAutolinkLiteral() {
+var checkBody = (source) => {
+  const items = parseCheckItems(source);
+  if (!items) return void 0;
   return {
-    text: text2
+    type: "element",
+    tagName: "div",
+    properties: { className: ["md-graph__body", "md-graph__body--check"] },
+    children: items.map((item) => {
+      const hex = item.color?.startsWith("#") ? item.color : void 0;
+      const named = hex ? "accent" : item.color ?? (item.done ? "accent" : "muted");
+      return {
+        type: "element",
+        tagName: "div",
+        properties: {
+          className: [
+            "md-graph__check-item",
+            ...!item.done ? ["md-graph__check-item--open"] : []
+          ]
+        },
+        children: [
+          {
+            type: "element",
+            tagName: "span",
+            properties: {
+              className: ["md-graph__check-marker", ...timelineColorClasses(named)],
+              ...hex ? { style: `color:${hex}` } : {}
+            },
+            children: [text(`[${item.done ? item.symbol ?? "x" : " "}]`)]
+          },
+          {
+            type: "element",
+            tagName: "div",
+            properties: { className: ["md-graph__check-copy"] },
+            children: [
+              {
+                type: "element",
+                tagName: "span",
+                properties: { className: ["md-graph__check-label"] },
+                children: [text(item.label)]
+              },
+              ...item.note ? [
+                {
+                  type: "element",
+                  tagName: "span",
+                  properties: { className: ["md-graph__check-note"] },
+                  children: [text(item.note)]
+                }
+              ] : []
+            ]
+          }
+        ]
+      };
+    })
+  };
+};
+var parseStackRows = (source) => {
+  if (!/^rows\s*:\s*$/im.test(source)) return void 0;
+  const rows = [];
+  let row;
+  let segment;
+  let inSegments = false;
+  for (const line of source.split(/\r?\n/)) {
+    if (/^\s{4}segments\s*:\s*$/i.test(line)) {
+      inSegments = true;
+      continue;
+    }
+    const label = /^(\s*)-\s*label\s*:\s*(.+?)\s*$/i.exec(line);
+    if (label?.[2]) {
+      if (label[1].length <= 2) {
+        row = { label: yamlScalar(label[2]), segments: [] };
+        rows.push(row);
+        segment = void 0;
+        inSegments = false;
+      } else if (row && inSegments) {
+        segment = { label: yamlScalar(label[2]) };
+        row.segments.push(segment);
+      }
+      continue;
+    }
+    const value = /^\s+value\s*:\s*([+-]?[\d.]+)\s*$/i.exec(line)?.[1];
+    if (segment && value && Number.isFinite(Number(value))) segment.value = Number(value);
+    const color2 = /^\s+color\s*:\s*(accent|accent2|accent3|muted|ink)\s*$/i.exec(line)?.[1];
+    if (segment && color2) segment.color = color2;
+  }
+  const parsed = rows.filter((row2) => row2.segments.some((entry) => Number.isFinite(entry.value)));
+  return parsed.length ? parsed : void 0;
+};
+var stackCounts = (segments, ticks) => {
+  const total = segments.reduce((sum, segment) => sum + Math.max(0, segment.value), 0) || 1;
+  const raw = segments.map((segment) => Math.max(0, segment.value) / total * ticks);
+  const counts = raw.map(Math.floor);
+  let remaining = ticks - counts.reduce((sum, count) => sum + count, 0);
+  const order = raw.map((value, index) => ({ index, fraction: value - Math.floor(value) })).sort((a, b) => b.fraction - a.fraction);
+  for (let index = 0; remaining > 0; index++, remaining--)
+    counts[order[index % order.length].index]++;
+  return counts;
+};
+var stackBody = (source, glyphs) => {
+  const rows = parseStackRows(source);
+  if (!rows) return void 0;
+  const props = properties(source);
+  const ticks = Math.max(1, Math.round(Number(props.ticks) || 24));
+  const scale = glyphScale(glyphs ?? props.glyphs, STACK_GLYPHS);
+  const legend = [...new Set(rows.flatMap((row) => row.segments.map(({ label }) => label)))];
+  const accentedLabel = legend.includes(props.accent ?? "") ? props.accent : legend[0];
+  const explicitColors = /* @__PURE__ */ new Map();
+  for (const row of rows) {
+    for (const segment of row.segments) {
+      if (segment.color && !explicitColors.has(segment.label)) {
+        explicitColors.set(segment.label, segment.color);
+      }
+    }
+  }
+  const segmentColor = (label) => timelineColorClasses(
+    explicitColors.get(label) ?? (label === accentedLabel ? "accent" : "muted")
+  );
+  const glyphFor = (label) => scale[legend.indexOf(label) % scale.length] ?? "\u2588";
+  return {
+    type: "element",
+    tagName: "div",
+    properties: {
+      className: ["md-graph__body", "md-graph__body--stack"],
+      style: `--md-graph-stack-ticks:${ticks}`
+    },
+    children: [
+      ...rows.map((row) => {
+        const counts = stackCounts(row.segments, ticks);
+        return {
+          type: "element",
+          tagName: "div",
+          properties: { className: ["md-graph__stack-row"] },
+          children: [
+            {
+              type: "element",
+              tagName: "span",
+              properties: { className: ["md-graph__stack-row-label"] },
+              children: [text(row.label)]
+            },
+            {
+              type: "element",
+              tagName: "span",
+              properties: { className: ["md-graph__stack-track"] },
+              children: row.segments.flatMap(
+                (segment, index) => Array.from({ length: counts[index] ?? 0 }, () => ({
+                  type: "element",
+                  tagName: "span",
+                  properties: {
+                    className: ["md-graph__stack-cell", ...segmentColor(segment.label)]
+                  },
+                  children: [text(glyphFor(segment.label))]
+                }))
+              )
+            }
+          ]
+        };
+      }),
+      {
+        type: "element",
+        tagName: "div",
+        properties: { className: ["md-graph__stack-legend"] },
+        children: legend.map((label) => ({
+          type: "element",
+          tagName: "span",
+          properties: { className: ["md-graph__stack-key"] },
+          children: [
+            {
+              type: "element",
+              tagName: "span",
+              properties: { className: ["md-graph__stack-key-glyph", ...segmentColor(label)] },
+              children: [text(glyphFor(label))]
+            },
+            text(` ${label}`)
+          ]
+        }))
+      }
+    ]
+  };
+};
+var parseFunnelSteps = (source) => {
+  if (!/^steps\s*:\s*$/im.test(source)) return void 0;
+  const steps = [];
+  let step;
+  for (const line of source.split(/\r?\n/)) {
+    const label = /^\s*-\s*label\s*:\s*(.+?)\s*$/i.exec(line)?.[1];
+    if (label) {
+      step = { label: yamlScalar(label) };
+      steps.push(step);
+      continue;
+    }
+    if (!step) continue;
+    const value = /^\s+value\s*:\s*([+-]?[\d.]+)\s*$/i.exec(line)?.[1];
+    if (value && Number.isFinite(Number(value))) step.value = Number(value);
+    const display = /^\s+display\s*:\s*(.+?)\s*$/i.exec(line)?.[1];
+    if (display) step.display = yamlScalar(display);
+    const color2 = /^\s+color\s*:\s*(accent|accent2|accent3|ink|muted)\s*$/i.exec(line)?.[1];
+    if (color2) step.color = color2;
+  }
+  const parsed = steps.filter((step2) => step2.label && Number.isFinite(step2.value));
+  return parsed.length ? parsed : void 0;
+};
+var funnelBody = (source, glyphs) => {
+  const steps = parseFunnelSteps(source);
+  if (!steps) return void 0;
+  const props = properties(source);
+  const ticks = Math.max(1, Math.round(Number(props.ticks) || 20));
+  const peak = Math.max(steps[0]?.value ?? 0, 1);
+  const focusedStage = steps.some(({ label }) => label === props.stage) ? props.stage : void 0;
+  const scale = glyphScale(glyphs ?? props.glyphs, ["-", "\u2588"]);
+  const empty2 = scale[0] ?? "-";
+  const filled = scale.length > 2 ? scale.at(-2) : scale.at(-1) ?? "\u2588";
+  return {
+    type: "element",
+    tagName: "div",
+    properties: {
+      className: ["md-graph__body", "md-graph__body--funnel"],
+      style: `--md-graph-funnel-ticks:${ticks}`
+    },
+    children: steps.map((step, stepIndex) => {
+      const ratio = Math.max(0, step.value) / peak;
+      const count = Math.min(ticks, Math.max(step.value > 0 ? 1 : 0, Math.round(ratio * ticks)));
+      return {
+        type: "element",
+        tagName: "div",
+        properties: {
+          className: [
+            "md-graph__funnel-row",
+            ...focusedStage && step.label !== focusedStage ? ["md-graph__funnel-row--receded"] : []
+          ]
+        },
+        children: [
+          {
+            type: "element",
+            tagName: "span",
+            properties: { className: ["md-graph__funnel-label"] },
+            children: [text(step.label)]
+          },
+          {
+            type: "element",
+            tagName: "span",
+            properties: { className: ["md-graph__funnel-track"] },
+            children: Array.from({ length: ticks }, (_, index) => ({
+              type: "element",
+              tagName: "span",
+              properties: {
+                className: [
+                  "md-graph__funnel-cell",
+                  ...index < count ? [
+                    "md-graph__funnel-cell--filled",
+                    ...timelineColorClasses(step.color ?? "accent")
+                  ] : ["md-graph__funnel-cell--empty"]
+                ]
+              },
+              children: [text(index < count ? filled : empty2)]
+            }))
+          },
+          {
+            type: "element",
+            tagName: "span",
+            properties: { className: ["md-graph__funnel-value"] },
+            children: [text(step.display ?? step.value.toLocaleString("en-US"))]
+          },
+          {
+            type: "element",
+            tagName: "span",
+            properties: { className: ["md-graph__funnel-percent"] },
+            children: [text(stepIndex === 0 ? "" : `${Math.round(ratio * 100)}%`)]
+          }
+        ]
+      };
+    })
+  };
+};
+var parseGanttItems = (source) => {
+  if (!/^items\s*:\s*$/im.test(source)) return void 0;
+  const items = [];
+  let item;
+  for (const line of source.split(/\r?\n/)) {
+    const label = /^\s*-\s*label\s*:\s*(.+?)\s*$/i.exec(line)?.[1];
+    if (label) {
+      item = { label: yamlScalar(label), complete: 1 };
+      items.push(item);
+      continue;
+    }
+    if (!item) continue;
+    const numeric = /^\s+(start|end|complete)\s*:\s*([+-]?[\d.]+)\s*$/i.exec(line);
+    if (numeric?.[1] && numeric[2] && Number.isFinite(Number(numeric[2]))) {
+      item[numeric[1].toLowerCase()] = Number(numeric[2]);
+    }
+    const color2 = /^\s+color\s*:\s*(accent|accent2|accent3|muted|ink)\s*$/i.exec(line)?.[1];
+    if (color2) item.color = color2;
+  }
+  const parsed = items.filter(
+    (item2) => item2.label && Number.isFinite(item2.start) && Number.isFinite(item2.end)
+  );
+  return parsed.length ? parsed : void 0;
+};
+var ganttBody = (source, glyphs) => {
+  const items = parseGanttItems(source);
+  if (!items) return void 0;
+  const props = properties(source);
+  const columns = Math.max(1, Math.round(Number(props.columns) || 24));
+  const progress = Number(props.progress);
+  const hasProgress = Number.isFinite(progress);
+  const tickLabels = yamlArray(props.ticks ?? "") ?? [];
+  const focusedStage = items.some(({ label }) => label === props.stage) ? props.stage : void 0;
+  const scale = glyphScale(glyphs ?? props.glyphs, GLYPH_PRESETS.shade);
+  const filledGlyph = scale.at(-1) ?? "\u2588";
+  const remainingGlyph = scale[1] ?? scale[0] ?? "\u2591";
+  const track = (children, className) => ({
+    type: "element",
+    tagName: "span",
+    properties: { className },
+    children
+  });
+  const rows = [];
+  if (hasProgress) {
+    const playhead = Math.round(clamp(progress) * (columns - 1));
+    rows.push({
+      type: "element",
+      tagName: "div",
+      properties: { className: ["md-graph__gantt-row", "md-graph__gantt-progress-row"] },
+      children: [
+        { type: "element", tagName: "span", properties: {}, children: [text("")] },
+        track(
+          Array.from({ length: columns }, (_, index) => ({
+            type: "element",
+            tagName: "span",
+            properties: {
+              className: [
+                "md-graph__gantt-cell",
+                ...index === playhead ? ["md-graph__accent"] : []
+              ]
+            },
+            children: [text(index === playhead ? "\u25BE" : " ")]
+          })),
+          ["md-graph__gantt-track", "md-graph__gantt-playhead"]
+        )
+      ]
+    });
+  }
+  for (const item of items) {
+    const start = Math.min(columns - 1, Math.max(0, Math.round(clamp(item.start) * columns)));
+    const end = Math.min(columns, Math.max(start + 1, Math.round(clamp(item.end) * columns)));
+    const completed = Math.round(clamp(item.complete) * (end - start));
+    const color2 = item.color ?? (item.label === focusedStage ? "accent" : "ink");
+    rows.push({
+      type: "element",
+      tagName: "div",
+      properties: {
+        className: [
+          "md-graph__gantt-row",
+          ...focusedStage && item.label !== focusedStage ? ["md-graph__gantt-row--receded"] : []
+        ]
+      },
+      children: [
+        {
+          type: "element",
+          tagName: "span",
+          properties: { className: ["md-graph__gantt-label", ...timelineColorClasses(color2)] },
+          children: [text(item.label)]
+        },
+        track(
+          Array.from({ length: columns }, (_, index) => {
+            const inside = index >= start && index < end;
+            const done = inside && index < start + completed;
+            return {
+              type: "element",
+              tagName: "span",
+              properties: {
+                className: [
+                  "md-graph__gantt-cell",
+                  ...done ? ["md-graph__gantt-cell--done", ...timelineColorClasses(color2)] : inside ? ["md-graph__gantt-cell--remaining"] : ["md-graph__gantt-cell--empty"]
+                ]
+              },
+              children: [text(done ? filledGlyph : inside ? remainingGlyph : "-")]
+            };
+          }),
+          ["md-graph__gantt-track"]
+        )
+      ]
+    });
+  }
+  if (tickLabels.length) {
+    rows.push({
+      type: "element",
+      tagName: "div",
+      properties: { className: ["md-graph__gantt-row", "md-graph__gantt-axis-row"] },
+      children: [
+        { type: "element", tagName: "span", properties: {}, children: [text("")] },
+        {
+          type: "element",
+          tagName: "span",
+          properties: { className: ["md-graph__gantt-axis"] },
+          children: tickLabels.map((label, index) => ({
+            type: "element",
+            tagName: "span",
+            properties: {
+              className: ["md-graph__gantt-tick"],
+              style: `left:${tickLabels.length === 1 ? 0 : index / (tickLabels.length - 1) * 100}%`
+            },
+            children: [text(label)]
+          }))
+        }
+      ]
+    });
+  }
+  return {
+    type: "element",
+    tagName: "div",
+    properties: {
+      className: ["md-graph__body", "md-graph__body--gantt"],
+      style: `--md-graph-gantt-columns:${columns}`
+    },
+    children: rows
+  };
+};
+var plotBody = (source, glyphs) => {
+  const props = properties(source);
+  const values = parseSequence(props.data ?? "");
+  if (!values.length) return void 0;
+  const labels = tableSection(source, "labels").map(yamlScalar);
+  const height = Math.max(1, Math.round(Number(props.height) || 7));
+  const variant = props.variant === "line" ? "line" : "area";
+  const progress = Number.isFinite(Number(props.progress)) ? clamp(Number(props.progress)) : 1;
+  const revealed = Math.min(values.length, Math.max(0, Math.ceil(progress * values.length)));
+  const peak = Math.max(...values, 1);
+  const scale = glyphScale(glyphs ?? props.glyphs, GLYPH_PRESETS.shade);
+  const cap = scale.at(-1) ?? "\u2588";
+  const fill = scale[1] ?? scale[0] ?? "\u2591";
+  const rows = Array.from({ length: height }, (_, row) => ({
+    type: "element",
+    tagName: "div",
+    properties: { className: ["md-graph__plot-row"] },
+    children: values.map((value, column) => {
+      const capRow = height - 1 - Math.round(Math.max(0, value) / peak * (height - 1));
+      const visible = column < revealed;
+      const isCap = visible && row === capRow;
+      const isArea = visible && variant === "area" && row > capRow;
+      const accented = column === revealed - 1;
+      return {
+        type: "element",
+        tagName: "span",
+        properties: {
+          className: [
+            "md-graph__plot-cell",
+            ...isCap ? ["md-graph__plot-cell--cap"] : [],
+            ...isArea ? ["md-graph__plot-cell--fill"] : [],
+            ...accented && isCap ? ["md-graph__accent"] : isCap ? ["md-graph__tone--ink"] : []
+          ]
+        },
+        children: [text(isCap ? cap : isArea ? fill : " ")]
+      };
+    })
+  }));
+  return {
+    type: "element",
+    tagName: "div",
+    properties: {
+      className: ["md-graph__body", "md-graph__body--plot"],
+      style: `--md-graph-plot-columns:${values.length};--md-graph-plot-height:${height}`
+    },
+    children: [
+      {
+        type: "element",
+        tagName: "div",
+        properties: { className: ["md-graph__plot-chart"] },
+        children: [
+          {
+            type: "element",
+            tagName: "div",
+            properties: { className: ["md-graph__plot-y-axis"] },
+            children: [
+              {
+                type: "element",
+                tagName: "span",
+                properties: {},
+                children: [text(String(peak))]
+              },
+              { type: "element", tagName: "span", properties: {}, children: [text("0")] }
+            ]
+          },
+          {
+            type: "element",
+            tagName: "div",
+            properties: { className: ["md-graph__plot-canvas"] },
+            children: rows
+          }
+        ]
+      },
+      {
+        type: "element",
+        tagName: "div",
+        properties: { className: ["md-graph__plot-label-row"] },
+        children: [
+          { type: "element", tagName: "span", properties: {}, children: [text("")] },
+          {
+            type: "element",
+            tagName: "span",
+            properties: { className: ["md-graph__plot-x-axis"] },
+            children: [
+              {
+                type: "element",
+                tagName: "span",
+                properties: {},
+                children: [text(labels[0] ?? "")]
+              },
+              {
+                type: "element",
+                tagName: "span",
+                properties: {},
+                children: [text(labels.at(-1) ?? labels[0] ?? "")]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  };
+};
+var waffleBody = (source, glyphs) => {
+  const props = properties(source);
+  if (!props.value || !Number.isFinite(Number(props.value))) return void 0;
+  const value = clamp(Number(props.value));
+  const cells = Math.max(1, Math.round(Number(props.cells) || 100));
+  const columns = Math.max(1, Math.round(Number(props.columns) || 10));
+  const filled = Math.round(value * cells);
+  const requestedGlyphs = glyphs ?? props.glyphs;
+  const scale = glyphScale(requestedGlyphs, GLYPH_PRESETS.shade);
+  const active = scale.at(-1) ?? "\u2588";
+  const empty2 = !requestedGlyphs || requestedGlyphs.trim().toLowerCase() === "shade" ? scale[1] ?? scale[0] ?? "\u2591" : scale[0] ?? " ";
+  const requestedColor = yamlScalar(props.color ?? "accent");
+  const hexColor = /^#(?:[0-9a-f]{3}|[0-9a-f]{4}|[0-9a-f]{6}|[0-9a-f]{8})$/i.test(requestedColor) ? requestedColor : void 0;
+  const namedColor = /^(accent|accent2|accent3|muted|ink)$/.test(requestedColor) ? requestedColor : "accent";
+  const colorClasses = hexColor ? ["md-graph__waffle-color--custom"] : timelineColorClasses(namedColor);
+  return {
+    type: "element",
+    tagName: "div",
+    properties: {
+      className: ["md-graph__body", "md-graph__body--waffle"],
+      style: `--md-graph-waffle-columns:${columns}${hexColor ? `;--md-graph-waffle-color:${hexColor}` : ""}`
+    },
+    children: [
+      {
+        type: "element",
+        tagName: "div",
+        properties: { className: ["md-graph__waffle-grid"] },
+        children: Array.from({ length: cells }, (_, index) => ({
+          type: "element",
+          tagName: "span",
+          properties: {
+            className: [
+              "md-graph__waffle-cell",
+              ...index < filled ? ["md-graph__waffle-cell--filled", ...colorClasses] : ["md-graph__waffle-cell--empty"]
+            ]
+          },
+          children: [text(index < filled ? active : empty2)]
+        }))
+      },
+      {
+        type: "element",
+        tagName: "div",
+        properties: { className: ["md-graph__waffle-percent", ...colorClasses] },
+        children: [text(`${Math.round(value * 100)}%`)]
+      },
+      ...props.label ? [
+        {
+          type: "element",
+          tagName: "div",
+          properties: { className: ["md-graph__waffle-label"] },
+          children: [text(yamlScalar(props.label))]
+        }
+      ] : []
+    ]
+  };
+};
+var parseDiff = (source) => {
+  if (!/^rows\s*:\s*$/im.test(source)) return void 0;
+  const rows = [];
+  let current;
+  let footer;
+  let inFooter = false;
+  for (const line of source.split(/\r?\n/)) {
+    if (/^footer\s*:\s*$/i.test(line)) {
+      inFooter = true;
+      footer = {};
+      current = footer;
+      continue;
+    }
+    const rowLabel = /^\s*-\s*label\s*:\s*(.+?)\s*$/i.exec(line)?.[1];
+    const footerLabel = inFooter ? /^\s+label\s*:\s*(.+?)\s*$/i.exec(line)?.[1] : void 0;
+    if (rowLabel) {
+      current = { label: yamlScalar(rowLabel) };
+      rows.push(current);
+      continue;
+    }
+    if (footerLabel && footer) footer.label = yamlScalar(footerLabel);
+    if (!current) continue;
+    const value = /^\s+value\s*:\s*(.+?)\s*$/i.exec(line)?.[1];
+    if (value) current.value = yamlScalar(value);
+    const colorSource = /^\s+color\s*:\s*(.+?)\s*$/i.exec(line)?.[1];
+    if (colorSource) {
+      const color2 = yamlScalar(colorSource);
+      if (/^(?:accent|accent2|accent3|muted|ink|#[0-9a-f]{3}|#[0-9a-f]{4}|#[0-9a-f]{6}|#[0-9a-f]{8})$/i.test(
+        color2
+      )) {
+        current.color = color2;
+      }
+    }
+    const type = /^\s+type\s*:\s*(add|remove)\s*$/i.exec(line)?.[1];
+    if (type) current.type = type;
+  }
+  const parsedRows = rows.filter(({ label, value }) => Boolean(label && value !== void 0));
+  const parsedFooter = footer?.label && footer.value !== void 0 ? footer : void 0;
+  return parsedRows.length ? { rows: parsedRows, footer: parsedFooter } : void 0;
+};
+var diffColor = (color2) => {
+  if (color2?.startsWith("#"))
+    return { classes: ["md-graph__diff-color--custom"], style: `color:${color2}` };
+  return { classes: timelineColorClasses(color2 ?? "ink") };
+};
+var diffBody = (source) => {
+  const parsed = parseDiff(source);
+  if (!parsed) return void 0;
+  const entry = (item, footer = false) => {
+    const tone = diffColor(item.color);
+    const sign = item.type === "add" ? "+" : item.type === "remove" ? "\u2212" : "";
+    return {
+      type: "element",
+      tagName: "div",
+      properties: {
+        className: ["md-graph__diff-row", ...footer ? ["md-graph__diff-footer"] : []]
+      },
+      children: [
+        {
+          type: "element",
+          tagName: "span",
+          properties: {
+            className: ["md-graph__diff-sign", ...tone.classes],
+            ...tone.style ? { style: tone.style } : {}
+          },
+          children: [text(sign)]
+        },
+        {
+          type: "element",
+          tagName: "span",
+          properties: {
+            className: ["md-graph__diff-label", ...tone.classes],
+            ...tone.style ? { style: tone.style } : {}
+          },
+          children: [text(item.label)]
+        },
+        {
+          type: "element",
+          tagName: "span",
+          properties: {
+            className: ["md-graph__diff-value", ...tone.classes],
+            ...tone.style ? { style: tone.style } : {}
+          },
+          children: [text(item.value)]
+        }
+      ]
+    };
+  };
+  return {
+    type: "element",
+    tagName: "div",
+    properties: { className: ["md-graph__body", "md-graph__body--diff"] },
+    children: [
+      ...parsed.rows.map((row) => entry(row)),
+      ...parsed.footer ? [entry(parsed.footer, true)] : []
+    ]
+  };
+};
+var parseInvoice = (source) => {
+  if (!/^items\s*:\s*$/im.test(source)) return void 0;
+  const invoice = { meta: [], items: [], totals: [] };
+  let section = "";
+  let current;
+  for (const line of source.split(/\r?\n/)) {
+    const heading = /^(from|to|meta|items|totals)\s*:\s*$/i.exec(line)?.[1]?.toLowerCase();
+    if (heading) {
+      section = heading;
+      current = void 0;
+      if (heading === "from" || heading === "to") {
+        invoice[heading] = { lines: [] };
+        current = invoice[heading];
+      }
+      continue;
+    }
+    const note = /^note\s*:\s*(.+?)\s*$/i.exec(line)?.[1];
+    if (note) {
+      invoice.note = yamlScalar(note);
+      continue;
+    }
+    if (section === "from" || section === "to") {
+      const party = invoice[section];
+      const name = /^\s+name\s*:\s*(.+?)\s*$/i.exec(line)?.[1];
+      if (name) party.name = yamlScalar(name);
+      const detail = /^\s+-\s*(.+?)\s*$/.exec(line)?.[1];
+      if (detail) party.lines.push(yamlScalar(detail));
+      continue;
+    }
+    const first = /^\s*-\s*(label|description)\s*:\s*(.+?)\s*$/i.exec(line);
+    if (first?.[1] && first[2]) {
+      if (section === "meta") {
+        current = { label: yamlScalar(first[2]) };
+        invoice.meta.push(current);
+      } else if (section === "items") {
+        current = { description: yamlScalar(first[2]) };
+        invoice.items.push(current);
+      } else if (section === "totals") {
+        current = { label: yamlScalar(first[2]) };
+        invoice.totals.push(current);
+      }
+      continue;
+    }
+    if (!current) continue;
+    const field = /^\s+(value|qty|rate|amount)\s*:\s*(.+?)\s*$/i.exec(line);
+    if (field?.[1] && field[2]) current[field[1].toLowerCase()] = yamlScalar(field[2]);
+    const colorSource = /^\s+color\s*:\s*(.+?)\s*$/i.exec(line)?.[1];
+    if (colorSource && section === "totals") {
+      const color2 = yamlScalar(colorSource);
+      if (/^(?:accent|accent2|accent3|muted|ink|#[0-9a-f]{3}|#[0-9a-f]{4}|#[0-9a-f]{6}|#[0-9a-f]{8})$/i.test(
+        color2
+      )) {
+        current.color = color2;
+      }
+    }
+  }
+  invoice.meta = invoice.meta.filter(({ label, value }) => Boolean(label && value !== void 0));
+  invoice.items = invoice.items.filter(
+    ({ description, amount }) => Boolean(description && amount !== void 0)
+  );
+  invoice.totals = invoice.totals.filter(
+    ({ label, value }) => Boolean(label && value !== void 0)
+  );
+  return invoice.items.length ? invoice : void 0;
+};
+var invoiceBody = (source) => {
+  const invoice = parseInvoice(source);
+  if (!invoice) return void 0;
+  const showQty = invoice.items.some(({ qty }) => qty !== void 0);
+  const showRate = invoice.items.some(({ rate }) => rate !== void 0);
+  const tableCells = (values, header = false) => values.map((value, index) => ({
+    type: "element",
+    tagName: "span",
+    properties: {
+      className: [
+        "md-graph__invoice-cell",
+        ...header ? ["md-graph__invoice-cell--header"] : [],
+        ...index > 0 ? ["md-graph__invoice-cell--numeric"] : []
+      ]
+    },
+    children: [text(value)]
+  }));
+  const parties = [["FROM", invoice.from], ["BILL TO", invoice.to]];
+  return {
+    type: "element",
+    tagName: "div",
+    properties: {
+      className: [
+        "md-graph__body",
+        "md-graph__body--invoice",
+        ...showQty ? ["md-graph__invoice--qty"] : [],
+        ...showRate ? ["md-graph__invoice--rate"] : []
+      ]
+    },
+    children: [
+      ...invoice.from || invoice.to ? [
+        {
+          type: "element",
+          tagName: "div",
+          properties: { className: ["md-graph__invoice-parties"] },
+          children: parties.map(([heading, party]) => ({
+            type: "element",
+            tagName: "div",
+            properties: { className: ["md-graph__invoice-party"] },
+            children: [
+              {
+                type: "element",
+                tagName: "span",
+                properties: { className: ["md-graph__invoice-kicker"] },
+                children: [text(heading)]
+              },
+              ...party?.name ? [
+                {
+                  type: "element",
+                  tagName: "span",
+                  properties: { className: ["md-graph__invoice-party-name"] },
+                  children: [text(party.name)]
+                }
+              ] : [],
+              ...(party?.lines ?? []).map((line) => ({
+                type: "element",
+                tagName: "span",
+                properties: { className: ["md-graph__invoice-party-line"] },
+                children: [text(line)]
+              }))
+            ]
+          }))
+        }
+      ] : [],
+      ...invoice.meta.length ? [
+        {
+          type: "element",
+          tagName: "div",
+          properties: { className: ["md-graph__invoice-meta"] },
+          children: invoice.meta.map((item) => ({
+            type: "element",
+            tagName: "div",
+            properties: { className: ["md-graph__invoice-meta-item"] },
+            children: [
+              {
+                type: "element",
+                tagName: "span",
+                properties: { className: ["md-graph__invoice-kicker"] },
+                children: [text(item.label)]
+              },
+              {
+                type: "element",
+                tagName: "span",
+                properties: {},
+                children: [text(item.value)]
+              }
+            ]
+          }))
+        }
+      ] : [],
+      {
+        type: "element",
+        tagName: "div",
+        properties: { className: ["md-graph__invoice-table"] },
+        children: [
+          {
+            type: "element",
+            tagName: "div",
+            properties: {
+              className: ["md-graph__invoice-table-row", "md-graph__invoice-table-head"]
+            },
+            children: tableCells(
+              ["Description", ...showQty ? ["Qty"] : [], ...showRate ? ["Rate"] : [], "Amount"],
+              true
+            )
+          },
+          ...invoice.items.map((item) => ({
+            type: "element",
+            tagName: "div",
+            properties: { className: ["md-graph__invoice-table-row"] },
+            children: tableCells([
+              item.description,
+              ...showQty ? [item.qty ?? ""] : [],
+              ...showRate ? [item.rate ?? ""] : [],
+              item.amount
+            ])
+          }))
+        ]
+      },
+      ...invoice.totals.length ? [
+        {
+          type: "element",
+          tagName: "div",
+          properties: { className: ["md-graph__invoice-totals"] },
+          children: invoice.totals.map((total) => {
+            const tone = diffColor(total.color);
+            return {
+              type: "element",
+              tagName: "div",
+              properties: { className: ["md-graph__invoice-total"] },
+              children: [
+                {
+                  type: "element",
+                  tagName: "span",
+                  properties: { className: ["md-graph__invoice-total-label"] },
+                  children: [text(total.label)]
+                },
+                {
+                  type: "element",
+                  tagName: "span",
+                  properties: {
+                    className: ["md-graph__invoice-total-value", ...tone.classes],
+                    ...tone.style ? { style: tone.style } : {}
+                  },
+                  children: [text(total.value)]
+                }
+              ]
+            };
+          })
+        }
+      ] : [],
+      ...invoice.note ? [
+        {
+          type: "element",
+          tagName: "div",
+          properties: { className: ["md-graph__invoice-note"] },
+          children: [text(invoice.note)]
+        }
+      ] : []
+    ]
+  };
+};
+var compareBody = (source) => {
+  const props = properties(source);
+  const columns = yamlArray(props.columns ?? "");
+  if (!columns?.length || !/^rows\s*:\s*$/im.test(source)) return void 0;
+  const rows = [];
+  let row;
+  for (const line of source.split(/\r?\n/)) {
+    const label = /^\s*-\s*label\s*:\s*(.+?)\s*$/i.exec(line)?.[1];
+    if (label) {
+      row = { label: yamlScalar(label), values: [] };
+      rows.push(row);
+      continue;
+    }
+    const values = /^\s+values\s*:\s*(\[[\s\S]*\])\s*$/i.exec(line)?.[1];
+    if (row && values) row.values = yamlArray(values) ?? [];
+  }
+  const parsedRows = rows.filter(({ values }) => values.length);
+  if (!parsedRows.length) return void 0;
+  const accented = columns.indexOf(yamlScalar(props.accent ?? ""));
+  const colorSource = yamlScalar(props.color ?? "accent");
+  const color2 = /^(?:accent|accent2|accent3|muted|ink|#[0-9a-f]{3}|#[0-9a-f]{4}|#[0-9a-f]{6}|#[0-9a-f]{8})$/i.test(
+    colorSource
+  ) ? colorSource : "accent";
+  const tone = diffColor(color2);
+  const accentProperties = () => ({
+    className: ["md-graph__compare-accent", ...tone.classes],
+    ...tone.style ? { style: tone.style } : {}
+  });
+  const tableRow = (label, values, header = false) => ({
+    type: "element",
+    tagName: "div",
+    properties: {
+      className: ["md-graph__compare-row", ...header ? ["md-graph__compare-head"] : []],
+      style: `--md-graph-compare-columns:${columns.length}`
+    },
+    children: [
+      {
+        type: "element",
+        tagName: "span",
+        properties: { className: ["md-graph__compare-label"] },
+        children: [text(label)]
+      },
+      ...values.map((value, index) => {
+        const normalized = value.trim().toLowerCase();
+        const positive = normalized === "true";
+        const negative = normalized === "false";
+        const selected = index === accented;
+        const display = positive ? "\u2713" : negative ? "\u2013" : value;
+        return {
+          type: "element",
+          tagName: "span",
+          properties: selected && (header || positive) ? accentProperties() : {
+            className: [
+              "md-graph__compare-value",
+              ...negative || !selected && !positive ? ["md-graph__compare-value--muted"] : []
+            ]
+          },
+          children: [text(display)]
+        };
+      })
+    ]
+  });
+  return {
+    type: "element",
+    tagName: "div",
+    properties: { className: ["md-graph__body", "md-graph__body--compare"] },
+    children: [
+      tableRow("", columns, true),
+      ...parsedRows.map((row2) => tableRow(row2.label, row2.values))
+    ]
+  };
+};
+var matrixBody = (source) => {
+  const props = properties(source);
+  const columns = yamlArray(props.columns ?? "");
+  if (!columns?.length || !/^rows\s*:\s*$/im.test(source)) return void 0;
+  const rows = [];
+  let row;
+  for (const line of source.split(/\r?\n/)) {
+    const label = /^\s*-\s*label\s*:\s*(.+?)\s*$/i.exec(line)?.[1];
+    if (label) {
+      row = { label: yamlScalar(label), values: [] };
+      rows.push(row);
+      continue;
+    }
+    const values = /^\s+values\s*:\s*(\[[\s\S]*\])\s*$/i.exec(line)?.[1];
+    if (row && values) row.values = yamlArray(values) ?? [];
+  }
+  const parsedRows = rows.filter(({ values }) => values.length);
+  if (!parsedRows.length) return void 0;
+  const accented = yamlScalar(props.accent ?? "");
+  const colorSource = yamlScalar(props.color ?? "accent");
+  const color2 = /^(?:accent|accent2|accent3|muted|ink|#[0-9a-f]{3}|#[0-9a-f]{4}|#[0-9a-f]{6}|#[0-9a-f]{8})$/i.test(
+    colorSource
+  ) ? colorSource : "accent";
+  const tone = diffColor(color2);
+  const tableRow = (label, values, header = false) => {
+    const selected = !header && label === accented;
+    return {
+      type: "element",
+      tagName: "div",
+      properties: {
+        className: [
+          "md-graph__matrix-row",
+          ...header ? ["md-graph__matrix-head"] : [],
+          ...selected ? ["md-graph__matrix-row--accent"] : []
+        ],
+        style: `--md-graph-matrix-columns:${columns.length}`
+      },
+      children: [label, ...values].map((value, index) => ({
+        type: "element",
+        tagName: "span",
+        properties: {
+          className: [
+            "md-graph__matrix-cell",
+            ...index ? ["md-graph__matrix-cell--value"] : ["md-graph__matrix-cell--label"],
+            ...selected ? tone.classes : []
+          ],
+          ...selected && tone.style ? { style: tone.style } : {}
+        },
+        children: [text(value)]
+      }))
+    };
+  };
+  return {
+    type: "element",
+    tagName: "div",
+    properties: { className: ["md-graph__body", "md-graph__body--matrix"] },
+    children: [
+      tableRow("", columns, true),
+      ...parsedRows.map((item) => tableRow(item.label, item.values))
+    ]
+  };
+};
+var statBody = (source) => {
+  if (!/^items\s*:\s*$/im.test(source)) return void 0;
+  const items = [];
+  let item;
+  for (const line of source.split(/\r?\n/)) {
+    const first = /^\s*-\s*(value|label)\s*:\s*(.+?)\s*$/i.exec(line);
+    if (first?.[1] && first[2]) {
+      item = { [first[1].toLowerCase()]: yamlScalar(first[2]) };
+      items.push(item);
+      continue;
+    }
+    if (!item) continue;
+    const field = /^\s+(value|label|hint)\s*:\s*(.+?)\s*$/i.exec(line);
+    if (field?.[1] && field[2]) {
+      item[field[1].toLowerCase()] = yamlScalar(field[2]);
+    }
+    const colorSource = /^\s+color\s*:\s*(.+?)\s*$/i.exec(line)?.[1];
+    if (colorSource) {
+      const color2 = yamlScalar(colorSource);
+      if (/^(?:accent|accent2|accent3|muted|ink|#[0-9a-f]{3}|#[0-9a-f]{4}|#[0-9a-f]{6}|#[0-9a-f]{8})$/i.test(
+        color2
+      )) {
+        item.color = color2;
+      }
+    }
+  }
+  const parsed = items.filter(({ value, label }) => Boolean(value !== void 0 && label));
+  if (!parsed.length) return void 0;
+  return {
+    type: "element",
+    tagName: "div",
+    properties: {
+      className: ["md-graph__body", "md-graph__body--stat"],
+      style: `--md-graph-stat-items:${parsed.length}`
+    },
+    children: parsed.map((entry) => {
+      const tone = diffColor(entry.color);
+      return {
+        type: "element",
+        tagName: "div",
+        properties: { className: ["md-graph__stat-item"] },
+        children: [
+          {
+            type: "element",
+            tagName: "span",
+            properties: {
+              className: ["md-graph__stat-value", ...tone.classes],
+              ...tone.style ? { style: tone.style } : {}
+            },
+            children: [text(entry.value)]
+          },
+          {
+            type: "element",
+            tagName: "span",
+            properties: { className: ["md-graph__stat-label"] },
+            children: [text(entry.label)]
+          },
+          ...entry.hint ? [
+            {
+              type: "element",
+              tagName: "span",
+              properties: { className: ["md-graph__stat-hint"] },
+              children: [text(entry.hint)]
+            }
+          ] : []
+        ]
+      };
+    })
+  };
+};
+var kpiBody = (source, glyphs) => {
+  const props = properties(source);
+  const values = parseSequence(props.data ?? "");
+  if (props.value === void 0 || !props.label || !values.length) return void 0;
+  const colorSource = yamlScalar(props.color ?? "accent");
+  const color2 = /^(?:accent|accent2|accent3|muted|ink|#[0-9a-f]{3}|#[0-9a-f]{4}|#[0-9a-f]{6}|#[0-9a-f]{8})$/i.test(
+    colorSource
+  ) ? colorSource : "accent";
+  const tone = diffColor(color2);
+  const marks = sparkGlyphs(values, glyphs ?? props.glyphs);
+  const accentedProperties = (className) => ({
+    className: [...className, ...tone.classes],
+    ...tone.style ? { style: tone.style } : {}
+  });
+  return {
+    type: "element",
+    tagName: "div",
+    properties: { className: ["md-graph__body", "md-graph__body--kpi"] },
+    children: [
+      {
+        type: "element",
+        tagName: "div",
+        properties: accentedProperties(["md-graph__kpi-value"]),
+        children: [text(yamlScalar(props.value))]
+      },
+      {
+        type: "element",
+        tagName: "div",
+        properties: { className: ["md-graph__kpi-meta"] },
+        children: [
+          {
+            type: "element",
+            tagName: "span",
+            properties: { className: ["md-graph__kpi-label"] },
+            children: [text(yamlScalar(props.label))]
+          },
+          ...props.hint ? [
+            {
+              type: "element",
+              tagName: "span",
+              properties: { className: ["md-graph__kpi-hint"] },
+              children: [text(yamlScalar(props.hint))]
+            }
+          ] : []
+        ]
+      },
+      {
+        type: "element",
+        tagName: "div",
+        properties: { className: ["md-graph__kpi-spark"] },
+        children: marks.map((mark, index) => ({
+          type: "element",
+          tagName: "span",
+          properties: index === marks.length - 1 ? accentedProperties(["md-graph__kpi-mark", "md-graph__kpi-mark--last"]) : { className: ["md-graph__kpi-mark"] },
+          children: [text(mark)]
+        }))
+      }
+    ]
+  };
+};
+var specBody = (source) => {
+  if (!/^rows\s*:\s*$/im.test(source)) return void 0;
+  const rows = [];
+  let row;
+  for (const line of source.split(/\r?\n/)) {
+    const label = /^\s*-\s*label\s*:\s*(.+?)\s*$/i.exec(line)?.[1];
+    if (label) {
+      row = { label: yamlScalar(label) };
+      rows.push(row);
+      continue;
+    }
+    if (!row) continue;
+    const value = /^\s+value\s*:\s*(.+?)\s*$/i.exec(line)?.[1];
+    if (value) row.value = yamlScalar(value);
+    const colorSource = /^\s+color\s*:\s*(.+?)\s*$/i.exec(line)?.[1];
+    if (colorSource) {
+      const color2 = yamlScalar(colorSource);
+      if (/^(?:accent|accent2|accent3|muted|ink|#[0-9a-f]{3}|#[0-9a-f]{4}|#[0-9a-f]{6}|#[0-9a-f]{8})$/i.test(
+        color2
+      )) {
+        row.color = color2;
+      }
+    }
+  }
+  const parsed = rows.filter(({ label, value }) => Boolean(label && value !== void 0));
+  if (!parsed.length) return void 0;
+  return {
+    type: "element",
+    tagName: "div",
+    properties: { className: ["md-graph__body", "md-graph__body--spec"] },
+    children: parsed.map((entry) => {
+      const tone = diffColor(entry.color);
+      return {
+        type: "element",
+        tagName: "div",
+        properties: { className: ["md-graph__spec-row"] },
+        children: [
+          {
+            type: "element",
+            tagName: "span",
+            properties: { className: ["md-graph__spec-label"] },
+            children: [text(entry.label)]
+          },
+          {
+            type: "element",
+            tagName: "span",
+            properties: {
+              className: ["md-graph__spec-value", ...tone.classes],
+              ...tone.style ? { style: tone.style } : {}
+            },
+            children: [text(entry.value)]
+          }
+        ]
+      };
+    })
+  };
+};
+var generatedActivityDays = (start, length) => {
+  const [year, month, day] = start.split("-").map(Number);
+  const origin = Date.UTC(year, month - 1, day);
+  if (!Number.isFinite(origin)) return [];
+  return Array.from({ length: Math.max(0, Math.round(length)) }, (_, index) => {
+    const time = origin + index * 864e5;
+    const date = new Date(time).toISOString().slice(0, 10);
+    const dow = new Date(time).getUTCDay();
+    const week = Math.floor(index / 7);
+    let count = 0;
+    if (dow > 0 && dow < 6) {
+      const pulse = (week + dow) % 9;
+      count = pulse === 0 ? 12 : pulse === 4 ? 7 : pulse % 3 === 0 ? 3 : index % 5 === 0 ? 1 : 0;
+    }
+    return { date, count };
+  });
+};
+var parseActivityDays = (source) => {
+  if (!/^days\s*:\s*$/im.test(source)) return void 0;
+  const generated = /^\s+activityDays\s*:\s*\[\s*([\d-]+)\s*,\s*(\d+)\s*\]\s*$/im.exec(source);
+  if (generated?.[1] && generated[2]) {
+    const days2 = generatedActivityDays(generated[1], Number(generated[2]));
+    return days2.length ? days2 : void 0;
+  }
+  const days = [];
+  let current;
+  for (const line of source.split(/\r?\n/)) {
+    const inline = /^\s*-\s*\{\s*date\s*:\s*["']?([\d-]+)["']?\s*,\s*count\s*:\s*([\d.]+)\s*\}\s*$/i.exec(line);
+    if (inline?.[1] && inline[2]) {
+      days.push({ date: inline[1], count: Number(inline[2]) });
+      continue;
+    }
+    const date = /^\s*-\s*date\s*:\s*["']?([\d-]+)["']?\s*$/i.exec(line)?.[1];
+    if (date) {
+      current = { date };
+      days.push(current);
+      continue;
+    }
+    const count = /^\s+count\s*:\s*([\d.]+)\s*$/i.exec(line)?.[1];
+    if (current && count) current.count = Number(count);
+  }
+  const parsed = days.filter(
+    ({ date, count }) => /^\d{4}-\d{2}-\d{2}$/.test(date) && Number.isFinite(count)
+  );
+  return parsed.length ? parsed : void 0;
+};
+var activityBody = (source, glyphs) => {
+  const supplied = parseActivityDays(source);
+  if (!supplied) return void 0;
+  const props = properties(source);
+  const weekStartsOn = props.weekStartsOn === "1" ? 1 : 0;
+  const ordered = [...supplied].sort((a, b) => a.date.localeCompare(b.date));
+  const firstTime = Date.parse(`${ordered[0].date}T00:00:00Z`);
+  const lastTime = Date.parse(`${ordered.at(-1).date}T00:00:00Z`);
+  const byDate = new Map(ordered.map((day) => [day.date, day.count]));
+  const days = [];
+  for (let time = firstTime; time <= lastTime; time += 864e5) {
+    const date = new Date(time).toISOString().slice(0, 10);
+    days.push({ date, count: byDate.get(date) ?? 0 });
+  }
+  const firstDow = new Date(firstTime).getUTCDay();
+  const leading = (firstDow - weekStartsOn + 7) % 7;
+  const weeks = Math.ceil((leading + days.length) / 7);
+  const requestedMax = Number(props.max);
+  const peak = Number.isFinite(requestedMax) && requestedMax > 0 ? requestedMax : Math.max(...days.map(({ count }) => count), 1);
+  const colorSource = yamlScalar(props.color ?? "accent");
+  const activityColor = /^(?:accent|accent2|accent3|muted|ink|#[0-9a-f]{3}|#[0-9a-f]{4}|#[0-9a-f]{6}|#[0-9a-f]{8})$/i.test(
+    colorSource
+  ) ? colorSource : "accent";
+  const requestedInkFrom = Number(props.inkFrom);
+  const requestedAccentFrom = Number(props.accentFrom);
+  const inkFrom = Number.isFinite(requestedInkFrom) ? Math.max(0, requestedInkFrom) : peak * 0.75;
+  const accentFrom = Number.isFinite(requestedAccentFrom) ? Math.max(0, requestedAccentFrom) : peak;
+  const activityTone = (count) => {
+    if (count <= 0 || count < inkFrom) return diffColor("muted");
+    if (count >= accentFrom) return diffColor(activityColor);
+    return diffColor("ink");
+  };
+  const scale = glyphScale(glyphs ?? props.glyphs, GLYPH_PRESETS.shade);
+  const slots = [
+    ...Array.from({ length: leading }, () => void 0),
+    ...days,
+    ...Array.from({ length: weeks * 7 - leading - days.length }, () => void 0)
+  ];
+  const monthSlots = /* @__PURE__ */ new Map();
+  let previousMonth = -1;
+  days.forEach((day, index) => {
+    const date = /* @__PURE__ */ new Date(`${day.date}T00:00:00Z`);
+    const month = date.getUTCMonth();
+    if (month !== previousMonth) {
+      const week = Math.floor((leading + index) / 7);
+      if (!monthSlots.has(week)) {
+        monthSlots.set(week, date.toLocaleString("en-US", { month: "short", timeZone: "UTC" }));
+      }
+      previousMonth = month;
+    }
+  });
+  const legend = props.legend?.toLowerCase() !== "false";
+  const caption = props.caption?.toLowerCase() === "false" ? void 0 : yamlScalar(
+    props.caption ?? props.label ?? `${days.reduce((sum, day) => sum + day.count, 0)} contributions`
+  );
+  const weekday = (target) => (target - weekStartsOn + 7) % 7;
+  return {
+    type: "element",
+    tagName: "div",
+    properties: {
+      className: [
+        "md-graph__body",
+        "md-graph__body--activity",
+        ...weeks <= 54 ? ["md-graph__body--activity-fit"] : []
+      ],
+      style: `--md-graph-activity-weeks:${weeks}`
+    },
+    children: [
+      {
+        type: "element",
+        tagName: "div",
+        properties: { className: ["md-graph__activity-month-row"] },
+        children: [
+          { type: "element", tagName: "span", properties: {}, children: [text("")] },
+          {
+            type: "element",
+            tagName: "div",
+            properties: { className: ["md-graph__activity-months"] },
+            children: [...monthSlots].map(([week, month]) => ({
+              type: "element",
+              tagName: "span",
+              properties: { style: `grid-column:${week + 1}` },
+              children: [text(month)]
+            }))
+          }
+        ]
+      },
+      {
+        type: "element",
+        tagName: "div",
+        properties: { className: ["md-graph__activity-main"] },
+        children: [
+          {
+            type: "element",
+            tagName: "div",
+            properties: { className: ["md-graph__activity-weekdays"] },
+            children: [
+              [weekday(1), "M"],
+              [weekday(3), "W"],
+              [weekday(5), "F"]
+            ].map(([row, label]) => ({
+              type: "element",
+              tagName: "span",
+              properties: { style: `grid-row:${Number(row) + 1}` },
+              children: [text(String(label))]
+            }))
+          },
+          {
+            type: "element",
+            tagName: "div",
+            properties: { className: ["md-graph__activity-grid"] },
+            children: slots.map((day) => {
+              const ratio = day ? clamp(day.count / peak) : 0;
+              const mark = glyphAt(scale, ratio);
+              const tone = activityTone(day?.count ?? 0);
+              return {
+                type: "element",
+                tagName: "span",
+                properties: {
+                  className: ["md-graph__activity-cell", ...tone.classes],
+                  ...tone.style ? { style: tone.style } : {},
+                  ...day ? { title: `${day.date}: ${day.count}` } : {}
+                },
+                children: [text(mark)]
+              };
+            })
+          }
+        ]
+      },
+      ...caption || legend ? [
+        {
+          type: "element",
+          tagName: "div",
+          properties: { className: ["md-graph__activity-footer"] },
+          children: [
+            {
+              type: "element",
+              tagName: "span",
+              properties: { className: ["md-graph__activity-caption"] },
+              children: [text(caption ?? "")]
+            },
+            ...legend ? [
+              {
+                type: "element",
+                tagName: "span",
+                properties: { className: ["md-graph__activity-legend"] },
+                children: [
+                  text("Less "),
+                  ...scale.map((mark, index) => {
+                    const representative = index / Math.max(1, scale.length - 1) * peak;
+                    const tone = activityTone(representative);
+                    return {
+                      type: "element",
+                      tagName: "span",
+                      properties: {
+                        className: ["md-graph__activity-legend-mark", ...tone.classes],
+                        ...tone.style ? { style: tone.style } : {}
+                      },
+                      children: [text(mark)]
+                    };
+                  }),
+                  text(" More")
+                ]
+              }
+            ] : []
+          ]
+        }
+      ] : []
+    ]
+  };
+};
+var heatmapBody = (source, palette, paletteExplicit, glyphs) => {
+  const props = properties(source);
+  const columns = yamlArray(props.columns ?? "");
+  if (!columns?.length || !/^rows\s*:\s*$/im.test(source)) return void 0;
+  const rows = [];
+  let row;
+  for (const line of source.split(/\r?\n/)) {
+    const label = /^\s*-\s*label\s*:\s*(.+?)\s*$/i.exec(line)?.[1];
+    if (label) {
+      row = { label: yamlScalar(label), values: [] };
+      rows.push(row);
+      continue;
+    }
+    const values = /^\s+values\s*:\s*(\[[\s\S]*\])\s*$/i.exec(line)?.[1];
+    if (row && values) {
+      row.values = (yamlArray(values) ?? []).map(Number).filter(Number.isFinite);
+    }
+  }
+  const parsedRows = rows.filter(({ values }) => values.length);
+  if (!parsedRows.length) return void 0;
+  const requestedMax = Number(props.max);
+  const peak = Number.isFinite(requestedMax) && requestedMax > 0 ? requestedMax : Math.max(...parsedRows.flatMap(({ values }) => values), 1);
+  const scale = glyphScale(glyphs ?? props.glyphs, GLYPH_PRESETS.shade);
+  const validHeatmapColor = (value) => /^(?:accent|accent2|accent3|muted|ink|#[0-9a-f]{3}|#[0-9a-f]{4}|#[0-9a-f]{6}|#[0-9a-f]{8})$/i.test(
+    value
+  );
+  const requestedColorScale = yamlArray(props.colorScale ?? "")?.filter(validHeatmapColor);
+  const colors = requestedColorScale?.length ? requestedColorScale : ["muted", "accent2", "accent2", "accent", "accent"];
+  const mode = paletteExplicit ? paletteMode(palette) : "solid";
+  const rowColor = (index) => {
+    if (mode === "solid") return "accent";
+    if (mode === "duo") return index % 2 ? "accent2" : "accent";
+    return ["accent", "accent2", "accent3"][index % 3];
+  };
+  const tone = (value, rowIndex = 0) => {
+    const ratio = clamp(value / peak);
+    const color2 = colors[Math.round(ratio * Math.max(0, colors.length - 1))] ?? "muted";
+    return diffColor(paletteExplicit && color2 === "accent" ? rowColor(rowIndex) : color2);
+  };
+  const rowElement = (label, values, header = false, rowIndex = 0) => ({
+    type: "element",
+    tagName: "div",
+    properties: {
+      className: ["md-graph__heatmap-row", ...header ? ["md-graph__heatmap-head"] : []],
+      style: `--md-graph-heatmap-columns:${columns.length}`
+    },
+    children: [label, ...values].map((value, index) => {
+      const numeric = typeof value === "number" ? value : void 0;
+      const cellTone = numeric === void 0 ? void 0 : tone(numeric, rowIndex);
+      return {
+        type: "element",
+        tagName: "span",
+        properties: {
+          className: [
+            "md-graph__heatmap-cell",
+            ...index ? ["md-graph__heatmap-cell--value"] : ["md-graph__heatmap-cell--label"],
+            ...cellTone?.classes ?? []
+          ],
+          ...cellTone?.style ? { style: cellTone.style } : {},
+          ...numeric === void 0 ? {} : { title: `${label} / ${columns[index - 1]}: ${numeric}` }
+        },
+        children: [
+          text(numeric === void 0 ? String(value) : glyphAt(scale, clamp(numeric / peak)))
+        ]
+      };
+    })
+  });
+  const legend = props.legend?.toLowerCase() !== "false";
+  return {
+    type: "element",
+    tagName: "div",
+    properties: { className: ["md-graph__body", "md-graph__body--heatmap"] },
+    children: [
+      rowElement("", columns, true),
+      ...parsedRows.map(({ label, values }, index) => rowElement(label, values, false, index)),
+      ...props.caption || legend ? [
+        {
+          type: "element",
+          tagName: "div",
+          properties: { className: ["md-graph__heatmap-footer"] },
+          children: [
+            {
+              type: "element",
+              tagName: "span",
+              properties: { className: ["md-graph__heatmap-caption"] },
+              children: [text(props.caption ? yamlScalar(props.caption) : "")]
+            },
+            ...legend ? [
+              {
+                type: "element",
+                tagName: "span",
+                properties: { className: ["md-graph__heatmap-legend"] },
+                children: [
+                  text("Less "),
+                  ...scale.map((mark, index) => {
+                    const cellTone = tone(index / Math.max(1, scale.length - 1) * peak);
+                    return {
+                      type: "element",
+                      tagName: "span",
+                      properties: {
+                        className: ["md-graph__heatmap-legend-mark", ...cellTone.classes]
+                      },
+                      children: [text(mark)]
+                    };
+                  }),
+                  text(" More")
+                ]
+              }
+            ] : []
+          ]
+        }
+      ] : []
+    ]
+  };
+};
+var calendarBody = (source, palette, paletteExplicit) => {
+  const props = properties(source);
+  const year = Number(props.year);
+  const month = Number(props.month);
+  if (!Number.isInteger(year) || !Number.isInteger(month) || month < 1 || month > 12)
+    return void 0;
+  const marks = [];
+  const inlineMarks = yamlArray(props.marks ?? "");
+  if (inlineMarks) {
+    for (const value of inlineMarks) {
+      const day = Number(value);
+      if (Number.isInteger(day)) marks.push({ day });
+    }
+  } else if (/^marks\s*:\s*$/im.test(source)) {
+    let mark;
+    for (const line of source.split(/\r?\n/)) {
+      const day = /^\s*-\s*day\s*:\s*(\d+)\s*$/i.exec(line)?.[1];
+      if (day) {
+        mark = { day: Number(day) };
+        marks.push(mark);
+        continue;
+      }
+      const accent = /^\s+accent\s*:\s*(true|false)\s*$/i.exec(line)?.[1];
+      if (mark && accent) mark.accent = accent.toLowerCase() === "true";
+    }
+  }
+  const daysInMonth = new Date(Date.UTC(year, month, 0)).getUTCDate();
+  const weekStartsOn = props.weekStartsOn === "0" ? 0 : 1;
+  const firstDow = new Date(Date.UTC(year, month - 1, 1)).getUTCDay();
+  const leading = (firstDow - weekStartsOn + 7) % 7;
+  const today = Number(props.today);
+  const colorSource = yamlScalar(props.color ?? "accent");
+  const explicitColor = /^(?:accent|accent2|accent3|muted|ink|#[0-9a-f]{3}|#[0-9a-f]{4}|#[0-9a-f]{6}|#[0-9a-f]{8})$/i.test(
+    colorSource
+  ) ? colorSource : "accent";
+  const mode = paletteExplicit ? paletteMode(palette) : "solid";
+  const marked = new Map(marks.map((mark, index) => [mark.day, { ...mark, index }]));
+  const markColor = (index) => {
+    if (props.color || mode === "solid") return explicitColor;
+    if (mode === "duo") return index % 2 ? "accent2" : "accent";
+    return ["accent", "accent2", "accent3"][index % 3];
+  };
+  const weekdayNames = weekStartsOn === 0 ? ["S", "M", "T", "W", "T", "F", "S"] : ["M", "T", "W", "T", "F", "S", "S"];
+  const calendarCell = (value, classes, style) => ({
+    type: "element",
+    tagName: "span",
+    properties: { className: ["md-graph__calendar-cell", ...classes], ...style ? { style } : {} },
+    children: [text(value)]
+  });
+  return {
+    type: "element",
+    tagName: "div",
+    properties: { className: ["md-graph__body", "md-graph__body--calendar"] },
+    children: [
+      ...weekdayNames.map((name) => calendarCell(name, ["md-graph__calendar-weekday"])),
+      ...Array.from({ length: leading }, () => calendarCell("", ["md-graph__calendar-empty"])),
+      ...Array.from({ length: daysInMonth }, (_, index) => {
+        const day = index + 1;
+        const entry = marked.get(day);
+        const selected = Boolean(entry) || day === today;
+        const tone = selected ? diffColor(markColor(entry?.index ?? 0)) : void 0;
+        return calendarCell(
+          day === today ? `[${day}]` : String(day),
+          ["md-graph__calendar-day", ...tone?.classes ?? []],
+          tone?.style
+        );
+      })
+    ]
+  };
+};
+var waterfallBody = (source, glyphs) => {
+  if (!/^items\s*:\s*$/im.test(source)) return void 0;
+  const props = properties(source);
+  const items = [];
+  let item;
+  for (const line of source.split(/\r?\n/)) {
+    const label = /^\s*-\s*label\s*:\s*(.+?)\s*$/i.exec(line)?.[1];
+    if (label) {
+      item = { label: yamlScalar(label) };
+      items.push(item);
+      continue;
+    }
+    if (!item) continue;
+    const value = /^\s+value\s*:\s*([+-]?[\d.]+)\s*$/i.exec(line)?.[1];
+    if (value) item.value = Number(value);
+    const kind = /^\s+kind\s*:\s*(start|in|out|end)\s*$/i.exec(line)?.[1];
+    if (kind) item.kind = kind;
+    const color2 = /^\s+color\s*:\s*(.+?)\s*$/i.exec(line)?.[1];
+    if (color2) {
+      const parsed2 = yamlScalar(color2);
+      if (/^(?:accent|accent2|accent3|muted|ink|#[0-9a-f]{3}|#[0-9a-f]{4}|#[0-9a-f]{6}|#[0-9a-f]{8})$/i.test(
+        parsed2
+      ))
+        item.color = parsed2;
+    }
+  }
+  const parsed = items.filter(({ label, value }) => Boolean(label) && Number.isFinite(value));
+  if (!parsed.length) return void 0;
+  const resolved = parsed.map((entry, index) => ({
+    ...entry,
+    kind: entry.kind ?? (index === 0 ? "start" : index === parsed.length - 1 ? "end" : entry.value < 0 ? "out" : "in")
+  }));
+  let current = 0;
+  const segments = resolved.map((entry) => {
+    const amount = Math.abs(entry.value);
+    let start = current;
+    let end = current;
+    if (entry.kind === "start") {
+      start = 0;
+      end = entry.value;
+      current = end;
+    } else if (entry.kind === "in") {
+      end = current + amount;
+      current = end;
+    } else if (entry.kind === "out") {
+      end = current - amount;
+      current = end;
+    } else {
+      start = 0;
+      end = entry.value;
+      current = end;
+    }
+    return { ...entry, start, end };
+  });
+  const low = Math.min(0, ...segments.flatMap(({ start, end }) => [start, end]));
+  const high = Math.max(0, ...segments.flatMap(({ start, end }) => [start, end]));
+  const span = Math.max(1, high - low);
+  const ticks = Math.max(1, Math.round(Number(props.ticks) || 24));
+  const scale = glyphScale(glyphs ?? props.glyphs, GLYPH_PRESETS.shade);
+  const full = scale.at(-1);
+  const empty2 = scale[0];
+  return {
+    type: "element",
+    tagName: "div",
+    properties: {
+      className: ["md-graph__body", "md-graph__body--waterfall"],
+      style: `--md-graph-waterfall-ticks:${ticks}`
+    },
+    children: segments.map((entry) => {
+      const from = Math.min(entry.start, entry.end);
+      const to = Math.max(entry.start, entry.end);
+      const tone = diffColor(entry.color ?? (entry.kind === "end" ? "accent" : "ink"));
+      const display = entry.kind === "in" ? `+${Math.abs(entry.value)}` : entry.kind === "out" ? `-${Math.abs(entry.value)}` : String(entry.value);
+      return {
+        type: "element",
+        tagName: "div",
+        properties: {
+          className: [
+            "md-graph__waterfall-row",
+            ...entry.kind === "end" ? ["md-graph__waterfall-row--end"] : []
+          ]
+        },
+        children: [
+          {
+            type: "element",
+            tagName: "span",
+            properties: { className: ["md-graph__waterfall-label"] },
+            children: [text(entry.label)]
+          },
+          {
+            type: "element",
+            tagName: "span",
+            properties: { className: ["md-graph__waterfall-track"] },
+            children: Array.from({ length: ticks }, (_, index) => {
+              const point = low + (index + 0.5) / ticks * span;
+              const active = point >= from && point <= to;
+              return {
+                type: "element",
+                tagName: "span",
+                properties: {
+                  className: [
+                    "md-graph__waterfall-tick",
+                    ...active ? tone.classes : ["md-graph__waterfall-tick--empty"]
+                  ],
+                  ...active && tone.style ? { style: tone.style } : {}
+                },
+                children: [text(active ? full : empty2)]
+              };
+            })
+          },
+          {
+            type: "element",
+            tagName: "span",
+            properties: {
+              className: ["md-graph__waterfall-value", ...tone.classes],
+              ...tone.style ? { style: tone.style } : {}
+            },
+            children: [text(display)]
+          }
+        ]
+      };
+    })
+  };
+};
+var uptimeBody = (source, glyphs) => {
+  const props = properties(source);
+  const validStatus = (value) => /^(?:ok|degraded|down|empty)$/i.test(value);
+  let days = (yamlArray(props.days ?? "") ?? []).map((value) => value.toLowerCase()).filter(validStatus);
+  if (!days.length && /^\s+statusDays\s*:\s*$/im.test(source)) {
+    const length = Number(/^\s+length\s*:\s*(\d+)\s*$/im.exec(source)?.[1]);
+    const fallback = /^\s+default\s*:\s*(ok|degraded|down|empty)\s*$/im.exec(source)?.[1]?.toLowerCase() ?? "ok";
+    const indices = (name) => new Set(
+      (yamlArray(
+        new RegExp(`^\\s+${name}\\s*:\\s*(\\[[^\\]]*\\])\\s*$`, "im").exec(source)?.[1] ?? ""
+      ) ?? []).map(Number).filter(Number.isInteger)
+    );
+    const down = indices("down");
+    const degraded = indices("degraded");
+    if (Number.isInteger(length) && length > 0 && validStatus(fallback)) {
+      days = Array.from(
+        { length },
+        (_, index) => down.has(index) ? "down" : degraded.has(index) ? "degraded" : fallback
+      );
+    }
+  }
+  if (!days.length) return void 0;
+  const columns = Math.max(1, Math.round(Number(props.columns) || 30));
+  const actualColumns = Math.min(columns, days.length);
+  const scale = glyphScale(glyphs ?? props.glyphs, GLYPH_PRESETS.shade);
+  const statusGlyph = (status) => status === "empty" ? "-" : status === "ok" ? scale.at(-1) : status === "degraded" ? glyphAt(scale, 0.5) : scale[0];
+  const statusTone = (status) => status === "ok" ? diffColor("accent") : diffColor("muted");
+  const measured = days.filter((status) => status !== "empty");
+  const percent = measured.length ? Math.round(measured.filter((status) => status === "ok").length / measured.length * 100) : 0;
+  const legendStatus = ["ok", "degraded", "down"];
+  return {
+    type: "element",
+    tagName: "div",
+    properties: {
+      className: ["md-graph__body", "md-graph__body--uptime"],
+      style: `--md-graph-uptime-columns:${actualColumns}`
+    },
+    children: [
+      {
+        type: "element",
+        tagName: "div",
+        properties: { className: ["md-graph__uptime-grid"] },
+        children: days.map((status) => {
+          const tone = statusTone(status);
+          return {
+            type: "element",
+            tagName: "span",
+            properties: {
+              className: [
+                "md-graph__uptime-day",
+                `md-graph__uptime-day--${status}`,
+                ...tone.classes
+              ]
+            },
+            children: [text(statusGlyph(status))]
+          };
+        })
+      },
+      {
+        type: "element",
+        tagName: "div",
+        properties: { className: ["md-graph__uptime-meta"] },
+        children: [
+          {
+            type: "element",
+            tagName: "span",
+            properties: { className: ["md-graph__uptime-percent", "md-graph__accent"] },
+            children: [text(`${percent}%`)]
+          },
+          {
+            type: "element",
+            tagName: "span",
+            properties: { className: ["md-graph__uptime-from"] },
+            children: [text(yamlScalar(props.from ?? ""))]
+          },
+          {
+            type: "element",
+            tagName: "span",
+            properties: { className: ["md-graph__uptime-to"] },
+            children: [text(yamlScalar(props.to ?? ""))]
+          }
+        ]
+      },
+      {
+        type: "element",
+        tagName: "div",
+        properties: { className: ["md-graph__uptime-legend"] },
+        children: legendStatus.flatMap((status, index) => {
+          const tone = statusTone(status);
+          return [
+            ...index ? [text("  ")] : [],
+            {
+              type: "element",
+              tagName: "span",
+              properties: { className: ["md-graph__uptime-legend-mark", ...tone.classes] },
+              children: [text(statusGlyph(status))]
+            },
+            text(` ${status === "ok" ? "up" : status}`)
+          ];
+        })
+      }
+    ]
+  };
+};
+var slopeBody = (source) => {
+  if (!/^items\s*:\s*$/im.test(source)) return void 0;
+  const props = properties(source);
+  const items = [];
+  let item;
+  for (const line of source.split(/\r?\n/)) {
+    const label = /^\s*-\s*label\s*:\s*(.+?)\s*$/i.exec(line)?.[1];
+    if (label) {
+      item = { label: yamlScalar(label) };
+      items.push(item);
+      continue;
+    }
+    if (!item) continue;
+    const value = /^\s+(from|to)\s*:\s*([+-]?[\d,.]+)\s*$/i.exec(line);
+    if (value?.[1] && value[2]) item[value[1]] = number(value[2]);
+    const color2 = /^\s+color\s*:\s*(.+?)\s*$/i.exec(line)?.[1];
+    if (color2) {
+      const parsed2 = yamlScalar(color2);
+      if (/^(?:accent|accent2|accent3|muted|ink|#[0-9a-f]{3}|#[0-9a-f]{4}|#[0-9a-f]{6}|#[0-9a-f]{8})$/i.test(
+        parsed2
+      ))
+        item.color = parsed2;
+    }
+  }
+  const parsed = items.filter(
+    ({ label, from, to }) => Boolean(label) && Number.isFinite(from) && Number.isFinite(to)
+  );
+  if (!parsed.length) return void 0;
+  const row = (label, from, marker, to, tone, header = false) => ({
+    type: "element",
+    tagName: "div",
+    properties: {
+      className: ["md-graph__slope-row", ...header ? ["md-graph__slope-head"] : []]
+    },
+    children: [
+      {
+        type: "element",
+        tagName: "span",
+        properties: { className: ["md-graph__slope-label"] },
+        children: [text(label)]
+      },
+      {
+        type: "element",
+        tagName: "span",
+        properties: { className: ["md-graph__slope-from"] },
+        children: [text(from)]
+      },
+      {
+        type: "element",
+        tagName: "span",
+        properties: {
+          className: ["md-graph__slope-marker", ...tone?.classes ?? []],
+          ...tone?.style ? { style: tone.style } : {}
+        },
+        children: [text(marker)]
+      },
+      {
+        type: "element",
+        tagName: "span",
+        properties: {
+          className: ["md-graph__slope-to", ...tone?.classes ?? []],
+          ...tone?.style ? { style: tone.style } : {}
+        },
+        children: [text(to)]
+      }
+    ]
+  });
+  return {
+    type: "element",
+    tagName: "div",
+    properties: { className: ["md-graph__body", "md-graph__body--slope"] },
+    children: [
+      row(
+        "",
+        yamlScalar(props.fromLabel ?? "from"),
+        "",
+        yamlScalar(props.toLabel ?? "to"),
+        void 0,
+        true
+      ),
+      ...parsed.map((item2) => {
+        const tone = diffColor(item2.color ?? "accent");
+        return row(
+          item2.label,
+          item2.from.toLocaleString("en-US"),
+          item2.from === item2.to ? "\u2013" : "\u2192",
+          item2.to.toLocaleString("en-US"),
+          tone
+        );
+      })
+    ]
+  };
+};
+var bulletBody = (source, glyphs) => {
+  if (!/^items\s*:\s*$/im.test(source)) return void 0;
+  const props = properties(source);
+  const items = [];
+  let item;
+  for (const line of source.split(/\r?\n/)) {
+    const label = /^\s*-\s*label\s*:\s*(.+?)\s*$/i.exec(line)?.[1];
+    if (label) {
+      item = { label: yamlScalar(label) };
+      items.push(item);
+      continue;
+    }
+    if (!item) continue;
+    const numeric = /^\s+(value|target|max)\s*:\s*([+-]?[\d,.]+)\s*$/i.exec(line);
+    if (numeric?.[1] && numeric[2])
+      item[numeric[1]] = number(numeric[2]);
+    const display = /^\s+display\s*:\s*(.+?)\s*$/i.exec(line)?.[1];
+    if (display) item.display = yamlScalar(display);
+    const color2 = /^\s+color\s*:\s*(.+?)\s*$/i.exec(line)?.[1];
+    if (color2) {
+      const parsed2 = yamlScalar(color2);
+      if (/^(?:accent|accent2|accent3|muted|ink|#[0-9a-f]{3}|#[0-9a-f]{4}|#[0-9a-f]{6}|#[0-9a-f]{8})$/i.test(
+        parsed2
+      ))
+        item.color = parsed2;
+    }
+  }
+  const parsed = items.filter(({ label, value }) => Boolean(label) && Number.isFinite(value));
+  if (!parsed.length) return void 0;
+  const ticks = Math.max(1, Math.round(Number(props.ticks) || 20));
+  const scale = glyphScale(glyphs ?? props.glyphs, ["-", "="]);
+  return {
+    type: "element",
+    tagName: "div",
+    properties: {
+      className: ["md-graph__body", "md-graph__body--bullet"],
+      style: `--md-graph-bullet-ticks:${ticks}`
+    },
+    children: parsed.map((item2) => {
+      const maximum = Math.max(1, item2.max ?? item2.target ?? item2.value);
+      const filled = Math.round(clamp(item2.value / maximum) * ticks);
+      const marker = item2.target === void 0 ? -1 : Math.round(clamp(item2.target / maximum) * ticks) - 1;
+      const tone = diffColor(item2.color ?? "accent");
+      const display = item2.display ?? (item2.target === void 0 ? item2.value.toLocaleString("en-US") : `${item2.value.toLocaleString("en-US")} / ${item2.target.toLocaleString("en-US")}`);
+      return {
+        type: "element",
+        tagName: "div",
+        properties: { className: ["md-graph__bullet-row"] },
+        children: [
+          {
+            type: "element",
+            tagName: "span",
+            properties: { className: ["md-graph__bullet-label"] },
+            children: [text(item2.label)]
+          },
+          {
+            type: "element",
+            tagName: "span",
+            properties: { className: ["md-graph__bullet-bracket"] },
+            children: [text("[")]
+          },
+          {
+            type: "element",
+            tagName: "span",
+            properties: { className: ["md-graph__bullet-track"] },
+            children: Array.from({ length: ticks }, (_, index) => {
+              const active = index < filled;
+              const isMarker = index === marker;
+              return {
+                type: "element",
+                tagName: "span",
+                properties: {
+                  className: [
+                    "md-graph__bullet-tick",
+                    ...active && !isMarker ? tone.classes : ["md-graph__bullet-tick--muted"]
+                  ],
+                  ...active && !isMarker && tone.style ? { style: tone.style } : {}
+                },
+                children: [text(isMarker ? "|" : active ? scale.at(-1) : scale[0])]
+              };
+            })
+          },
+          {
+            type: "element",
+            tagName: "span",
+            properties: { className: ["md-graph__bullet-bracket"] },
+            children: [text("]")]
+          },
+          {
+            type: "element",
+            tagName: "span",
+            properties: { className: ["md-graph__bullet-display"] },
+            children: [text(display)]
+          }
+        ]
+      };
+    })
+  };
+};
+var timerBody = (source) => {
+  const props = properties(source);
+  const kindSource = props.kind ?? "elapsed";
+  const kind = /^(?:elapsed|ago|clock)$/i.test(kindSource) ? kindSource.toLowerCase() : "elapsed";
+  const atSource = props.at ? yamlScalar(props.at) : "";
+  const at = atSource ? Number.isFinite(Number(atSource)) ? Number(atSource) : Date.parse(atSource) : Number.NaN;
+  if (kind !== "clock" && !Number.isFinite(at)) return void 0;
+  const units = (yamlArray(props.units ?? "") ?? ["days", "hours", "minutes", "seconds"]).filter(
+    (unit) => /^(?:days|hours|minutes|seconds)$/.test(unit)
+  );
+  const timeFormat = props.timeFormat === "12" ? "12" : "24";
+  const formatDuration = (milliseconds) => {
+    const seconds = Math.max(0, Math.floor(milliseconds / 1e3));
+    const days = Math.floor(seconds / 86400);
+    const hours = Math.floor(seconds % 86400 / 3600);
+    const minutes = Math.floor(seconds % 3600 / 60);
+    const remainder = seconds % 60;
+    if (units.length === 1 && units[0] === "days") return `${days}d`;
+    if (units.join(",") === "days,hours,minutes,seconds")
+      return `${days}d ${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(remainder).padStart(2, "0")}`;
+    return units.map(
+      (unit) => unit === "days" ? `${days}d` : unit === "hours" ? `${hours}h` : unit === "minutes" ? `${minutes}m` : `${remainder}s`
+    ).join(" ");
+  };
+  const now = Date.now();
+  const initial = kind === "clock" ? new Date(now).toLocaleTimeString("en-US", {
+    hour12: timeFormat === "12",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit"
+  }) : `${formatDuration(now - at)}${kind === "ago" ? " ago" : ""}`;
+  const colorSource = yamlScalar(props.color ?? "accent");
+  const color2 = /^(?:accent|accent2|accent3|muted|ink|#[0-9a-f]{3}|#[0-9a-f]{4}|#[0-9a-f]{6}|#[0-9a-f]{8})$/i.test(
+    colorSource
+  ) ? colorSource : "accent";
+  const tone = diffColor(color2);
+  return {
+    type: "element",
+    tagName: "div",
+    properties: {
+      className: ["md-graph__body", "md-graph__body--timer"],
+      "data-timer-kind": kind,
+      "data-timer-at": Number.isFinite(at) ? String(at) : "",
+      "data-timer-units": units.join(","),
+      "data-timer-format": timeFormat
+    },
+    children: [
+      {
+        type: "element",
+        tagName: "span",
+        properties: {
+          className: ["md-graph__timer-value", ...tone.classes],
+          ...tone.style ? { style: tone.style } : {}
+        },
+        children: [text(initial)]
+      },
+      ...props.caption ? [
+        {
+          type: "element",
+          tagName: "span",
+          properties: { className: ["md-graph__timer-caption"] },
+          children: [text(yamlScalar(props.caption))]
+        }
+      ] : []
+    ]
+  };
+};
+var countdownBody = (source) => {
+  const props = properties(source);
+  const toSource = props.to ? yamlScalar(props.to) : "";
+  const deadline = toSource ? Number.isFinite(Number(toSource)) ? Number(toSource) : Date.parse(toSource) : Number.NaN;
+  if (!Number.isFinite(deadline)) return void 0;
+  const done = yamlScalar(props.done ?? "done");
+  const remaining = deadline - Date.now();
+  const format = (milliseconds) => {
+    const seconds = Math.max(0, Math.floor(milliseconds / 1e3));
+    const days = Math.floor(seconds / 86400);
+    const hours = Math.floor(seconds % 86400 / 3600);
+    const minutes = Math.floor(seconds % 3600 / 60);
+    const remainder = seconds % 60;
+    return `${days}d ${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(remainder).padStart(2, "0")}`;
+  };
+  const colorSource = yamlScalar(props.color ?? "accent");
+  const color2 = /^(?:accent|accent2|accent3|muted|ink|#[0-9a-f]{3}|#[0-9a-f]{4}|#[0-9a-f]{6}|#[0-9a-f]{8})$/i.test(
+    colorSource
+  ) ? colorSource : "accent";
+  const tone = diffColor(remaining <= 0 ? "muted" : color2);
+  return {
+    type: "element",
+    tagName: "div",
+    properties: {
+      className: ["md-graph__body", "md-graph__body--countdown"],
+      "data-countdown-to": String(deadline),
+      "data-countdown-done": done,
+      "data-countdown-color": color2
+    },
+    children: [
+      {
+        type: "element",
+        tagName: "span",
+        properties: {
+          className: [
+            "md-graph__countdown-value",
+            ...remaining <= 0 ? ["md-graph__countdown-value--done"] : [],
+            ...tone.classes
+          ],
+          ...tone.style ? { style: tone.style } : {}
+        },
+        children: [text(remaining <= 0 ? done : format(remaining))]
+      },
+      ...props.caption ? [
+        {
+          type: "element",
+          tagName: "span",
+          properties: { className: ["md-graph__countdown-caption"] },
+          children: [text(yamlScalar(props.caption))]
+        }
+      ] : []
+    ]
+  };
+};
+var frameBody = (source) => {
+  const topProperty = (name) => new RegExp(`^${name}\\s*:\\s*(.+?)\\s*$`, "im").exec(source)?.[1];
+  const validColor = (value) => /^(?:accent|accent2|accent3|muted|ink|#[0-9a-f]{3}|#[0-9a-f]{4}|#[0-9a-f]{6}|#[0-9a-f]{8})$/i.test(
+    value
+  );
+  const scalarOrBlock = (name) => {
+    const lines2 = source.split(/\r?\n/);
+    const index = lines2.findIndex((line) => new RegExp(`^${name}\\s*:`).test(line));
+    if (index < 0) return void 0;
+    const rest = lines2[index].replace(new RegExp(`^${name}\\s*:\\s*`), "");
+    if (rest.trim() !== "|") return rest.trim() ? yamlScalar(rest) : void 0;
+    const block = [];
+    for (let cursor = index + 1; cursor < lines2.length; cursor++) {
+      const line = lines2[cursor];
+      if (line && !/^\s+/.test(line)) break;
+      block.push(line.replace(/^ {2}/, ""));
+    }
+    return block.join("\n").trimEnd();
+  };
+  const defaultColorSource = yamlScalar(topProperty("color") ?? "ink");
+  const defaultColor = validColor(defaultColorSource) ? defaultColorSource : "ink";
+  const captionColorSource = yamlScalar(topProperty("captionColor") ?? "muted");
+  const captionColor = validColor(captionColorSource) ? captionColorSource : "muted";
+  const lines = [];
+  const contentHeader = /^content[ \t]*:[ \t]*(.*)$/im.exec(source)?.[1] ?? "";
+  if (contentHeader.trim() && contentHeader.trim() !== "|") {
+    lines.push({ text: yamlScalar(contentHeader) });
+  } else if (contentHeader.trim() === "|") {
+    const block = scalarOrBlock("content");
+    if (block) lines.push(...block.split("\n").map((text3) => ({ text: text3 })));
+  } else if (/^content[ \t]*:[ \t]*$/im.test(source)) {
+    let current;
+    let inContent = false;
+    for (const line of source.split(/\r?\n/)) {
+      if (/^content\s*:\s*$/.test(line)) {
+        inContent = true;
+        continue;
+      }
+      if (inContent && line && !/^\s+/.test(line)) break;
+      if (!inContent) continue;
+      const entry = /^\s{2}-\s+text\s*:\s*(.+?)\s*$/.exec(line)?.[1] ?? /^\s{2}-\s+(.+?)\s*$/.exec(line)?.[1];
+      if (entry) {
+        current = { text: yamlScalar(entry) };
+        lines.push(current);
+        continue;
+      }
+      const color2 = /^\s{4}color\s*:\s*(.+?)\s*$/.exec(line)?.[1];
+      if (current && color2) {
+        const parsed = yamlScalar(color2);
+        if (validColor(parsed)) current.color = parsed;
+      }
+    }
+  }
+  if (!lines.length) return void 0;
+  const caption = scalarOrBlock("caption");
+  const divider = Boolean(caption) && topProperty("divider")?.toLowerCase() !== "false";
+  return {
+    type: "element",
+    tagName: "div",
+    properties: { className: ["md-graph__body", "md-graph__body--frame"] },
+    children: [
+      {
+        type: "element",
+        tagName: "div",
+        properties: { className: ["md-graph__frame-content"] },
+        children: lines.map((line) => {
+          const tone = diffColor(line.color ?? defaultColor);
+          return {
+            type: "element",
+            tagName: "div",
+            properties: {
+              className: ["md-graph__frame-line", ...tone.classes],
+              ...tone.style ? { style: tone.style } : {}
+            },
+            children: [text(line.text)]
+          };
+        })
+      },
+      ...caption ? [
+        {
+          type: "element",
+          tagName: "div",
+          properties: {
+            className: [
+              "md-graph__frame-caption",
+              ...divider ? ["md-graph__frame-caption--divider"] : [],
+              ...diffColor(captionColor).classes
+            ],
+            ...diffColor(captionColor).style ? { style: diffColor(captionColor).style } : {}
+          },
+          children: [text(caption)]
+        }
+      ] : []
+    ]
+  };
+};
+var parseBarsGroups = (source) => {
+  const groups = [];
+  let group;
+  for (const line of source.split(/\r?\n/)) {
+    const section = /^\s*([\w-]+)\s*:\s*$/.exec(line)?.[1];
+    if (section) {
+      group = { label: section, values: [], size: "md" };
+      groups.push(group);
+      continue;
+    }
+    if (!group) continue;
+    const label = /^\s+label\s*:\s*(.+?)\s*$/i.exec(line)?.[1];
+    if (label) group.label = label;
+    const size = /^\s+size\s*:\s*(sm|md|lg)\s*$/i.exec(line)?.[1];
+    if (size) group.size = size;
+    const tone = /^\s+tone\s*:\s*(accent|secondary|tertiary|muted)\s*$/i.exec(line)?.[1];
+    if (tone) group.tone = tone;
+    const values = /^\s+values\s*:\s*\[([^\]]*)\]\s*$/i.exec(line)?.[1];
+    if (values)
+      group.values = values.split(",").map(Number).filter((value) => Number.isFinite(value) && value >= 0);
+  }
+  const structured = groups.filter(({ values }) => values.length);
+  if (structured.length) return structured;
+  const legacy = meaningful(source).flatMap((line) => {
+    const match = /^([^:]+):\s*\[([^\]]+)\]$/.exec(line.trim());
+    if (!match?.[1] || !match[2]) return [];
+    const values = match[2].split(",").map(Number).filter(Number.isFinite);
+    return values.length ? [{ label: match[1].trim(), values, size: "md" }] : [];
+  });
+  return legacy.length ? legacy : void 0;
+};
+var barsBody = (source, palette, paletteExplicit, glyphs) => {
+  const groups = parseBarsGroups(source);
+  if (!groups) return void 0;
+  const processor = /^\s*processor\s*:\s*(.+?)\s*$/im.exec(source)?.[1];
+  const connector = processor ? processor.trim().split(/\s+/).map((part) => part === "->" || part === "\u2192" ? "- - -\u25B6" : part).join("  ") : "- - -\u25B6";
+  const toneClass = (group, index) => group.tone === "muted" ? "md-graph__bars-tone--muted" : group.tone === "secondary" || !group.tone && paletteExplicit && paletteMode(palette) !== "solid" && index === 0 && groups.length > 1 ? "md-graph__color-1" : group.tone === "tertiary" ? "md-graph__color-2" : !group.tone && !paletteExplicit && index === 0 && groups.length > 1 ? "md-graph__bars-tone--muted" : "md-graph__color-0";
+  const labelToneClass = (group, index) => group.tone || index === 0 && groups.length > 1 ? [toneClass(group, index)] : [];
+  const mark = glyphScale(glyphs, ["\u2588"]).at(-1);
+  return {
+    type: "element",
+    tagName: "div",
+    properties: { className: ["md-graph__body", "md-graph__body--bars"] },
+    children: groups.flatMap((group, groupIndex) => [
+      ...groupIndex ? [
+        {
+          type: "element",
+          tagName: "span",
+          properties: { className: ["md-graph__bars-connector"] },
+          children: [text(connector)]
+        }
+      ] : [],
+      {
+        type: "element",
+        tagName: "div",
+        properties: {
+          className: ["md-graph__bars-group", `md-graph__bars-group--${group.size}`]
+        },
+        children: [
+          {
+            type: "element",
+            tagName: "div",
+            properties: { className: ["md-graph__bars-stacks", toneClass(group, groupIndex)] },
+            children: group.values.map((value) => ({
+              type: "element",
+              tagName: "span",
+              properties: {
+                className: ["md-graph__bars-stack"],
+                ariaLabel: String(value)
+              },
+              children: Array.from({ length: Math.round(value) }, () => ({
+                type: "element",
+                tagName: "span",
+                properties: { ariaHidden: "true" },
+                children: [text(mark)]
+              }))
+            }))
+          },
+          {
+            type: "element",
+            tagName: "div",
+            properties: {
+              className: ["md-graph__bars-group-label", ...labelToneClass(group, groupIndex)]
+            },
+            children: [text(group.label)]
+          }
+        ]
+      }
+    ])
+  };
+};
+var parseCellGrids = (source) => {
+  const grids = [];
+  let grid;
+  for (const line of source.split(/\r?\n/)) {
+    const itemLabel = /^\s*-\s*label\s*:\s*(.+?)\s*$/i.exec(line)?.[1];
+    const sectionLabel = /^(?!\s)([^:]+)\s*:\s*$/.exec(line)?.[1];
+    if (itemLabel || sectionLabel) {
+      grid = { label: itemLabel ?? sectionLabel, cells: [], color: "accent" };
+      grids.push(grid);
+      continue;
+    }
+    if (!grid || /^\s*cells\s*:\s*$/i.test(line)) continue;
+    const color2 = /^\s+color\s*:\s*(accent|accent2|accent3)\s*$/i.exec(line)?.[1];
+    if (color2) {
+      grid.color = color2;
+      continue;
+    }
+    const array = /^\s*-\s*\[([01,\s]+)\]\s*$/.exec(line)?.[1];
+    const compact = /^\s*([01](?:\s*[01])+?)\s*$/.exec(line)?.[1];
+    const values = array ? array.split(",").map((value) => Number(value.trim())) : compact ? [...compact.replace(/\s/g, "")].map(Number) : [];
+    if (values.length) grid.cells.push(values);
+  }
+  const parsed = grids.filter(({ cells }) => cells.length);
+  return parsed.length ? parsed : void 0;
+};
+var cellGlyphPair = (glyphs = "shade") => {
+  const scale = glyphScale(glyphs, GLYPH_PRESETS.shade);
+  return [scale[0], scale.at(-1)];
+};
+var meterGlyphPair = (glyphs) => {
+  const scale = glyphScale(glyphs, ["-", "="]);
+  return [scale[0], scale.length > 2 ? scale.at(-2) : scale.at(-1)];
+};
+var cellsBody = (source, glyphs) => {
+  const grids = parseCellGrids(source);
+  if (!grids) return void 0;
+  const [empty2, active] = cellGlyphPair(glyphs);
+  const colorClass = (color2) => color2 === "accent2" ? "md-graph__color-1" : color2 === "accent3" ? "md-graph__color-2" : "md-graph__color-0";
+  return {
+    type: "element",
+    tagName: "div",
+    properties: { className: ["md-graph__body", "md-graph__body--cells"] },
+    children: grids.map((grid) => ({
+      type: "element",
+      tagName: "div",
+      properties: { className: ["md-graph__cells-item"] },
+      children: [
+        {
+          type: "element",
+          tagName: "div",
+          properties: { className: ["md-graph__cells-grid"] },
+          children: grid.cells.map((row) => ({
+            type: "element",
+            tagName: "div",
+            properties: { className: ["md-graph__cells-row"] },
+            children: row.map((value) => ({
+              type: "element",
+              tagName: "span",
+              properties: {
+                className: [
+                  "md-graph__cell",
+                  value ? "md-graph__cell--active" : "md-graph__cell--empty",
+                  ...value ? [colorClass(grid.color)] : []
+                ],
+                ariaHidden: "true"
+              },
+              children: [text(value ? active : empty2)]
+            }))
+          }))
+        },
+        {
+          type: "element",
+          tagName: "div",
+          properties: { className: ["md-graph__cells-label"] },
+          children: [text(grid.label)]
+        }
+      ]
+    }))
+  };
+};
+var meterBody = (source, glyphs) => {
+  const props = properties(source);
+  const shorthand = /([\d.]+)\s*\/\s*([\d.]+)/.exec(source);
+  if (!props.value && !shorthand) return void 0;
+  const value = number(props.value ?? shorthand?.[1] ?? "0");
+  const explicitMax = props.max ?? shorthand?.[2];
+  const max = explicitMax ? number(explicitMax) || 1 : 1;
+  const ratio = clamp(value / max);
+  const ticks = Math.max(1, Math.round(number(props.ticks ?? "14") || 14));
+  const meterGlyphs = glyphs ?? props.glyphs;
+  const [empty2, active] = meterGlyphPair(meterGlyphs);
+  const meterColor = /^(accent2|accent3)$/i.test(props.color ?? "") ? Number(props.color.slice(-1)) - 1 : 0;
+  const filled = Math.round(ratio * ticks);
+  return {
+    type: "element",
+    tagName: "div",
+    properties: { className: ["md-graph__body", "md-graph__body--meter"] },
+    children: [
+      {
+        type: "element",
+        tagName: "div",
+        properties: {
+          className: ["md-graph__meter-row"],
+          style: `--md-graph-meter-ticks:${ticks};--md-graph-meter-width:${ticks * 2.75}rem`
+        },
+        children: [
+          {
+            type: "element",
+            tagName: "span",
+            properties: { className: ["md-graph__meter-bar"] },
+            children: [
+              {
+                type: "element",
+                tagName: "span",
+                properties: { className: ["md-graph__track"] },
+                children: [text("[")]
+              },
+              {
+                type: "element",
+                tagName: "span",
+                properties: {
+                  className: ["md-graph__meter-cells"]
+                },
+                children: Array.from({ length: ticks }, (_, index) => ({
+                  type: "element",
+                  tagName: "span",
+                  properties: {
+                    className: [
+                      "md-graph__meter-cell",
+                      index < filled ? `md-graph__color-${meterColor}` : "md-graph__track"
+                    ]
+                  },
+                  children: [text(index < filled ? active : empty2)]
+                }))
+              },
+              {
+                type: "element",
+                tagName: "span",
+                properties: { className: ["md-graph__track"] },
+                children: [text("]")]
+              }
+            ]
+          },
+          {
+            type: "element",
+            tagName: "span",
+            properties: { className: ["md-graph__meter-value"] },
+            children: [text(`${Math.round(ratio * 100)}%`)]
+          }
+        ]
+      },
+      ...props.label ? [
+        {
+          type: "element",
+          tagName: "div",
+          properties: { className: ["md-graph__meter-label"] },
+          children: [text(props.label)]
+        }
+      ] : [],
+      ...props.caption ? [
+        {
+          type: "element",
+          tagName: "div",
+          properties: { className: ["md-graph__caption", "md-graph__meter-caption"] },
+          children: [text(props.caption)]
+        }
+      ] : []
+    ]
+  };
+};
+function render(type, source, glyphs) {
+  const props = properties(source);
+  const items = data(source);
+  switch (type) {
+    case "rank": {
+      const rankedItems = rankData(source);
+      const ticks = Number(props.ticks) || 20;
+      const max = number(props.max ?? "") || Math.max(1, ...rankedItems.map(({ value }) => value));
+      const labelWidth = Math.max(14, ...rankedItems.map(({ label }) => label.length));
+      return rankedItems.map(
+        ({ label, value, display }) => `${label.padEnd(labelWidth)}	${rankBar(value / max, ticks, glyphs ?? props.glyphs)}	${display ?? value.toLocaleString("en-US")}`
+      );
+    }
+    case "funnel":
+      return aligned(items, 20, glyphs ?? props.glyphs);
+    case "meter": {
+      const shorthand = /([\d.]+)\s*\/\s*([\d.]+)/.exec(source);
+      const value = number(props.value ?? shorthand?.[1] ?? "0");
+      const max = number(props.max ?? shorthand?.[2] ?? "100") || 100;
+      return [
+        `${props.label ?? ""}	${asciiBar(value / max, 15)}	${Math.round(value / max * 100)}%`
+      ];
+    }
+    case "bars": {
+      const series = meaningful(source).flatMap((line) => {
+        const match = /^([^:]+):\s*(\[[^\]]+\])$/.exec(line.trim());
+        return match?.[1] && match[2] ? [{ name: match[1], values: parseSequence(match[2]) }] : [];
+      });
+      const max = Math.max(1, ...series.flatMap(({ values }) => values));
+      const groups = series.map(
+        ({ name, values }) => `${values.map((value) => glyphAt(glyphScale(glyphs ?? props.glyphs, SPARK_GLYPHS), value / max)).join(" ")}
+${name}`
+      );
+      return groups.length > 1 ? groups.flatMap(
+        (group, index) => index < groups.length - 1 ? [group, "- - -\u25B6"] : [group]
+      ) : groups;
+    }
+    case "spark":
+      return meaningful(source).flatMap((line) => {
+        const match = /^([^:]+):\s*(.+)$/.exec(line);
+        if (!match?.[1] || !match[2] || /^\|/.test(line)) return [];
+        const values = parseSequence(match[2]);
+        return values.length ? [`${match[1].padEnd(12)} ${spark(values, glyphs ?? props.glyphs)}`] : [];
+      });
+    case "flow":
+      return meaningful(source).filter((line) => line.includes("->")).map((line) => line.trim().replace(/\s*->\s*/g, "  - - -\u25B6  "));
+    case "cells": {
+      const scale = glyphScale(glyphs ?? props.glyphs, GLYPH_PRESETS.shade);
+      const empty2 = scale[0];
+      const full = scale.at(-1);
+      return meaningful(source).map(
+        (line) => /^\s*[01](?:\s*[01])+$/.test(line) ? line.replace(/1/g, full).replace(/0/g, empty2).replace(/\s/g, " ") : line
+      );
+    }
+    case "tree": {
+      return meaningful(source).map((line) => {
+        const match = /^(\s*)[-*+]\s+(.+)$/.exec(line);
+        if (!match?.[1] && !match?.[2]) return line;
+        const depth = Math.floor((match?.[1]?.length ?? 0) / 2);
+        return `${depth ? "\u2502  ".repeat(depth - 1) + "\u251C\u2500 " : ""}${match?.[2] ?? line}`;
+      });
+    }
+    case "timeline": {
+      const scale = glyphScale(glyphs ?? props.glyphs, ["\xB7", "\u25CF"]);
+      return meaningful(source).map((line) => {
+        const cells = line.split("|").map((cell) => cell.trim());
+        return cells.length >= 2 ? `${scale.at(-1)}  ${cells[0]}  ${cells.slice(1).join(`  ${scale[0]}  `)}` : line;
+      });
+    }
+    case "gantt": {
+      const full = glyphScale(glyphs ?? props.glyphs, ["\u25A0"]).at(-1);
+      const tasks = meaningful(source).flatMap((line) => {
+        const match = /^(.+?)\s*:\s*(\S+)(?:\s*\.\.\s*(\S+))?$/.exec(line);
+        if (!match?.[1] || !match[2]) return [];
+        const start = Date.parse(match[2]), end = Date.parse(match[3] ?? match[2]);
+        return Number.isFinite(start) && Number.isFinite(end) ? [{ label: match[1].trim(), start, end }] : [];
+      });
+      const min = Math.min(...tasks.map((task) => task.start)), max = Math.max(...tasks.map((task) => task.end)), span = Math.max(864e5, max - min);
+      const labelWidth = Math.max(1, ...tasks.map((task) => task.label.length));
+      return tasks.map(
+        (task) => `${task.label.padEnd(labelWidth)}  ${" ".repeat(Math.round((task.start - min) / span * 28))}${full.repeat(Math.max(1, Math.round((task.end - task.start + 864e5) / span * 28)))}`
+      );
+    }
+    case "plot": {
+      const pointGlyph = glyphScale(glyphs ?? props.glyphs, ["\u25CF"]).at(-1);
+      const lines = meaningful(source);
+      const points = lines.flatMap((line) => {
+        const match = /^([+-]?[\d.]+)\s*,\s*([+-]?[\d.]+)$/.exec(line.trim());
+        return match ? [{ x: number(match[1]), y: number(match[2]) }] : [];
+      });
+      if (!points.length) return lines;
+      const width = 32, height = 7, minX = Math.min(...points.map((p) => p.x)), maxX = Math.max(...points.map((p) => p.x)), minY = Math.min(...points.map((p) => p.y)), maxY = Math.max(...points.map((p) => p.y));
+      const grid = Array.from({ length: height }, () => Array(width).fill(" "));
+      for (const point of points)
+        grid[height - 1 - Math.round(clamp((point.y - minY) / Math.max(1, maxY - minY)) * (height - 1))][Math.round(clamp((point.x - minX) / Math.max(1, maxX - minX)) * (width - 1))] = pointGlyph;
+      return grid.map((row) => `\u2502${row.join("")}`).concat(`\u2514${"\u2500".repeat(width)}`);
+    }
+    case "stack": {
+      const full = glyphScale(glyphs ?? props.glyphs, ["\u25A0"]).at(-1);
+      return items.length ? [
+        `${items.map(({ label, value }) => `${label} ${full.repeat(Math.max(1, Math.round(value / 5)))}`).join("  ")}`
+      ] : tableLines(source);
+    }
+    case "waffle": {
+      const scale = glyphScale(glyphs ?? props.glyphs, ["\xB7", "\u25A0"]);
+      const size = /^(\d+)x(\d+)$/.exec(props.size ?? "10x10");
+      const cols = Number(size?.[1] ?? 10), rows = Number(size?.[2] ?? 10), total = cols * rows;
+      let cursor = 0;
+      const cells = items.flatMap(
+        (item, series) => Array(
+          Math.round(
+            item.value / Math.max(
+              100,
+              items.reduce((sum, d) => sum + d.value, 0)
+            ) * total
+          )
+        ).fill(String(series + 1))
+      );
+      return Array.from(
+        { length: rows },
+        () => Array.from({ length: cols }, () => cells[cursor++] ? scale.at(-1) : scale[0]).join(" ")
+      ).concat(items.map((item, index) => `${index + 1}  ${item.label}  ${item.value}`));
+    }
+    case "activity":
+      return aligned(
+        items.map((item) => ({ ...item, label: item.label.slice(5) })),
+        12,
+        glyphs ?? props.glyphs
+      );
+    case "calendar": {
+      const dates = meaningful(source).flatMap((line) => {
+        const match = /^(\d{4})-(\d{2})-(\d{2})\s*=\s*(.+)$/.exec(line);
+        return match ? [
+          {
+            year: Number(match[1]),
+            month: Number(match[2]),
+            day: Number(match[3]),
+            value: match[4]
+          }
+        ] : [];
+      });
+      if (!dates.length) return meaningful(source);
+      const { year, month } = dates[0], first = new Date(Date.UTC(year, month - 1, 1)).getUTCDay(), days = new Date(Date.UTC(year, month, 0)).getUTCDate();
+      const marked = new Map(dates.map((date) => [date.day, date.value]));
+      const cells = Array(first).fill("  ").concat(
+        Array.from(
+          { length: days },
+          (_, index) => marked.has(index + 1) ? String(index + 1).padStart(2) + "\u25CF" : String(index + 1).padStart(2) + " "
+        )
+      );
+      return [
+        "Su  Mo  Tu  We  Th  Fr  Sa",
+        ...Array.from(
+          { length: Math.ceil(cells.length / 7) },
+          (_, row) => cells.slice(row * 7, row * 7 + 7).join(" ")
+        )
+      ];
+    }
+    case "waterfall": {
+      let sum = 0;
+      const values = meaningful(source).flatMap((line) => {
+        const match = /^(.+?)\s*=\s*(.+)$/.exec(line);
+        if (!match?.[1] || !match[2]) return [];
+        if (match[2].trim() === "total") return [{ label: match[1].trim(), value: sum }];
+        const value = number(match[2]);
+        if (Number.isFinite(value)) {
+          sum = sum === 0 ? value : sum + value;
+          return [{ label: match[1].trim(), value }];
+        }
+        return [];
+      });
+      return aligned(values, 20);
+    }
+    case "slope":
+      return meaningful(source).flatMap((line) => {
+        const match = /^(.+?)\s*=\s*(.+?)\s*->\s*(.+)$/.exec(line);
+        return match?.[1] ? [`${match[1].padEnd(14)} ${match[2]}  \u2500\u2500\u2500\u2500\u2500>  ${match[3]}`] : [];
+      });
+    case "bullet": {
+      const compact = meaningful(source).flatMap((line) => {
+        const match = /^(.+?)\s*=\s*([\d.]+)\s*\/\s*([\d.]+)\s*\/\s*([\d.]+)/.exec(line);
+        return match?.[1] ? [
+          {
+            label: match[1],
+            value: number(match[2]),
+            target: number(match[3]),
+            max: number(match[4])
+          }
+        ] : [];
+      });
+      const bullets = compact.length ? compact : [
+        {
+          label: "",
+          value: number(props.value ?? "0"),
+          target: number(props.target ?? "0"),
+          max: number(props.max ?? "100")
+        }
+      ];
+      return bullets.map(
+        ({ label, value, target, max }) => `${label.padEnd(12)}	${asciiBar(value / max, 20, target / max, glyphs ?? props.glyphs)}	${value} / ${target}`
+      );
+    }
+    case "uptime": {
+      const scale = glyphScale(glyphs ?? props.glyphs, ["\xB7", "\u25A8", "\u25A0"]);
+      return meaningful(source).map(
+        (line) => line.replace(/\s*=\s*up$/, `  ${scale.at(-1).repeat(5)} up`).replace(/\s*=\s*down$/, `  ${scale[0].repeat(5)} down`).replace(/\s*=\s*degraded$/, `  ${glyphAt(scale, 0.5).repeat(5)} degraded`)
+      );
+    }
+    case "heatmap": {
+      const scale = glyphScale(glyphs ?? props.glyphs, ["\xB7", ...SPARK_GLYPHS]);
+      return meaningful(source).filter((line) => !/^[xy]:/.test(line)).map(
+        (line) => line.replace(/\b0\b/g, scale[0]).replace(/\b[1-9]\b/g, (value) => glyphAt(scale, Number(value) / 9))
+      );
+    }
+    case "diff":
+      return meaningful(source).map(
+        (line) => line.startsWith("+") ? `+ ${line.slice(1).trim()}` : line.startsWith("-") ? `\u2212 ${line.slice(1).trim()}` : line.replace(/\s*->\s*/, "  \u2500\u2500>  ")
+      );
+    case "stat":
+      return [props.value ?? "", [props.change, props.period].filter(Boolean).join("  ")];
+    case "kpi":
+    case "spec":
+      return Object.entries(props).map(([key, value]) => `${key.padEnd(16)} ${value}`);
+    case "timer":
+      return [
+        `${clock(durationSeconds(props.elapsed ?? "0s"))} / ${clock(durationSeconds(props.duration ?? "0s"))}`,
+        props.state ?? ""
+      ];
+    case "countdown": {
+      const delta = Math.max(0, (Date.parse(props.target ?? "") - Date.now()) / 1e3);
+      if (!Number.isFinite(delta)) return [props.target ?? ""];
+      const days = Math.floor(delta / 86400);
+      return [
+        `${days}d ${clock(delta % 86400)}`,
+        (props.units ?? "days hours minutes seconds").replace(/[[\],]/g, " ").replace(/\s+/g, "  ")
+      ];
+    }
+    case "check": {
+      const scale = glyphScale(glyphs ?? props.glyphs, ["\xB7", "\u2713"]);
+      return meaningful(source).map(
+        (line) => line.replace(/^\s*[-*]?\s*\[[xX]\]\s*/, `${scale.at(-1)}  `).replace(/^\s*[-*]?\s*\[ \]\s*/, `${scale[0]}  `)
+      );
+    }
+    case "table":
+    case "compare":
+    case "frame":
+    case "matrix":
+    case "sheet":
+      return tableLines(source).length ? tableLines(source) : meaningful(source);
+    case "invoice": {
+      const table = tableLines(source);
+      const meta = Object.entries(props).filter(([key]) => !["subtotal", "tax", "total"].includes(key)).map(([key, value]) => `${key.padEnd(12)} ${value}`);
+      const totals = ["subtotal", "tax", "total"].flatMap(
+        (key) => props[key] ? [`${key.padEnd(12)} ${props[key]}`] : []
+      );
+      return [
+        ...meta,
+        ...meta.length ? [""] : [],
+        ...table,
+        ...totals.length ? [""] : [],
+        ...totals
+      ];
+    }
+    default:
+      return meaningful(source);
+  }
+}
+var ACCENT_GLYPHS = /([=#@■█●✓+▨▁▂▃▄▅▆▇]+)/g;
+var escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+var coloredLine = (line, lineIndex, palette, targets) => {
+  if (line.includes("\n")) {
+    const [marks = "", label = ""] = line.split("\n");
+    return {
+      type: "element",
+      tagName: "div",
+      properties: { className: ["md-graph__line", "md-graph__line--bars"] },
+      children: [
+        {
+          type: "element",
+          tagName: "span",
+          properties: { className: ["md-graph__bars-marks"] },
+          children: coloredLine(marks, Math.floor(lineIndex / 2) + 1, palette, targets).children
+        },
+        {
+          type: "element",
+          tagName: "span",
+          properties: { className: ["md-graph__bars-label"] },
+          children: [text(label)]
+        }
+      ]
+    };
+  }
+  if (line.includes("	")) {
+    const [label = "", barValue = "", value = ""] = line.split("	");
+    const barMatch = /^\[\s*(.*?)\s*\]$/.exec(barValue);
+    const cells = barMatch?.[1]?.split(/\s+/).filter(Boolean) ?? [];
+    const barChildren = [text("[")];
+    barChildren.push({
+      type: "element",
+      tagName: "span",
+      properties: { className: ["md-graph__bar-cells"] },
+      children: cells.map((cell) => ({
+        type: "element",
+        tagName: "span",
+        properties: {
+          className: !["-", ".", "\xB7", "\u2591"].includes(cell) && cell !== "|" ? ["md-graph__accent", "md-graph__color-0"] : cell === "|" ? ["md-graph__marker"] : ["md-graph__track"]
+        },
+        children: [text(cell)]
+      }))
+    });
+    barChildren.push(text("]"));
+    return {
+      type: "element",
+      tagName: "div",
+      properties: { className: ["md-graph__line", "md-graph__line--bar"] },
+      children: [
+        {
+          type: "element",
+          tagName: "span",
+          properties: { className: ["md-graph__bar-label"] },
+          children: coloredLine(label.trimEnd(), lineIndex, palette, targets).children
+        },
+        {
+          type: "element",
+          tagName: "span",
+          properties: { className: ["md-graph__ascii-bar"] },
+          children: barChildren
+        },
+        {
+          type: "element",
+          tagName: "span",
+          properties: { className: ["md-graph__bar-value"] },
+          children: [text(value)]
+        }
+      ]
+    };
+  }
+  const children = [];
+  let cursor = 0, glyphIndex = 0;
+  const targetPattern = targets.length ? targets.sort((a, b) => b.length - a.length).map(escapeRegExp).join("|") : "(?!)";
+  const pattern = new RegExp(`(- - -\u25B6)|([-.\xB7])|${ACCENT_GLYPHS.source}|(${targetPattern})`, "g");
+  for (const match of line.matchAll(pattern)) {
+    const start = match.index ?? 0;
+    if (start > cursor) children.push(text(line.slice(cursor, start)));
+    const connector = match[0] === "- - -\u25B6";
+    const track = /^[-.·]+$/.test(match[0]);
+    const connectorTargeted = connector && targets.some(
+      (target) => line.slice(start + match[0].length).trimStart().startsWith(target)
+    );
+    const colorIndex = paletteMode(palette) === "solid" ? 0 : paletteMode(palette) === "duo" ? (lineIndex + glyphIndex) % 2 : (lineIndex + glyphIndex) % 4;
+    children.push({
+      type: "element",
+      tagName: "span",
+      properties: {
+        className: track ? ["md-graph__track"] : connector ? [
+          "md-graph__arrow",
+          ...connectorTargeted ? ["md-graph__accent", `md-graph__color-${colorIndex}`] : []
+        ] : ["md-graph__accent", `md-graph__color-${colorIndex}`]
+      },
+      children: [text(match[0])]
+    });
+    cursor = start + match[0].length;
+    glyphIndex++;
+  }
+  if (cursor < line.length) children.push(text(line.slice(cursor)));
+  return {
+    type: "element",
+    tagName: "div",
+    properties: { className: ["md-graph__line"] },
+    children: children.length ? children : [text(" ")]
+  };
+};
+function renderGraphBody(type, source, palette, semantic = true, paletteExplicit = false, glyphs) {
+  const targets = source.split(/\r?\n/).flatMap((line) => {
+    const match = /^\s*@(accent|highlight)\s+(?:"([^"]+)"|(\S+))/.exec(line);
+    return match?.[2] || match?.[3] ? [match[2] ?? match[3]] : [];
+  });
+  if (semantic && type === "table") {
+    const table = tableBody(source);
+    if (table) return table;
+  }
+  if (semantic && type === "sheet") {
+    const sheet = sheetBody(source);
+    if (sheet) return sheet;
+  }
+  if (semantic && type === "flow") {
+    const flow = flowBody(source);
+    if (flow) return flow;
+  }
+  if (semantic && type === "tree") {
+    const tree = treeBody(source);
+    if (tree) return tree;
+  }
+  if (semantic && type === "timeline") {
+    const timeline = timelineBody(source);
+    if (timeline) return timeline;
+  }
+  if (semantic && type === "check") {
+    const check = checkBody(source);
+    if (check) return check;
+  }
+  if (semantic && type === "stack") {
+    const stack = stackBody(source, glyphs);
+    if (stack) return stack;
+  }
+  if (semantic && type === "funnel") {
+    const funnel = funnelBody(source, glyphs);
+    if (funnel) return funnel;
+  }
+  if (semantic && type === "gantt") {
+    const gantt = ganttBody(source, glyphs);
+    if (gantt) return gantt;
+  }
+  if (semantic && type === "plot") {
+    const plot = plotBody(source, glyphs);
+    if (plot) return plot;
+  }
+  if (semantic && type === "waffle") {
+    const waffle = waffleBody(source, glyphs);
+    if (waffle) return waffle;
+  }
+  if (semantic && type === "diff") {
+    const diff = diffBody(source);
+    if (diff) return diff;
+  }
+  if (semantic && type === "invoice") {
+    const invoice = invoiceBody(source);
+    if (invoice) return invoice;
+  }
+  if (semantic && type === "compare") {
+    const compare = compareBody(source);
+    if (compare) return compare;
+  }
+  if (semantic && type === "matrix") {
+    const matrix = matrixBody(source);
+    if (matrix) return matrix;
+  }
+  if (semantic && type === "stat") {
+    const stat = statBody(source);
+    if (stat) return stat;
+  }
+  if (semantic && type === "kpi") {
+    const kpi = kpiBody(source, glyphs);
+    if (kpi) return kpi;
+  }
+  if (semantic && type === "spec") {
+    const spec = specBody(source);
+    if (spec) return spec;
+  }
+  if (semantic && type === "activity") {
+    const activity = activityBody(source, glyphs);
+    if (activity) return activity;
+  }
+  if (semantic && type === "heatmap") {
+    const heatmap = heatmapBody(source, palette, paletteExplicit, glyphs);
+    if (heatmap) return heatmap;
+  }
+  if (semantic && type === "calendar") {
+    const calendar = calendarBody(source, palette, paletteExplicit);
+    if (calendar) return calendar;
+  }
+  if (semantic && type === "waterfall") {
+    const waterfall = waterfallBody(source, glyphs);
+    if (waterfall) return waterfall;
+  }
+  if (semantic && type === "uptime") {
+    const uptime = uptimeBody(source, glyphs);
+    if (uptime) return uptime;
+  }
+  if (semantic && type === "slope") {
+    const slope = slopeBody(source);
+    if (slope) return slope;
+  }
+  if (semantic && type === "bullet") {
+    const bullet = bulletBody(source, glyphs);
+    if (bullet) return bullet;
+  }
+  if (semantic && type === "timer") {
+    const timer = timerBody(source);
+    if (timer) return timer;
+  }
+  if (semantic && type === "countdown") {
+    const countdown = countdownBody(source);
+    if (countdown) return countdown;
+  }
+  if (semantic && type === "frame") {
+    const frame = frameBody(source);
+    if (frame) return frame;
+  }
+  if (semantic && type === "bars") {
+    const bars = barsBody(source, palette, paletteExplicit, glyphs);
+    if (bars) return bars;
+  }
+  if (semantic && type === "cells") {
+    const cells = cellsBody(source, glyphs);
+    if (cells) return cells;
+  }
+  if (semantic && type === "meter") {
+    const meter = meterBody(source, glyphs);
+    if (meter) return meter;
+  }
+  if (semantic && type === "spark") {
+    const spark2 = sparkBody(source, palette, glyphs);
+    if (spark2) return spark2;
+  }
+  return {
+    type: "element",
+    tagName: "div",
+    properties: { className: ["md-graph__body"] },
+    children: (semantic ? render(type, source, glyphs) : source.split(/\r?\n/)).map(
+      (line, index) => coloredLine(line, index, palette, targets)
+    )
   };
 }
-var code2 = 48;
-while (code2 < 123) {
-  text2[code2] = emailAutolink;
-  code2++;
-  if (code2 === 58) code2 = 65;
-  else if (code2 === 91) code2 = 97;
+
+// src/parser.ts
+var STANDARD_ATTRIBUTES = /* @__PURE__ */ new Set([
+  "title",
+  "id",
+  "caption",
+  "frame",
+  "palette",
+  "glyphs",
+  "aria-label",
+  "version",
+  "format",
+  "stretch",
+  "corner"
+]);
+var supported = new Set(supportedGraphTypes);
+var defaultGraphLimits = {
+  maxBlockBytes: 64 * 1024,
+  maxRows: 1e3,
+  maxColumns: 100,
+  maxPoints: 1e4,
+  maxNodes: 2e3,
+  maxEdges: 5e3,
+  maxDepth: 100
+};
+function scalar(value) {
+  const trimmed = value.trim();
+  if (trimmed === "true") return true;
+  if (trimmed === "false") return false;
+  if (trimmed === "null") return null;
+  if (/^-?(?:\d+\.?\d*|\.\d+)$/.test(trimmed)) return Number(trimmed);
+  return trimmed;
 }
-text2[43] = emailAutolink;
-text2[45] = emailAutolink;
-text2[46] = emailAutolink;
-text2[95] = emailAutolink;
-text2[72] = [emailAutolink, protocolAutolink];
-text2[104] = [emailAutolink, protocolAutolink];
-text2[87] = [emailAutolink, wwwAutolink];
-text2[119] = [emailAutolink, wwwAutolink];
-function tokenizeEmailAutolink(effects, ok3, nok) {
-  const self = this;
-  let dot;
-  let data;
-  return start;
-  function start(code3) {
-    if (!gfmAtext(code3) || !previousEmail.call(self, self.previous) || previousUnbalanced(self.events)) {
-      return nok(code3);
+function decodeQuoted(value) {
+  if (value.startsWith('"')) {
+    try {
+      return JSON.parse(value);
+    } catch {
+      return value.slice(1, value.endsWith('"') ? -1 : void 0);
     }
-    effects.enter("literalAutolink");
-    effects.enter("literalAutolinkEmail");
-    return atext(code3);
   }
-  function atext(code3) {
-    if (gfmAtext(code3)) {
-      effects.consume(code3);
-      return atext;
-    }
-    if (code3 === 64) {
-      effects.consume(code3);
-      return emailDomain;
-    }
-    return nok(code3);
-  }
-  function emailDomain(code3) {
-    if (code3 === 46) {
-      return effects.check(emailDomainDotTrail, emailDomainAfter, emailDomainDot)(code3);
-    }
-    if (code3 === 45 || code3 === 95 || asciiAlphanumeric(code3)) {
-      data = true;
-      effects.consume(code3);
-      return emailDomain;
-    }
-    return emailDomainAfter(code3);
-  }
-  function emailDomainDot(code3) {
-    effects.consume(code3);
-    dot = true;
-    return emailDomain;
-  }
-  function emailDomainAfter(code3) {
-    if (data && dot && asciiAlpha(self.previous)) {
-      effects.exit("literalAutolinkEmail");
-      effects.exit("literalAutolink");
-      return ok3(code3);
-    }
-    return nok(code3);
-  }
+  if (value.startsWith("'")) return value.slice(1, value.endsWith("'") ? -1 : void 0);
+  return value;
 }
-function tokenizeWwwAutolink(effects, ok3, nok) {
-  const self = this;
-  return wwwStart;
-  function wwwStart(code3) {
-    if (code3 !== 87 && code3 !== 119 || !previousWww.call(self, self.previous) || previousUnbalanced(self.events)) {
-      return nok(code3);
-    }
-    effects.enter("literalAutolink");
-    effects.enter("literalAutolinkWww");
-    return effects.check(wwwPrefix, effects.attempt(domain, effects.attempt(path, wwwAfter), nok), nok)(code3);
-  }
-  function wwwAfter(code3) {
-    effects.exit("literalAutolinkWww");
-    effects.exit("literalAutolink");
-    return ok3(code3);
-  }
-}
-function tokenizeProtocolAutolink(effects, ok3, nok) {
-  const self = this;
-  let buffer = "";
-  let seen = false;
-  return protocolStart;
-  function protocolStart(code3) {
-    if ((code3 === 72 || code3 === 104) && previousProtocol.call(self, self.previous) && !previousUnbalanced(self.events)) {
-      effects.enter("literalAutolink");
-      effects.enter("literalAutolinkHttp");
-      buffer += String.fromCodePoint(code3);
-      effects.consume(code3);
-      return protocolPrefixInside;
-    }
-    return nok(code3);
-  }
-  function protocolPrefixInside(code3) {
-    if (asciiAlpha(code3) && buffer.length < 5) {
-      buffer += String.fromCodePoint(code3);
-      effects.consume(code3);
-      return protocolPrefixInside;
-    }
-    if (code3 === 58) {
-      const protocol = buffer.toLowerCase();
-      if (protocol === "http" || protocol === "https") {
-        effects.consume(code3);
-        return protocolSlashesInside;
-      }
-    }
-    return nok(code3);
-  }
-  function protocolSlashesInside(code3) {
-    if (code3 === 47) {
-      effects.consume(code3);
-      if (seen) {
-        return afterProtocol;
-      }
-      seen = true;
-      return protocolSlashesInside;
-    }
-    return nok(code3);
-  }
-  function afterProtocol(code3) {
-    return code3 === null || asciiControl(code3) || markdownLineEndingOrSpace(code3) || unicodeWhitespace(code3) || unicodePunctuation(code3) ? nok(code3) : effects.attempt(domain, effects.attempt(path, protocolAfter), nok)(code3);
-  }
-  function protocolAfter(code3) {
-    effects.exit("literalAutolinkHttp");
-    effects.exit("literalAutolink");
-    return ok3(code3);
-  }
-}
-function tokenizeWwwPrefix(effects, ok3, nok) {
-  let size = 0;
-  return wwwPrefixInside;
-  function wwwPrefixInside(code3) {
-    if ((code3 === 87 || code3 === 119) && size < 3) {
-      size++;
-      effects.consume(code3);
-      return wwwPrefixInside;
-    }
-    if (code3 === 46 && size === 3) {
-      effects.consume(code3);
-      return wwwPrefixAfter;
-    }
-    return nok(code3);
-  }
-  function wwwPrefixAfter(code3) {
-    return code3 === null ? nok(code3) : ok3(code3);
-  }
-}
-function tokenizeDomain(effects, ok3, nok) {
-  let underscoreInLastSegment;
-  let underscoreInLastLastSegment;
-  let seen;
-  return domainInside;
-  function domainInside(code3) {
-    if (code3 === 46 || code3 === 95) {
-      return effects.check(trail, domainAfter, domainAtPunctuation)(code3);
-    }
-    if (code3 === null || markdownLineEndingOrSpace(code3) || unicodeWhitespace(code3) || code3 !== 45 && unicodePunctuation(code3)) {
-      return domainAfter(code3);
-    }
-    seen = true;
-    effects.consume(code3);
-    return domainInside;
-  }
-  function domainAtPunctuation(code3) {
-    if (code3 === 95) {
-      underscoreInLastSegment = true;
-    } else {
-      underscoreInLastLastSegment = underscoreInLastSegment;
-      underscoreInLastSegment = void 0;
-    }
-    effects.consume(code3);
-    return domainInside;
-  }
-  function domainAfter(code3) {
-    if (underscoreInLastLastSegment || underscoreInLastSegment || !seen) {
-      return nok(code3);
-    }
-    return ok3(code3);
-  }
-}
-function tokenizePath(effects, ok3) {
-  let sizeOpen = 0;
-  let sizeClose = 0;
-  return pathInside;
-  function pathInside(code3) {
-    if (code3 === 40) {
-      sizeOpen++;
-      effects.consume(code3);
-      return pathInside;
-    }
-    if (code3 === 41 && sizeClose < sizeOpen) {
-      return pathAtPunctuation(code3);
-    }
-    if (code3 === 33 || code3 === 34 || code3 === 38 || code3 === 39 || code3 === 41 || code3 === 42 || code3 === 44 || code3 === 46 || code3 === 58 || code3 === 59 || code3 === 60 || code3 === 63 || code3 === 93 || code3 === 95 || code3 === 126) {
-      return effects.check(trail, ok3, pathAtPunctuation)(code3);
-    }
-    if (code3 === null || markdownLineEndingOrSpace(code3) || unicodeWhitespace(code3)) {
-      return ok3(code3);
-    }
-    effects.consume(code3);
-    return pathInside;
-  }
-  function pathAtPunctuation(code3) {
-    if (code3 === 41) {
-      sizeClose++;
-    }
-    effects.consume(code3);
-    return pathInside;
-  }
-}
-function tokenizeTrail(effects, ok3, nok) {
-  return trail2;
-  function trail2(code3) {
-    if (code3 === 33 || code3 === 34 || code3 === 39 || code3 === 41 || code3 === 42 || code3 === 44 || code3 === 46 || code3 === 58 || code3 === 59 || code3 === 63 || code3 === 95 || code3 === 126) {
-      effects.consume(code3);
-      return trail2;
-    }
-    if (code3 === 38) {
-      effects.consume(code3);
-      return trailCharacterReferenceStart;
-    }
-    if (code3 === 93) {
-      effects.consume(code3);
-      return trailBracketAfter;
-    }
-    if (
-      // `<` is an end.
-      code3 === 60 || // So is whitespace.
-      code3 === null || markdownLineEndingOrSpace(code3) || unicodeWhitespace(code3)
-    ) {
-      return ok3(code3);
-    }
-    return nok(code3);
-  }
-  function trailBracketAfter(code3) {
-    if (code3 === null || code3 === 40 || code3 === 91 || markdownLineEndingOrSpace(code3) || unicodeWhitespace(code3)) {
-      return ok3(code3);
-    }
-    return trail2(code3);
-  }
-  function trailCharacterReferenceStart(code3) {
-    return asciiAlpha(code3) ? trailCharacterReferenceInside(code3) : nok(code3);
-  }
-  function trailCharacterReferenceInside(code3) {
-    if (code3 === 59) {
-      effects.consume(code3);
-      return trail2;
-    }
-    if (asciiAlpha(code3)) {
-      effects.consume(code3);
-      return trailCharacterReferenceInside;
-    }
-    return nok(code3);
-  }
-}
-function tokenizeEmailDomainDotTrail(effects, ok3, nok) {
-  return start;
-  function start(code3) {
-    effects.consume(code3);
-    return after;
-  }
-  function after(code3) {
-    return asciiAlphanumeric(code3) ? nok(code3) : ok3(code3);
-  }
-}
-function previousWww(code3) {
-  return code3 === null || code3 === 40 || code3 === 42 || code3 === 95 || code3 === 91 || code3 === 93 || code3 === 126 || markdownLineEndingOrSpace(code3);
-}
-function previousProtocol(code3) {
-  return !asciiAlpha(code3);
-}
-function previousEmail(code3) {
-  return !(code3 === 47 || gfmAtext(code3));
-}
-function gfmAtext(code3) {
-  return code3 === 43 || code3 === 45 || code3 === 46 || code3 === 95 || asciiAlphanumeric(code3);
-}
-function previousUnbalanced(events) {
-  let index = events.length;
-  let result = false;
-  while (index--) {
-    const token = events[index][1];
-    if ((token.type === "labelLink" || token.type === "labelImage") && !token._balanced) {
-      result = true;
+function parseInfoAttributes(meta = "") {
+  const attributes = {};
+  const diagnostics = [];
+  const token = /([A-Za-z][\w-]*)\s*=\s*("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|(?!["'])[^\s]+)/gy;
+  let cursor = 0;
+  while (cursor < meta.length) {
+    while (/\s/.test(meta[cursor] ?? "")) cursor++;
+    if (cursor >= meta.length) break;
+    token.lastIndex = cursor;
+    const match = token.exec(meta);
+    if (!match?.[1] || match[2] === void 0) {
+      diagnostics.push({
+        severity: "error",
+        code: "GRAPH_INVALID_ATTRIBUTE",
+        message: `Malformed graph attribute near: ${meta.slice(cursor)}`
+      });
       break;
     }
-    if (token._gfmAutolinkLiteralWalkedInto) {
-      result = false;
-      break;
+    attributes[match[1]] = scalar(decodeQuoted(match[2]));
+    cursor = token.lastIndex;
+  }
+  return { attributes, diagnostics };
+}
+function annotations(source) {
+  return source.split(/\r?\n/).flatMap((line) => {
+    const match = /^\s*@([\w-]+)(?:\s+(\S+))?(.*)$/.exec(line);
+    if (!match?.[1]) return [];
+    const args = parseInfoAttributes(match[3] ?? "").attributes;
+    return [{ name: match[1], ...match[2] ? { target: decodeQuoted(match[2]) } : {}, args }];
+  });
+}
+function profileDiagnostics(type, source) {
+  const result = [];
+  const lines = source.split(/\r?\n/);
+  if (["table", "invoice", "compare", "frame", "matrix", "sheet"].includes(type)) {
+    const table = lines.filter((line) => line.includes("|")).map(
+      (line) => line.replace(/^\s*\||\|\s*$/g, "").split(/(?<!\\)\|/).map((cell) => cell.trim())
+    );
+    if (table.length) {
+      const expected = table[0].length;
+      const alignment = table[1];
+      if (!alignment || !alignment.every((cell) => /^:?-{3,}:?$/.test(cell)))
+        result.push({
+          severity: "error",
+          code: "GRAPH_TABLE_ALIGNMENT",
+          message: "Table requires a valid GFM alignment row."
+        });
+      for (const [index, row] of table.entries())
+        if (row.length !== expected)
+          result.push({
+            severity: "error",
+            code: "GRAPH_TABLE_COLUMN_COUNT",
+            message: `Table row has ${row.length} columns; expected ${expected}.`,
+            line: index + 1
+          });
+      if (type === "table") {
+        const alignIndex = lines.findIndex((line) => /^\s*align\s*:/i.test(line));
+        if (alignIndex >= 0) {
+          const inline = lines[alignIndex].replace(/^\s*align\s*:\s*/i, "").trim();
+          const configured = inline ? inline.replace(/^\[|\]$/g, "").split(",").map((value) => decodeQuoted(value.trim())) : lines.slice(alignIndex + 1).flatMap((line) => {
+            const match = /^\s*-\s*(\S+)\s*$/.exec(line);
+            return match?.[1] ? [decodeQuoted(match[1])] : [];
+          });
+          if (configured.length !== expected || configured.some((value) => !/^(left|center|right)$/i.test(value)))
+            result.push({
+              severity: "error",
+              code: "GRAPH_TABLE_ALIGN_CONFIG",
+              message: `Table align must contain ${expected} left, center, or right values.`
+            });
+        }
+      }
     }
   }
-  if (events.length > 0 && !result) {
-    events[events.length - 1][1]._gfmAutolinkLiteralWalkedInto = true;
+  if (type === "cells") {
+    const rows = lines.filter((line) => /^\s*[01](?:\s*[01])+\s*$/.test(line));
+    const widths = rows.map((line) => line.replace(/\s/g, "").length);
+    if (new Set(widths).size > 1)
+      result.push({
+        severity: "error",
+        code: "GRAPH_MATRIX_RAGGED_ROW",
+        message: "Matrix rows must have equal width."
+      });
+  }
+  if (type === "meter") {
+    const keyed = Object.fromEntries(
+      lines.flatMap((line) => {
+        const match = /^\s*(min|max|value)\s*:\s*(-?[\d.]+)/.exec(line);
+        return match?.[1] && match[2] ? [[match[1], Number(match[2])]] : [];
+      })
+    );
+    const min = keyed.min ?? 0, max = keyed.max ?? 1;
+    if (keyed.value !== void 0 && (keyed.value < min || keyed.value > max))
+      result.push({
+        severity: "error",
+        code: "GRAPH_METER_RANGE",
+        message: `Meter value must be between ${min} and ${max}.`
+      });
+  }
+  if (type === "waffle") {
+    const values = lines.flatMap((line) => {
+      const match = /=\s*(-?[\d.]+)/.exec(line);
+      return match ? [Number(match[1])] : [];
+    });
+    if (values.some((value) => value < 0))
+      result.push({
+        severity: "error",
+        code: "GRAPH_INVALID_NUMBER",
+        message: "Waffle values cannot be negative."
+      });
+    const total = values.reduce((sum, value) => sum + value, 0);
+    if (values.length && total !== 100)
+      result.push({
+        severity: "warning",
+        code: "GRAPH_WAFFLE_TOTAL",
+        message: `Waffle values total ${total}; expected 100.`
+      });
+  }
+  if (type === "gantt") {
+    for (const [index, line] of lines.entries()) {
+      const match = /:\s*(\d{4}-\d{2}-\d{2})\s*\.\.\s*(\d{4}-\d{2}-\d{2})/.exec(line);
+      if (match?.[1] && match[2] && Date.parse(match[2]) < Date.parse(match[1]))
+        result.push({
+          severity: "error",
+          code: "GRAPH_INTERVAL_REVERSED",
+          message: "Interval end precedes its start.",
+          line: index + 1
+        });
+    }
+  }
+  if (type === "plot") {
+    let section;
+    let sectionPoints = 0;
+    const finishSection = () => {
+      if (section && sectionPoints === 0)
+        result.push({
+          severity: "error",
+          code: "GRAPH_PLOT_EMPTY_SERIES",
+          message: `Plot series ${section} has no points.`
+        });
+    };
+    for (const [index, line] of lines.entries()) {
+      const heading = /^\s*\[([^\]]+)\]\s*$/.exec(line);
+      if (heading?.[1]) {
+        finishSection();
+        section = heading[1];
+        sectionPoints = 0;
+        continue;
+      }
+      if (!line.includes(",")) continue;
+      const coordinate = /^\s*([+-]?[\d.]+)\s*,\s*([+-]?[\d.]+)\s*$/.exec(line);
+      if (!coordinate || !Number.isFinite(Number(coordinate[1])) || !Number.isFinite(Number(coordinate[2])))
+        result.push({
+          severity: "error",
+          code: "GRAPH_INVALID_NUMBER",
+          message: "Plot coordinates must be finite numbers.",
+          line: index + 1
+        });
+      else sectionPoints++;
+    }
+    finishSection();
+  }
+  if (type === "uptime") {
+    let previousEnd = -1;
+    for (const [index, line] of lines.entries()) {
+      const match = /^(\d{2}):(\d{2})\.\.(\d{2}):(\d{2})\s*=/.exec(line.trim());
+      if (!match) continue;
+      const start = Number(match[1]) * 60 + Number(match[2]);
+      const end = Number(match[3]) * 60 + Number(match[4]);
+      if (end < start)
+        result.push({
+          severity: "error",
+          code: "GRAPH_INTERVAL_REVERSED",
+          message: "Uptime interval end precedes its start.",
+          line: index + 1
+        });
+      if (start < previousEnd)
+        result.push({
+          severity: "error",
+          code: "GRAPH_UPTIME_OVERLAP",
+          message: "Uptime intervals overlap.",
+          line: index + 1
+        });
+      previousEnd = Math.max(previousEnd, end);
+    }
+  }
+  if (type === "countdown") {
+    const target = lines.map((line) => /^\s*target\s*:\s*(.+)$/.exec(line)?.[1]).find(Boolean);
+    if (target && (!/^\d{4}-\d{2}-\d{2}T.*(?:Z|[+-]\d{2}:?\d{2})$/.test(target) || !Number.isFinite(Date.parse(target))))
+      result.push({
+        severity: "error",
+        code: "GRAPH_COUNTDOWN_TARGET",
+        message: "Countdown target must be an absolute datetime."
+      });
   }
   return result;
 }
-
-// node_modules/micromark-util-resolve-all/index.js
-function resolveAll(constructs2, events, context) {
-  const called = [];
-  let index = -1;
-  while (++index < constructs2.length) {
-    const resolve = constructs2[index].resolveAll;
-    if (resolve && !called.includes(resolve)) {
-      events = resolve(events, context);
-      called.push(resolve);
-    }
-  }
-  return events;
-}
-
-// node_modules/micromark-factory-space/index.js
-function factorySpace(effects, ok3, type, max) {
-  const limit = max ? max - 1 : Number.POSITIVE_INFINITY;
-  let size = 0;
-  return start;
-  function start(code3) {
-    if (markdownSpace(code3)) {
-      effects.enter(type);
-      return prefix(code3);
-    }
-    return ok3(code3);
-  }
-  function prefix(code3) {
-    if (markdownSpace(code3) && size++ < limit) {
-      effects.consume(code3);
-      return prefix;
-    }
-    effects.exit(type);
-    return ok3(code3);
-  }
-}
-
-// node_modules/micromark-core-commonmark/lib/blank-line.js
-var blankLine = {
-  partial: true,
-  tokenize: tokenizeBlankLine
-};
-function tokenizeBlankLine(effects, ok3, nok) {
-  return start;
-  function start(code3) {
-    return markdownSpace(code3) ? factorySpace(effects, after, "linePrefix")(code3) : after(code3);
-  }
-  function after(code3) {
-    return code3 === null || markdownLineEnding(code3) ? ok3(code3) : nok(code3);
-  }
-}
-
-// node_modules/micromark-extension-gfm-footnote/lib/syntax.js
-var indent = {
-  tokenize: tokenizeIndent,
-  partial: true
-};
-function gfmFootnote() {
-  return {
-    document: {
-      [91]: {
-        name: "gfmFootnoteDefinition",
-        tokenize: tokenizeDefinitionStart,
-        continuation: {
-          tokenize: tokenizeDefinitionContinuation
-        },
-        exit: gfmFootnoteDefinitionEnd
-      }
-    },
-    text: {
-      [91]: {
-        name: "gfmFootnoteCall",
-        tokenize: tokenizeGfmFootnoteCall
-      },
-      [93]: {
-        name: "gfmPotentialFootnoteCall",
-        add: "after",
-        tokenize: tokenizePotentialGfmFootnoteCall,
-        resolveTo: resolveToPotentialGfmFootnoteCall
-      }
-    }
-  };
-}
-function tokenizePotentialGfmFootnoteCall(effects, ok3, nok) {
-  const self = this;
-  let index = self.events.length;
-  const defined = self.parser.gfmFootnotes || (self.parser.gfmFootnotes = []);
-  let labelStart;
-  while (index--) {
-    const token = self.events[index][1];
-    if (token.type === "labelImage") {
-      labelStart = token;
-      break;
-    }
-    if (token.type === "gfmFootnoteCall" || token.type === "labelLink" || token.type === "label" || token.type === "image" || token.type === "link") {
-      break;
-    }
-  }
-  return start;
-  function start(code3) {
-    if (!labelStart || !labelStart._balanced) {
-      return nok(code3);
-    }
-    const id = normalizeIdentifier(self.sliceSerialize({
-      start: labelStart.end,
-      end: self.now()
-    }));
-    if (id.codePointAt(0) !== 94 || !defined.includes(id.slice(1))) {
-      return nok(code3);
-    }
-    effects.enter("gfmFootnoteCallLabelMarker");
-    effects.consume(code3);
-    effects.exit("gfmFootnoteCallLabelMarker");
-    return ok3(code3);
-  }
-}
-function resolveToPotentialGfmFootnoteCall(events, context) {
-  let index = events.length;
-  while (index--) {
-    if (events[index][1].type === "labelImage" && events[index][0] === "enter") {
-      events[index][1];
-      break;
-    }
-  }
-  events[index + 1][1].type = "data";
-  events[index + 3][1].type = "gfmFootnoteCallLabelMarker";
-  const call = {
-    type: "gfmFootnoteCall",
-    start: Object.assign({}, events[index + 3][1].start),
-    end: Object.assign({}, events[events.length - 1][1].end)
-  };
-  const marker = {
-    type: "gfmFootnoteCallMarker",
-    start: Object.assign({}, events[index + 3][1].end),
-    end: Object.assign({}, events[index + 3][1].end)
-  };
-  marker.end.column++;
-  marker.end.offset++;
-  marker.end._bufferIndex++;
-  const string = {
-    type: "gfmFootnoteCallString",
-    start: Object.assign({}, marker.end),
-    end: Object.assign({}, events[events.length - 1][1].start)
-  };
-  const chunk = {
-    type: "chunkString",
-    contentType: "string",
-    start: Object.assign({}, string.start),
-    end: Object.assign({}, string.end)
-  };
-  const replacement = [
-    // Take the `labelImageMarker` (now `data`, the `!`)
-    events[index + 1],
-    events[index + 2],
-    ["enter", call, context],
-    // The `[`
-    events[index + 3],
-    events[index + 4],
-    // The `^`.
-    ["enter", marker, context],
-    ["exit", marker, context],
-    // Everything in between.
-    ["enter", string, context],
-    ["enter", chunk, context],
-    ["exit", chunk, context],
-    ["exit", string, context],
-    // The ending (`]`, properly parsed and labelled).
-    events[events.length - 2],
-    events[events.length - 1],
-    ["exit", call, context]
-  ];
-  events.splice(index, events.length - index + 1, ...replacement);
-  return events;
-}
-function tokenizeGfmFootnoteCall(effects, ok3, nok) {
-  const self = this;
-  const defined = self.parser.gfmFootnotes || (self.parser.gfmFootnotes = []);
-  let size = 0;
-  let data;
-  return start;
-  function start(code3) {
-    effects.enter("gfmFootnoteCall");
-    effects.enter("gfmFootnoteCallLabelMarker");
-    effects.consume(code3);
-    effects.exit("gfmFootnoteCallLabelMarker");
-    return callStart;
-  }
-  function callStart(code3) {
-    if (code3 !== 94) return nok(code3);
-    effects.enter("gfmFootnoteCallMarker");
-    effects.consume(code3);
-    effects.exit("gfmFootnoteCallMarker");
-    effects.enter("gfmFootnoteCallString");
-    effects.enter("chunkString").contentType = "string";
-    return callData;
-  }
-  function callData(code3) {
-    if (
-      // Too long.
-      size > 999 || // Closing brace with nothing.
-      code3 === 93 && !data || // Space or tab is not supported by GFM for some reason.
-      // `\n` and `[` not being supported makes sense.
-      code3 === null || code3 === 91 || markdownLineEndingOrSpace(code3)
-    ) {
-      return nok(code3);
-    }
-    if (code3 === 93) {
-      effects.exit("chunkString");
-      const token = effects.exit("gfmFootnoteCallString");
-      if (!defined.includes(normalizeIdentifier(self.sliceSerialize(token)))) {
-        return nok(code3);
-      }
-      effects.enter("gfmFootnoteCallLabelMarker");
-      effects.consume(code3);
-      effects.exit("gfmFootnoteCallLabelMarker");
-      effects.exit("gfmFootnoteCall");
-      return ok3;
-    }
-    if (!markdownLineEndingOrSpace(code3)) {
-      data = true;
-    }
-    size++;
-    effects.consume(code3);
-    return code3 === 92 ? callEscape : callData;
-  }
-  function callEscape(code3) {
-    if (code3 === 91 || code3 === 92 || code3 === 93) {
-      effects.consume(code3);
-      size++;
-      return callData;
-    }
-    return callData(code3);
-  }
-}
-function tokenizeDefinitionStart(effects, ok3, nok) {
-  const self = this;
-  const defined = self.parser.gfmFootnotes || (self.parser.gfmFootnotes = []);
-  let identifier;
-  let size = 0;
-  let data;
-  return start;
-  function start(code3) {
-    effects.enter("gfmFootnoteDefinition")._container = true;
-    effects.enter("gfmFootnoteDefinitionLabel");
-    effects.enter("gfmFootnoteDefinitionLabelMarker");
-    effects.consume(code3);
-    effects.exit("gfmFootnoteDefinitionLabelMarker");
-    return labelAtMarker;
-  }
-  function labelAtMarker(code3) {
-    if (code3 === 94) {
-      effects.enter("gfmFootnoteDefinitionMarker");
-      effects.consume(code3);
-      effects.exit("gfmFootnoteDefinitionMarker");
-      effects.enter("gfmFootnoteDefinitionLabelString");
-      effects.enter("chunkString").contentType = "string";
-      return labelInside;
-    }
-    return nok(code3);
-  }
-  function labelInside(code3) {
-    if (
-      // Too long.
-      size > 999 || // Closing brace with nothing.
-      code3 === 93 && !data || // Space or tab is not supported by GFM for some reason.
-      // `\n` and `[` not being supported makes sense.
-      code3 === null || code3 === 91 || markdownLineEndingOrSpace(code3)
-    ) {
-      return nok(code3);
-    }
-    if (code3 === 93) {
-      effects.exit("chunkString");
-      const token = effects.exit("gfmFootnoteDefinitionLabelString");
-      identifier = normalizeIdentifier(self.sliceSerialize(token));
-      effects.enter("gfmFootnoteDefinitionLabelMarker");
-      effects.consume(code3);
-      effects.exit("gfmFootnoteDefinitionLabelMarker");
-      effects.exit("gfmFootnoteDefinitionLabel");
-      return labelAfter;
-    }
-    if (!markdownLineEndingOrSpace(code3)) {
-      data = true;
-    }
-    size++;
-    effects.consume(code3);
-    return code3 === 92 ? labelEscape : labelInside;
-  }
-  function labelEscape(code3) {
-    if (code3 === 91 || code3 === 92 || code3 === 93) {
-      effects.consume(code3);
-      size++;
-      return labelInside;
-    }
-    return labelInside(code3);
-  }
-  function labelAfter(code3) {
-    if (code3 === 58) {
-      effects.enter("definitionMarker");
-      effects.consume(code3);
-      effects.exit("definitionMarker");
-      if (!defined.includes(identifier)) {
-        defined.push(identifier);
-      }
-      return factorySpace(effects, whitespaceAfter, "gfmFootnoteDefinitionWhitespace");
-    }
-    return nok(code3);
-  }
-  function whitespaceAfter(code3) {
-    return ok3(code3);
-  }
-}
-function tokenizeDefinitionContinuation(effects, ok3, nok) {
-  return effects.check(blankLine, ok3, effects.attempt(indent, ok3, nok));
-}
-function gfmFootnoteDefinitionEnd(effects) {
-  effects.exit("gfmFootnoteDefinition");
-}
-function tokenizeIndent(effects, ok3, nok) {
-  const self = this;
-  return factorySpace(effects, afterPrefix, "gfmFootnoteDefinitionIndent", 4 + 1);
-  function afterPrefix(code3) {
-    const tail = self.events[self.events.length - 1];
-    return tail && tail[1].type === "gfmFootnoteDefinitionIndent" && tail[2].sliceSerialize(tail[1], true).length === 4 ? ok3(code3) : nok(code3);
-  }
-}
-
-// node_modules/micromark-extension-gfm-strikethrough/lib/syntax.js
-function gfmStrikethrough(options) {
-  const options_ = options || {};
-  let single = options_.singleTilde;
-  const tokenizer = {
-    name: "strikethrough",
-    tokenize: tokenizeStrikethrough,
-    resolveAll: resolveAllStrikethrough
-  };
-  if (single === null || single === void 0) {
-    single = true;
-  }
-  return {
-    text: {
-      [126]: tokenizer
-    },
-    insideSpan: {
-      null: [tokenizer]
-    },
-    attentionMarkers: {
-      null: [126]
-    }
-  };
-  function resolveAllStrikethrough(events, context) {
-    let index = -1;
-    while (++index < events.length) {
-      if (events[index][0] === "enter" && events[index][1].type === "strikethroughSequenceTemporary" && events[index][1]._close) {
-        let open = index;
-        while (open--) {
-          if (events[open][0] === "exit" && events[open][1].type === "strikethroughSequenceTemporary" && events[open][1]._open && // If the sizes are the same:
-          events[index][1].end.offset - events[index][1].start.offset === events[open][1].end.offset - events[open][1].start.offset) {
-            events[index][1].type = "strikethroughSequence";
-            events[open][1].type = "strikethroughSequence";
-            const strikethrough = {
-              type: "strikethrough",
-              start: Object.assign({}, events[open][1].start),
-              end: Object.assign({}, events[index][1].end)
-            };
-            const text3 = {
-              type: "strikethroughText",
-              start: Object.assign({}, events[open][1].end),
-              end: Object.assign({}, events[index][1].start)
-            };
-            const nextEvents = [["enter", strikethrough, context], ["enter", events[open][1], context], ["exit", events[open][1], context], ["enter", text3, context]];
-            const insideSpan = context.parser.constructs.insideSpan.null;
-            if (insideSpan) {
-              splice(nextEvents, nextEvents.length, 0, resolveAll(insideSpan, events.slice(open + 1, index), context));
-            }
-            splice(nextEvents, nextEvents.length, 0, [["exit", text3, context], ["enter", events[index][1], context], ["exit", events[index][1], context], ["exit", strikethrough, context]]);
-            splice(events, open - 1, index - open + 3, nextEvents);
-            index = open + nextEvents.length - 2;
-            break;
-          }
-        }
-      }
-    }
-    index = -1;
-    while (++index < events.length) {
-      if (events[index][1].type === "strikethroughSequenceTemporary") {
-        events[index][1].type = "data";
-      }
-    }
-    return events;
-  }
-  function tokenizeStrikethrough(effects, ok3, nok) {
-    const previous2 = this.previous;
-    const events = this.events;
-    let size = 0;
-    return start;
-    function start(code3) {
-      if (previous2 === 126 && events[events.length - 1][1].type !== "characterEscape") {
-        return nok(code3);
-      }
-      effects.enter("strikethroughSequenceTemporary");
-      return more(code3);
-    }
-    function more(code3) {
-      const before = classifyCharacter(previous2);
-      if (code3 === 126) {
-        if (size > 1) return nok(code3);
-        effects.consume(code3);
-        size++;
-        return more;
-      }
-      if (size < 2 && !single) return nok(code3);
-      const token = effects.exit("strikethroughSequenceTemporary");
-      const after = classifyCharacter(code3);
-      token._open = !after || after === 2 && Boolean(before);
-      token._close = !before || before === 2 && Boolean(after);
-      return ok3(code3);
-    }
-  }
-}
-
-// node_modules/micromark-extension-gfm-table/lib/edit-map.js
-var EditMap = class {
-  /**
-   * Create a new edit map.
-   */
-  constructor() {
-    this.map = [];
-  }
-  /**
-   * Create an edit: a remove and/or add at a certain place.
-   *
-   * @param {number} index
-   * @param {number} remove
-   * @param {Array<Event>} add
-   * @returns {undefined}
-   */
-  add(index, remove, add) {
-    addImplementation(this, index, remove, add);
-  }
-  // To do: add this when moving to `micromark`.
-  // /**
-  //  * Create an edit: but insert `add` before existing additions.
-  //  *
-  //  * @param {number} index
-  //  * @param {number} remove
-  //  * @param {Array<Event>} add
-  //  * @returns {undefined}
-  //  */
-  // addBefore(index, remove, add) {
-  //   addImplementation(this, index, remove, add, true)
-  // }
-  /**
-   * Done, change the events.
-   *
-   * @param {Array<Event>} events
-   * @returns {undefined}
-   */
-  consume(events) {
-    this.map.sort(function(a2, b) {
-      return a2[0] - b[0];
+function parseGraphFence(input) {
+  const limits = { ...defaultGraphLimits, ...input.limits };
+  const parsed = parseInfoAttributes(input.meta);
+  const diagnostics = [...parsed.diagnostics];
+  if (!supported.has(input.type))
+    diagnostics.push({
+      severity: input.strict ? "error" : "warning",
+      code: "GRAPH_UNKNOWN_PROFILE",
+      message: `Unknown graph profile: ${input.type}`
     });
-    if (this.map.length === 0) {
-      return;
-    }
-    let index = this.map.length;
-    const vecs = [];
-    while (index > 0) {
-      index -= 1;
-      vecs.push(events.slice(this.map[index][0] + this.map[index][1]), this.map[index][2]);
-      events.length = this.map[index][0];
-    }
-    vecs.push(events.slice());
-    events.length = 0;
-    let slice = vecs.pop();
-    while (slice) {
-      for (const element of slice) {
-        events.push(element);
-      }
-      slice = vecs.pop();
-    }
-    this.map.length = 0;
-  }
-};
-function addImplementation(editMap, at, remove, add) {
-  let index = 0;
-  if (remove === 0 && add.length === 0) {
-    return;
-  }
-  while (index < editMap.map.length) {
-    if (editMap.map[index][0] === at) {
-      editMap.map[index][1] += remove;
-      editMap.map[index][2].push(...add);
-      return;
-    }
-    index += 1;
-  }
-  editMap.map.push([at, remove, add]);
-}
-
-// node_modules/micromark-extension-gfm-table/lib/infer.js
-function gfmTableAlign(events, index) {
-  let inDelimiterRow = false;
-  const align = [];
-  while (index < events.length) {
-    const event = events[index];
-    if (inDelimiterRow) {
-      if (event[0] === "enter") {
-        if (event[1].type === "tableContent") {
-          align.push(events[index + 1][1].type === "tableDelimiterMarker" ? "left" : "none");
-        }
-      } else if (event[1].type === "tableContent") {
-        if (events[index - 1][1].type === "tableDelimiterMarker") {
-          const alignIndex = align.length - 1;
-          align[alignIndex] = align[alignIndex] === "left" ? "center" : "right";
-        }
-      } else if (event[1].type === "tableDelimiterRow") {
-        break;
-      }
-    } else if (event[0] === "enter" && event[1].type === "tableDelimiterRow") {
-      inDelimiterRow = true;
-    }
-    index += 1;
-  }
-  return align;
-}
-
-// node_modules/micromark-extension-gfm-table/lib/syntax.js
-function gfmTable() {
-  return {
-    flow: {
-      null: {
-        name: "table",
-        tokenize: tokenizeTable,
-        resolveAll: resolveTable
-      }
-    }
-  };
-}
-function tokenizeTable(effects, ok3, nok) {
-  const self = this;
-  let size = 0;
-  let sizeB = 0;
-  let seen;
-  return start;
-  function start(code3) {
-    let index = self.events.length - 1;
-    while (index > -1) {
-      const type = self.events[index][1].type;
-      if (type === "lineEnding" || // Note: markdown-rs uses `whitespace` instead of `linePrefix`
-      type === "linePrefix") index--;
-      else break;
-    }
-    const tail = index > -1 ? self.events[index][1].type : null;
-    const next = tail === "tableHead" || tail === "tableRow" ? bodyRowStart : headRowBefore;
-    if (next === bodyRowStart && self.parser.lazy[self.now().line]) {
-      return nok(code3);
-    }
-    return next(code3);
-  }
-  function headRowBefore(code3) {
-    effects.enter("tableHead");
-    effects.enter("tableRow");
-    return headRowStart(code3);
-  }
-  function headRowStart(code3) {
-    if (code3 === 124) {
-      return headRowBreak(code3);
-    }
-    seen = true;
-    sizeB += 1;
-    return headRowBreak(code3);
-  }
-  function headRowBreak(code3) {
-    if (code3 === null) {
-      return nok(code3);
-    }
-    if (markdownLineEnding(code3)) {
-      if (sizeB > 1) {
-        sizeB = 0;
-        self.interrupt = true;
-        effects.exit("tableRow");
-        effects.enter("lineEnding");
-        effects.consume(code3);
-        effects.exit("lineEnding");
-        return headDelimiterStart;
-      }
-      return nok(code3);
-    }
-    if (markdownSpace(code3)) {
-      return factorySpace(effects, headRowBreak, "whitespace")(code3);
-    }
-    sizeB += 1;
-    if (seen) {
-      seen = false;
-      size += 1;
-    }
-    if (code3 === 124) {
-      effects.enter("tableCellDivider");
-      effects.consume(code3);
-      effects.exit("tableCellDivider");
-      seen = true;
-      return headRowBreak;
-    }
-    effects.enter("data");
-    return headRowData(code3);
-  }
-  function headRowData(code3) {
-    if (code3 === null || code3 === 124 || markdownLineEndingOrSpace(code3)) {
-      effects.exit("data");
-      return headRowBreak(code3);
-    }
-    effects.consume(code3);
-    return code3 === 92 ? headRowEscape : headRowData;
-  }
-  function headRowEscape(code3) {
-    if (code3 === 92 || code3 === 124) {
-      effects.consume(code3);
-      return headRowData;
-    }
-    return headRowData(code3);
-  }
-  function headDelimiterStart(code3) {
-    self.interrupt = false;
-    if (self.parser.lazy[self.now().line]) {
-      return nok(code3);
-    }
-    effects.enter("tableDelimiterRow");
-    seen = false;
-    if (markdownSpace(code3)) {
-      return factorySpace(effects, headDelimiterBefore, "linePrefix", self.parser.constructs.disable.null.includes("codeIndented") ? void 0 : 4)(code3);
-    }
-    return headDelimiterBefore(code3);
-  }
-  function headDelimiterBefore(code3) {
-    if (code3 === 45 || code3 === 58) {
-      return headDelimiterValueBefore(code3);
-    }
-    if (code3 === 124) {
-      seen = true;
-      effects.enter("tableCellDivider");
-      effects.consume(code3);
-      effects.exit("tableCellDivider");
-      return headDelimiterCellBefore;
-    }
-    return headDelimiterNok(code3);
-  }
-  function headDelimiterCellBefore(code3) {
-    if (markdownSpace(code3)) {
-      return factorySpace(effects, headDelimiterValueBefore, "whitespace")(code3);
-    }
-    return headDelimiterValueBefore(code3);
-  }
-  function headDelimiterValueBefore(code3) {
-    if (code3 === 58) {
-      sizeB += 1;
-      seen = true;
-      effects.enter("tableDelimiterMarker");
-      effects.consume(code3);
-      effects.exit("tableDelimiterMarker");
-      return headDelimiterLeftAlignmentAfter;
-    }
-    if (code3 === 45) {
-      sizeB += 1;
-      return headDelimiterLeftAlignmentAfter(code3);
-    }
-    if (code3 === null || markdownLineEnding(code3)) {
-      return headDelimiterCellAfter(code3);
-    }
-    return headDelimiterNok(code3);
-  }
-  function headDelimiterLeftAlignmentAfter(code3) {
-    if (code3 === 45) {
-      effects.enter("tableDelimiterFiller");
-      return headDelimiterFiller(code3);
-    }
-    return headDelimiterNok(code3);
-  }
-  function headDelimiterFiller(code3) {
-    if (code3 === 45) {
-      effects.consume(code3);
-      return headDelimiterFiller;
-    }
-    if (code3 === 58) {
-      seen = true;
-      effects.exit("tableDelimiterFiller");
-      effects.enter("tableDelimiterMarker");
-      effects.consume(code3);
-      effects.exit("tableDelimiterMarker");
-      return headDelimiterRightAlignmentAfter;
-    }
-    effects.exit("tableDelimiterFiller");
-    return headDelimiterRightAlignmentAfter(code3);
-  }
-  function headDelimiterRightAlignmentAfter(code3) {
-    if (markdownSpace(code3)) {
-      return factorySpace(effects, headDelimiterCellAfter, "whitespace")(code3);
-    }
-    return headDelimiterCellAfter(code3);
-  }
-  function headDelimiterCellAfter(code3) {
-    if (code3 === 124) {
-      return headDelimiterBefore(code3);
-    }
-    if (code3 === null || markdownLineEnding(code3)) {
-      if (!seen || size !== sizeB) {
-        return headDelimiterNok(code3);
-      }
-      effects.exit("tableDelimiterRow");
-      effects.exit("tableHead");
-      return ok3(code3);
-    }
-    return headDelimiterNok(code3);
-  }
-  function headDelimiterNok(code3) {
-    return nok(code3);
-  }
-  function bodyRowStart(code3) {
-    effects.enter("tableRow");
-    return bodyRowBreak(code3);
-  }
-  function bodyRowBreak(code3) {
-    if (code3 === 124) {
-      effects.enter("tableCellDivider");
-      effects.consume(code3);
-      effects.exit("tableCellDivider");
-      return bodyRowBreak;
-    }
-    if (code3 === null || markdownLineEnding(code3)) {
-      effects.exit("tableRow");
-      return ok3(code3);
-    }
-    if (markdownSpace(code3)) {
-      return factorySpace(effects, bodyRowBreak, "whitespace")(code3);
-    }
-    effects.enter("data");
-    return bodyRowData(code3);
-  }
-  function bodyRowData(code3) {
-    if (code3 === null || code3 === 124 || markdownLineEndingOrSpace(code3)) {
-      effects.exit("data");
-      return bodyRowBreak(code3);
-    }
-    effects.consume(code3);
-    return code3 === 92 ? bodyRowEscape : bodyRowData;
-  }
-  function bodyRowEscape(code3) {
-    if (code3 === 92 || code3 === 124) {
-      effects.consume(code3);
-      return bodyRowData;
-    }
-    return bodyRowData(code3);
-  }
-}
-function resolveTable(events, context) {
-  let index = -1;
-  let inFirstCellAwaitingPipe = true;
-  let rowKind = 0;
-  let lastCell = [0, 0, 0, 0];
-  let cell = [0, 0, 0, 0];
-  let afterHeadAwaitingFirstBodyRow = false;
-  let lastTableEnd = 0;
-  let currentTable;
-  let currentBody;
-  let currentCell;
-  const map3 = new EditMap();
-  while (++index < events.length) {
-    const event = events[index];
-    const token = event[1];
-    if (event[0] === "enter") {
-      if (token.type === "tableHead") {
-        afterHeadAwaitingFirstBodyRow = false;
-        if (lastTableEnd !== 0) {
-          flushTableEnd(map3, context, lastTableEnd, currentTable, currentBody);
-          currentBody = void 0;
-          lastTableEnd = 0;
-        }
-        currentTable = {
-          type: "table",
-          start: Object.assign({}, token.start),
-          // Note: correct end is set later.
-          end: Object.assign({}, token.end)
-        };
-        map3.add(index, 0, [["enter", currentTable, context]]);
-      } else if (token.type === "tableRow" || token.type === "tableDelimiterRow") {
-        inFirstCellAwaitingPipe = true;
-        currentCell = void 0;
-        lastCell = [0, 0, 0, 0];
-        cell = [0, index + 1, 0, 0];
-        if (afterHeadAwaitingFirstBodyRow) {
-          afterHeadAwaitingFirstBodyRow = false;
-          currentBody = {
-            type: "tableBody",
-            start: Object.assign({}, token.start),
-            // Note: correct end is set later.
-            end: Object.assign({}, token.end)
-          };
-          map3.add(index, 0, [["enter", currentBody, context]]);
-        }
-        rowKind = token.type === "tableDelimiterRow" ? 2 : currentBody ? 3 : 1;
-      } else if (rowKind && (token.type === "data" || token.type === "tableDelimiterMarker" || token.type === "tableDelimiterFiller")) {
-        inFirstCellAwaitingPipe = false;
-        if (cell[2] === 0) {
-          if (lastCell[1] !== 0) {
-            cell[0] = cell[1];
-            currentCell = flushCell(map3, context, lastCell, rowKind, void 0, currentCell);
-            lastCell = [0, 0, 0, 0];
-          }
-          cell[2] = index;
-        }
-      } else if (token.type === "tableCellDivider") {
-        if (inFirstCellAwaitingPipe) {
-          inFirstCellAwaitingPipe = false;
-        } else {
-          if (lastCell[1] !== 0) {
-            cell[0] = cell[1];
-            currentCell = flushCell(map3, context, lastCell, rowKind, void 0, currentCell);
-          }
-          lastCell = cell;
-          cell = [lastCell[1], index, 0, 0];
-        }
-      }
-    } else if (token.type === "tableHead") {
-      afterHeadAwaitingFirstBodyRow = true;
-      lastTableEnd = index;
-    } else if (token.type === "tableRow" || token.type === "tableDelimiterRow") {
-      lastTableEnd = index;
-      if (lastCell[1] !== 0) {
-        cell[0] = cell[1];
-        currentCell = flushCell(map3, context, lastCell, rowKind, index, currentCell);
-      } else if (cell[1] !== 0) {
-        currentCell = flushCell(map3, context, cell, rowKind, index, currentCell);
-      }
-      rowKind = 0;
-    } else if (rowKind && (token.type === "data" || token.type === "tableDelimiterMarker" || token.type === "tableDelimiterFiller")) {
-      cell[3] = index;
-    }
-  }
-  if (lastTableEnd !== 0) {
-    flushTableEnd(map3, context, lastTableEnd, currentTable, currentBody);
-  }
-  map3.consume(context.events);
-  index = -1;
-  while (++index < context.events.length) {
-    const event = context.events[index];
-    if (event[0] === "enter" && event[1].type === "table") {
-      event[1]._align = gfmTableAlign(context.events, index);
-    }
-  }
-  return events;
-}
-function flushCell(map3, context, range, rowKind, rowEnd, previousCell) {
-  const groupName = rowKind === 1 ? "tableHeader" : rowKind === 2 ? "tableDelimiter" : "tableData";
-  const valueName = "tableContent";
-  if (range[0] !== 0) {
-    previousCell.end = Object.assign({}, getPoint(context.events, range[0]));
-    map3.add(range[0], 0, [["exit", previousCell, context]]);
-  }
-  const now = getPoint(context.events, range[1]);
-  previousCell = {
-    type: groupName,
-    start: Object.assign({}, now),
-    // Note: correct end is set later.
-    end: Object.assign({}, now)
-  };
-  map3.add(range[1], 0, [["enter", previousCell, context]]);
-  if (range[2] !== 0) {
-    const relatedStart = getPoint(context.events, range[2]);
-    const relatedEnd = getPoint(context.events, range[3]);
-    const valueToken = {
-      type: valueName,
-      start: Object.assign({}, relatedStart),
-      end: Object.assign({}, relatedEnd)
-    };
-    map3.add(range[2], 0, [["enter", valueToken, context]]);
-    if (rowKind !== 2) {
-      const start = context.events[range[2]];
-      const end = context.events[range[3]];
-      start[1].end = Object.assign({}, end[1].end);
-      start[1].type = "chunkText";
-      start[1].contentType = "text";
-      if (range[3] > range[2] + 1) {
-        const a2 = range[2] + 1;
-        const b = range[3] - range[2] - 1;
-        map3.add(a2, b, []);
-      }
-    }
-    map3.add(range[3] + 1, 0, [["exit", valueToken, context]]);
-  }
-  if (rowEnd !== void 0) {
-    previousCell.end = Object.assign({}, getPoint(context.events, rowEnd));
-    map3.add(rowEnd, 0, [["exit", previousCell, context]]);
-    previousCell = void 0;
-  }
-  return previousCell;
-}
-function flushTableEnd(map3, context, index, table, tableBody) {
-  const exits = [];
-  const related = getPoint(context.events, index);
-  if (tableBody) {
-    tableBody.end = Object.assign({}, related);
-    exits.push(["exit", tableBody, context]);
-  }
-  table.end = Object.assign({}, related);
-  exits.push(["exit", table, context]);
-  map3.add(index + 1, 0, exits);
-}
-function getPoint(events, index) {
-  const event = events[index];
-  const side = event[0] === "enter" ? "start" : "end";
-  return event[1][side];
-}
-
-// node_modules/micromark-extension-gfm-task-list-item/lib/syntax.js
-var tasklistCheck = {
-  name: "tasklistCheck",
-  tokenize: tokenizeTasklistCheck
-};
-function gfmTaskListItem() {
-  return {
-    text: {
-      [91]: tasklistCheck
-    }
-  };
-}
-function tokenizeTasklistCheck(effects, ok3, nok) {
-  const self = this;
-  return open;
-  function open(code3) {
-    if (
-      // Exit if there’s stuff before.
-      self.previous !== null || // Exit if not in the first content that is the first child of a list
-      // item.
-      !self._gfmTasklistFirstContentOfListItem
-    ) {
-      return nok(code3);
-    }
-    effects.enter("taskListCheck");
-    effects.enter("taskListCheckMarker");
-    effects.consume(code3);
-    effects.exit("taskListCheckMarker");
-    return inside;
-  }
-  function inside(code3) {
-    if (markdownLineEndingOrSpace(code3)) {
-      effects.enter("taskListCheckValueUnchecked");
-      effects.consume(code3);
-      effects.exit("taskListCheckValueUnchecked");
-      return close;
-    }
-    if (code3 === 88 || code3 === 120) {
-      effects.enter("taskListCheckValueChecked");
-      effects.consume(code3);
-      effects.exit("taskListCheckValueChecked");
-      return close;
-    }
-    return nok(code3);
-  }
-  function close(code3) {
-    if (code3 === 93) {
-      effects.enter("taskListCheckMarker");
-      effects.consume(code3);
-      effects.exit("taskListCheckMarker");
-      effects.exit("taskListCheck");
-      return after;
-    }
-    return nok(code3);
-  }
-  function after(code3) {
-    if (markdownLineEnding(code3)) {
-      return ok3(code3);
-    }
-    if (markdownSpace(code3)) {
-      return effects.check({
-        tokenize: spaceThenNonSpace
-      }, ok3, nok)(code3);
-    }
-    return nok(code3);
-  }
-}
-function spaceThenNonSpace(effects, ok3, nok) {
-  return factorySpace(effects, after, "whitespace");
-  function after(code3) {
-    return code3 === null ? nok(code3) : ok3(code3);
-  }
-}
-
-// node_modules/micromark-extension-gfm/index.js
-function gfm(options) {
-  return combineExtensions([
-    gfmAutolinkLiteral(),
-    gfmFootnote(),
-    gfmStrikethrough(options),
-    gfmTable(),
-    gfmTaskListItem()
-  ]);
-}
-
-// node_modules/remark-gfm/lib/index.js
-var emptyOptions2 = {};
-function remarkGfm(options) {
-  const self = (
-    /** @type {Processor<Root>} */
-    this
+  for (const attribute of Object.keys(parsed.attributes))
+    if (!STANDARD_ATTRIBUTES.has(attribute) && !attribute.startsWith("x-"))
+      diagnostics.push({
+        severity: input.strict ? "error" : "warning",
+        code: "GRAPH_UNKNOWN_ATTRIBUTE",
+        message: `Unknown graph attribute: ${attribute}`
+      });
+  const bytes = new TextEncoder().encode(input.value).byteLength;
+  if (bytes > limits.maxBlockBytes)
+    diagnostics.push({
+      severity: "error",
+      code: "GRAPH_LIMIT_BLOCK_BYTES",
+      message: `Graph block exceeds ${limits.maxBlockBytes} bytes.`
+    });
+  const rows = input.value.split(/\r?\n/);
+  if (rows.length > limits.maxRows)
+    diagnostics.push({
+      severity: "error",
+      code: "GRAPH_LIMIT_ROWS",
+      message: `Graph block exceeds ${limits.maxRows} rows.`
+    });
+  if (Math.max(0, ...rows.map((row) => row.length)) > limits.maxColumns)
+    diagnostics.push({
+      severity: "error",
+      code: "GRAPH_LIMIT_COLUMNS",
+      message: `Graph row exceeds ${limits.maxColumns} columns.`
+    });
+  const pointCount = rows.filter((row) => /^\s*[+-]?[\d.]+\s*,\s*[+-]?[\d.]+\s*$/.test(row)).length;
+  const edgeCount = rows.reduce((count, row) => count + (row.match(/->/g)?.length ?? 0), 0);
+  const treeRows = rows.filter((row) => /^\s*[-*+]\s+/.test(row));
+  const nodeCount = new Set(rows.flatMap((row) => row.includes("->") ? row.split(/\s*->\s*/) : [])).size + treeRows.length;
+  const depth = Math.max(
+    0,
+    ...treeRows.map((row) => Math.floor((/^\s*/.exec(row)?.[0].length ?? 0) / 2) + 1)
   );
-  const settings = options || emptyOptions2;
-  const data = self.data();
-  const micromarkExtensions = data.micromarkExtensions || (data.micromarkExtensions = []);
-  const fromMarkdownExtensions = data.fromMarkdownExtensions || (data.fromMarkdownExtensions = []);
-  const toMarkdownExtensions = data.toMarkdownExtensions || (data.toMarkdownExtensions = []);
-  micromarkExtensions.push(gfm(settings));
-  fromMarkdownExtensions.push(gfmFromMarkdown());
-  toMarkdownExtensions.push(gfmToMarkdown(settings));
-}
-
-// node_modules/github-slugger/regex.js
-var regex = /[\0-\x1F!-,\.\/:-@\[-\^`\{-\xA9\xAB-\xB4\xB6-\xB9\xBB-\xBF\xD7\xF7\u02C2-\u02C5\u02D2-\u02DF\u02E5-\u02EB\u02ED\u02EF-\u02FF\u0375\u0378\u0379\u037E\u0380-\u0385\u0387\u038B\u038D\u03A2\u03F6\u0482\u0530\u0557\u0558\u055A-\u055F\u0589-\u0590\u05BE\u05C0\u05C3\u05C6\u05C8-\u05CF\u05EB-\u05EE\u05F3-\u060F\u061B-\u061F\u066A-\u066D\u06D4\u06DD\u06DE\u06E9\u06FD\u06FE\u0700-\u070F\u074B\u074C\u07B2-\u07BF\u07F6-\u07F9\u07FB\u07FC\u07FE\u07FF\u082E-\u083F\u085C-\u085F\u086B-\u089F\u08B5\u08C8-\u08D2\u08E2\u0964\u0965\u0970\u0984\u098D\u098E\u0991\u0992\u09A9\u09B1\u09B3-\u09B5\u09BA\u09BB\u09C5\u09C6\u09C9\u09CA\u09CF-\u09D6\u09D8-\u09DB\u09DE\u09E4\u09E5\u09F2-\u09FB\u09FD\u09FF\u0A00\u0A04\u0A0B-\u0A0E\u0A11\u0A12\u0A29\u0A31\u0A34\u0A37\u0A3A\u0A3B\u0A3D\u0A43-\u0A46\u0A49\u0A4A\u0A4E-\u0A50\u0A52-\u0A58\u0A5D\u0A5F-\u0A65\u0A76-\u0A80\u0A84\u0A8E\u0A92\u0AA9\u0AB1\u0AB4\u0ABA\u0ABB\u0AC6\u0ACA\u0ACE\u0ACF\u0AD1-\u0ADF\u0AE4\u0AE5\u0AF0-\u0AF8\u0B00\u0B04\u0B0D\u0B0E\u0B11\u0B12\u0B29\u0B31\u0B34\u0B3A\u0B3B\u0B45\u0B46\u0B49\u0B4A\u0B4E-\u0B54\u0B58-\u0B5B\u0B5E\u0B64\u0B65\u0B70\u0B72-\u0B81\u0B84\u0B8B-\u0B8D\u0B91\u0B96-\u0B98\u0B9B\u0B9D\u0BA0-\u0BA2\u0BA5-\u0BA7\u0BAB-\u0BAD\u0BBA-\u0BBD\u0BC3-\u0BC5\u0BC9\u0BCE\u0BCF\u0BD1-\u0BD6\u0BD8-\u0BE5\u0BF0-\u0BFF\u0C0D\u0C11\u0C29\u0C3A-\u0C3C\u0C45\u0C49\u0C4E-\u0C54\u0C57\u0C5B-\u0C5F\u0C64\u0C65\u0C70-\u0C7F\u0C84\u0C8D\u0C91\u0CA9\u0CB4\u0CBA\u0CBB\u0CC5\u0CC9\u0CCE-\u0CD4\u0CD7-\u0CDD\u0CDF\u0CE4\u0CE5\u0CF0\u0CF3-\u0CFF\u0D0D\u0D11\u0D45\u0D49\u0D4F-\u0D53\u0D58-\u0D5E\u0D64\u0D65\u0D70-\u0D79\u0D80\u0D84\u0D97-\u0D99\u0DB2\u0DBC\u0DBE\u0DBF\u0DC7-\u0DC9\u0DCB-\u0DCE\u0DD5\u0DD7\u0DE0-\u0DE5\u0DF0\u0DF1\u0DF4-\u0E00\u0E3B-\u0E3F\u0E4F\u0E5A-\u0E80\u0E83\u0E85\u0E8B\u0EA4\u0EA6\u0EBE\u0EBF\u0EC5\u0EC7\u0ECE\u0ECF\u0EDA\u0EDB\u0EE0-\u0EFF\u0F01-\u0F17\u0F1A-\u0F1F\u0F2A-\u0F34\u0F36\u0F38\u0F3A-\u0F3D\u0F48\u0F6D-\u0F70\u0F85\u0F98\u0FBD-\u0FC5\u0FC7-\u0FFF\u104A-\u104F\u109E\u109F\u10C6\u10C8-\u10CC\u10CE\u10CF\u10FB\u1249\u124E\u124F\u1257\u1259\u125E\u125F\u1289\u128E\u128F\u12B1\u12B6\u12B7\u12BF\u12C1\u12C6\u12C7\u12D7\u1311\u1316\u1317\u135B\u135C\u1360-\u137F\u1390-\u139F\u13F6\u13F7\u13FE-\u1400\u166D\u166E\u1680\u169B-\u169F\u16EB-\u16ED\u16F9-\u16FF\u170D\u1715-\u171F\u1735-\u173F\u1754-\u175F\u176D\u1771\u1774-\u177F\u17D4-\u17D6\u17D8-\u17DB\u17DE\u17DF\u17EA-\u180A\u180E\u180F\u181A-\u181F\u1879-\u187F\u18AB-\u18AF\u18F6-\u18FF\u191F\u192C-\u192F\u193C-\u1945\u196E\u196F\u1975-\u197F\u19AC-\u19AF\u19CA-\u19CF\u19DA-\u19FF\u1A1C-\u1A1F\u1A5F\u1A7D\u1A7E\u1A8A-\u1A8F\u1A9A-\u1AA6\u1AA8-\u1AAF\u1AC1-\u1AFF\u1B4C-\u1B4F\u1B5A-\u1B6A\u1B74-\u1B7F\u1BF4-\u1BFF\u1C38-\u1C3F\u1C4A-\u1C4C\u1C7E\u1C7F\u1C89-\u1C8F\u1CBB\u1CBC\u1CC0-\u1CCF\u1CD3\u1CFB-\u1CFF\u1DFA\u1F16\u1F17\u1F1E\u1F1F\u1F46\u1F47\u1F4E\u1F4F\u1F58\u1F5A\u1F5C\u1F5E\u1F7E\u1F7F\u1FB5\u1FBD\u1FBF-\u1FC1\u1FC5\u1FCD-\u1FCF\u1FD4\u1FD5\u1FDC-\u1FDF\u1FED-\u1FF1\u1FF5\u1FFD-\u203E\u2041-\u2053\u2055-\u2070\u2072-\u207E\u2080-\u208F\u209D-\u20CF\u20F1-\u2101\u2103-\u2106\u2108\u2109\u2114\u2116-\u2118\u211E-\u2123\u2125\u2127\u2129\u212E\u213A\u213B\u2140-\u2144\u214A-\u214D\u214F-\u215F\u2189-\u24B5\u24EA-\u2BFF\u2C2F\u2C5F\u2CE5-\u2CEA\u2CF4-\u2CFF\u2D26\u2D28-\u2D2C\u2D2E\u2D2F\u2D68-\u2D6E\u2D70-\u2D7E\u2D97-\u2D9F\u2DA7\u2DAF\u2DB7\u2DBF\u2DC7\u2DCF\u2DD7\u2DDF\u2E00-\u2E2E\u2E30-\u3004\u3008-\u3020\u3030\u3036\u3037\u303D-\u3040\u3097\u3098\u309B\u309C\u30A0\u30FB\u3100-\u3104\u3130\u318F-\u319F\u31C0-\u31EF\u3200-\u33FF\u4DC0-\u4DFF\u9FFD-\u9FFF\uA48D-\uA4CF\uA4FE\uA4FF\uA60D-\uA60F\uA62C-\uA63F\uA673\uA67E\uA6F2-\uA716\uA720\uA721\uA789\uA78A\uA7C0\uA7C1\uA7CB-\uA7F4\uA828-\uA82B\uA82D-\uA83F\uA874-\uA87F\uA8C6-\uA8CF\uA8DA-\uA8DF\uA8F8-\uA8FA\uA8FC\uA92E\uA92F\uA954-\uA95F\uA97D-\uA97F\uA9C1-\uA9CE\uA9DA-\uA9DF\uA9FF\uAA37-\uAA3F\uAA4E\uAA4F\uAA5A-\uAA5F\uAA77-\uAA79\uAAC3-\uAADA\uAADE\uAADF\uAAF0\uAAF1\uAAF7-\uAB00\uAB07\uAB08\uAB0F\uAB10\uAB17-\uAB1F\uAB27\uAB2F\uAB5B\uAB6A-\uAB6F\uABEB\uABEE\uABEF\uABFA-\uABFF\uD7A4-\uD7AF\uD7C7-\uD7CA\uD7FC-\uD7FF\uE000-\uF8FF\uFA6E\uFA6F\uFADA-\uFAFF\uFB07-\uFB12\uFB18-\uFB1C\uFB29\uFB37\uFB3D\uFB3F\uFB42\uFB45\uFBB2-\uFBD2\uFD3E-\uFD4F\uFD90\uFD91\uFDC8-\uFDEF\uFDFC-\uFDFF\uFE10-\uFE1F\uFE30-\uFE32\uFE35-\uFE4C\uFE50-\uFE6F\uFE75\uFEFD-\uFF0F\uFF1A-\uFF20\uFF3B-\uFF3E\uFF40\uFF5B-\uFF65\uFFBF-\uFFC1\uFFC8\uFFC9\uFFD0\uFFD1\uFFD8\uFFD9\uFFDD-\uFFFF]|\uD800[\uDC0C\uDC27\uDC3B\uDC3E\uDC4E\uDC4F\uDC5E-\uDC7F\uDCFB-\uDD3F\uDD75-\uDDFC\uDDFE-\uDE7F\uDE9D-\uDE9F\uDED1-\uDEDF\uDEE1-\uDEFF\uDF20-\uDF2C\uDF4B-\uDF4F\uDF7B-\uDF7F\uDF9E\uDF9F\uDFC4-\uDFC7\uDFD0\uDFD6-\uDFFF]|\uD801[\uDC9E\uDC9F\uDCAA-\uDCAF\uDCD4-\uDCD7\uDCFC-\uDCFF\uDD28-\uDD2F\uDD64-\uDDFF\uDF37-\uDF3F\uDF56-\uDF5F\uDF68-\uDFFF]|\uD802[\uDC06\uDC07\uDC09\uDC36\uDC39-\uDC3B\uDC3D\uDC3E\uDC56-\uDC5F\uDC77-\uDC7F\uDC9F-\uDCDF\uDCF3\uDCF6-\uDCFF\uDD16-\uDD1F\uDD3A-\uDD7F\uDDB8-\uDDBD\uDDC0-\uDDFF\uDE04\uDE07-\uDE0B\uDE14\uDE18\uDE36\uDE37\uDE3B-\uDE3E\uDE40-\uDE5F\uDE7D-\uDE7F\uDE9D-\uDEBF\uDEC8\uDEE7-\uDEFF\uDF36-\uDF3F\uDF56-\uDF5F\uDF73-\uDF7F\uDF92-\uDFFF]|\uD803[\uDC49-\uDC7F\uDCB3-\uDCBF\uDCF3-\uDCFF\uDD28-\uDD2F\uDD3A-\uDE7F\uDEAA\uDEAD-\uDEAF\uDEB2-\uDEFF\uDF1D-\uDF26\uDF28-\uDF2F\uDF51-\uDFAF\uDFC5-\uDFDF\uDFF7-\uDFFF]|\uD804[\uDC47-\uDC65\uDC70-\uDC7E\uDCBB-\uDCCF\uDCE9-\uDCEF\uDCFA-\uDCFF\uDD35\uDD40-\uDD43\uDD48-\uDD4F\uDD74\uDD75\uDD77-\uDD7F\uDDC5-\uDDC8\uDDCD\uDDDB\uDDDD-\uDDFF\uDE12\uDE38-\uDE3D\uDE3F-\uDE7F\uDE87\uDE89\uDE8E\uDE9E\uDEA9-\uDEAF\uDEEB-\uDEEF\uDEFA-\uDEFF\uDF04\uDF0D\uDF0E\uDF11\uDF12\uDF29\uDF31\uDF34\uDF3A\uDF45\uDF46\uDF49\uDF4A\uDF4E\uDF4F\uDF51-\uDF56\uDF58-\uDF5C\uDF64\uDF65\uDF6D-\uDF6F\uDF75-\uDFFF]|\uD805[\uDC4B-\uDC4F\uDC5A-\uDC5D\uDC62-\uDC7F\uDCC6\uDCC8-\uDCCF\uDCDA-\uDD7F\uDDB6\uDDB7\uDDC1-\uDDD7\uDDDE-\uDDFF\uDE41-\uDE43\uDE45-\uDE4F\uDE5A-\uDE7F\uDEB9-\uDEBF\uDECA-\uDEFF\uDF1B\uDF1C\uDF2C-\uDF2F\uDF3A-\uDFFF]|\uD806[\uDC3B-\uDC9F\uDCEA-\uDCFE\uDD07\uDD08\uDD0A\uDD0B\uDD14\uDD17\uDD36\uDD39\uDD3A\uDD44-\uDD4F\uDD5A-\uDD9F\uDDA8\uDDA9\uDDD8\uDDD9\uDDE2\uDDE5-\uDDFF\uDE3F-\uDE46\uDE48-\uDE4F\uDE9A-\uDE9C\uDE9E-\uDEBF\uDEF9-\uDFFF]|\uD807[\uDC09\uDC37\uDC41-\uDC4F\uDC5A-\uDC71\uDC90\uDC91\uDCA8\uDCB7-\uDCFF\uDD07\uDD0A\uDD37-\uDD39\uDD3B\uDD3E\uDD48-\uDD4F\uDD5A-\uDD5F\uDD66\uDD69\uDD8F\uDD92\uDD99-\uDD9F\uDDAA-\uDEDF\uDEF7-\uDFAF\uDFB1-\uDFFF]|\uD808[\uDF9A-\uDFFF]|\uD809[\uDC6F-\uDC7F\uDD44-\uDFFF]|[\uD80A\uD80B\uD80E-\uD810\uD812-\uD819\uD824-\uD82B\uD82D\uD82E\uD830-\uD833\uD837\uD839\uD83D\uD83F\uD87B-\uD87D\uD87F\uD885-\uDB3F\uDB41-\uDBFF][\uDC00-\uDFFF]|\uD80D[\uDC2F-\uDFFF]|\uD811[\uDE47-\uDFFF]|\uD81A[\uDE39-\uDE3F\uDE5F\uDE6A-\uDECF\uDEEE\uDEEF\uDEF5-\uDEFF\uDF37-\uDF3F\uDF44-\uDF4F\uDF5A-\uDF62\uDF78-\uDF7C\uDF90-\uDFFF]|\uD81B[\uDC00-\uDE3F\uDE80-\uDEFF\uDF4B-\uDF4E\uDF88-\uDF8E\uDFA0-\uDFDF\uDFE2\uDFE5-\uDFEF\uDFF2-\uDFFF]|\uD821[\uDFF8-\uDFFF]|\uD823[\uDCD6-\uDCFF\uDD09-\uDFFF]|\uD82C[\uDD1F-\uDD4F\uDD53-\uDD63\uDD68-\uDD6F\uDEFC-\uDFFF]|\uD82F[\uDC6B-\uDC6F\uDC7D-\uDC7F\uDC89-\uDC8F\uDC9A-\uDC9C\uDC9F-\uDFFF]|\uD834[\uDC00-\uDD64\uDD6A-\uDD6C\uDD73-\uDD7A\uDD83\uDD84\uDD8C-\uDDA9\uDDAE-\uDE41\uDE45-\uDFFF]|\uD835[\uDC55\uDC9D\uDCA0\uDCA1\uDCA3\uDCA4\uDCA7\uDCA8\uDCAD\uDCBA\uDCBC\uDCC4\uDD06\uDD0B\uDD0C\uDD15\uDD1D\uDD3A\uDD3F\uDD45\uDD47-\uDD49\uDD51\uDEA6\uDEA7\uDEC1\uDEDB\uDEFB\uDF15\uDF35\uDF4F\uDF6F\uDF89\uDFA9\uDFC3\uDFCC\uDFCD]|\uD836[\uDC00-\uDDFF\uDE37-\uDE3A\uDE6D-\uDE74\uDE76-\uDE83\uDE85-\uDE9A\uDEA0\uDEB0-\uDFFF]|\uD838[\uDC07\uDC19\uDC1A\uDC22\uDC25\uDC2B-\uDCFF\uDD2D-\uDD2F\uDD3E\uDD3F\uDD4A-\uDD4D\uDD4F-\uDEBF\uDEFA-\uDFFF]|\uD83A[\uDCC5-\uDCCF\uDCD7-\uDCFF\uDD4C-\uDD4F\uDD5A-\uDFFF]|\uD83B[\uDC00-\uDDFF\uDE04\uDE20\uDE23\uDE25\uDE26\uDE28\uDE33\uDE38\uDE3A\uDE3C-\uDE41\uDE43-\uDE46\uDE48\uDE4A\uDE4C\uDE50\uDE53\uDE55\uDE56\uDE58\uDE5A\uDE5C\uDE5E\uDE60\uDE63\uDE65\uDE66\uDE6B\uDE73\uDE78\uDE7D\uDE7F\uDE8A\uDE9C-\uDEA0\uDEA4\uDEAA\uDEBC-\uDFFF]|\uD83C[\uDC00-\uDD2F\uDD4A-\uDD4F\uDD6A-\uDD6F\uDD8A-\uDFFF]|\uD83E[\uDC00-\uDFEF\uDFFA-\uDFFF]|\uD869[\uDEDE-\uDEFF]|\uD86D[\uDF35-\uDF3F]|\uD86E[\uDC1E\uDC1F]|\uD873[\uDEA2-\uDEAF]|\uD87A[\uDFE1-\uDFFF]|\uD87E[\uDE1E-\uDFFF]|\uD884[\uDF4B-\uDFFF]|\uDB40[\uDC00-\uDCFF\uDDF0-\uDFFF]/g;
-
-// node_modules/github-slugger/index.js
-var own = Object.hasOwnProperty;
-var BananaSlug = class {
-  /**
-   * Create a new slug class.
-   */
-  constructor() {
-    this.occurrences;
-    this.reset();
-  }
-  /**
-   * Generate a unique slug.
-  *
-  * Tracks previously generated slugs: repeated calls with the same value
-  * will result in different slugs.
-  * Use the `slug` function to get same slugs.
-   *
-   * @param  {string} value
-   *   String of text to slugify
-   * @param  {boolean} [maintainCase=false]
-   *   Keep the current case, otherwise make all lowercase
-   * @return {string}
-   *   A unique slug string
-   */
-  slug(value, maintainCase) {
-    const self = this;
-    let result = slug(value, maintainCase === true);
-    const originalSlug = result;
-    while (own.call(self.occurrences, result)) {
-      self.occurrences[originalSlug]++;
-      result = originalSlug + "-" + self.occurrences[originalSlug];
-    }
-    self.occurrences[result] = 0;
-    return result;
-  }
-  /**
-   * Reset - Forget all previous slugs
-   *
-   * @return void
-   */
-  reset() {
-    this.occurrences = /* @__PURE__ */ Object.create(null);
-  }
-};
-function slug(value, maintainCase) {
-  if (typeof value !== "string") return "";
-  if (!maintainCase) value = value.toLowerCase();
-  return value.replace(regex, "").replace(/ /g, "-");
-}
-
-// node_modules/hast-util-heading-rank/lib/index.js
-function headingRank(node2) {
-  const name = node2.type === "element" ? node2.tagName.toLowerCase() : "";
-  const code3 = name.length === 2 && name.charCodeAt(0) === 104 ? name.charCodeAt(1) : 0;
-  return code3 > 48 && code3 < 55 ? code3 - 48 : void 0;
-}
-
-// node_modules/hast-util-to-string/lib/index.js
-function toString2(node2) {
-  if ("children" in node2) {
-    return all2(node2);
-  }
-  return "value" in node2 ? node2.value : "";
-}
-function one2(node2) {
-  if (node2.type === "text") {
-    return node2.value;
-  }
-  return "children" in node2 ? all2(node2) : "";
-}
-function all2(node2) {
-  let index = -1;
-  const result = [];
-  while (++index < node2.children.length) {
-    result[index] = one2(node2.children[index]);
-  }
-  return result.join("");
-}
-
-// node_modules/rehype-slug/lib/index.js
-var emptyOptions3 = {};
-var slugs = new BananaSlug();
-function rehypeSlug(options) {
-  const settings = options || emptyOptions3;
-  const prefix = settings.prefix || "";
-  return function(tree) {
-    slugs.reset();
-    visit(tree, "element", function(node2) {
-      if (headingRank(node2) && !node2.properties.id) {
-        node2.properties.id = prefix + slugs.slug(toString2(node2));
-      }
-    });
+  const counts = [
+    [pointCount, limits.maxPoints, "GRAPH_LIMIT_POINTS", "points"],
+    [nodeCount, limits.maxNodes, "GRAPH_LIMIT_NODES", "nodes"],
+    [edgeCount, limits.maxEdges, "GRAPH_LIMIT_EDGES", "edges"],
+    [depth, limits.maxDepth, "GRAPH_LIMIT_DEPTH", "tree depth"]
+  ];
+  for (const [actual, maximum, code, label] of counts)
+    if (actual > maximum)
+      diagnostics.push({ severity: "error", code, message: `Graph exceeds ${maximum} ${label}.` });
+  diagnostics.push(...profileDiagnostics(input.type, input.value));
+  return {
+    kind: "graph",
+    type: input.type,
+    attributes: parsed.attributes,
+    data: { kind: "opaque", raw: input.value },
+    annotations: annotations(input.value),
+    diagnostics,
+    raw: input.value
   };
 }
 
 // src/transformer.ts
 var defaultOptions = {
-  highlightToken: "==",
-  headingClass: "example-plugin-heading",
-  enableGfm: true,
-  addHeadingSlugs: true
+  accentColor: defaultAccents[0],
+  accentColor2: defaultAccents[1],
+  accentColor3: defaultAccents[2],
+  frame: "ascii",
+  palette: "duo",
+  strict: false,
+  limits: defaultGraphLimits
 };
-var escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-var remarkHighlightToken = (token) => {
-  const escapedToken = escapeRegExp(token);
-  const pattern = new RegExp(`${escapedToken}([^
-]+?)${escapedToken}`, "g");
-  return () => (tree, _file) => {
-    findAndReplace(tree, [
-      [
-        pattern,
-        (_match, value) => ({
-          type: "strong",
-          children: [{ type: "text", value }]
-        })
-      ]
-    ]);
-  };
-};
-var rehypeHeadingClass = (className) => {
-  return () => (tree, _file) => {
-    visit(tree, "element", (node2) => {
-      if (!/^h[1-6]$/.test(node2.tagName)) {
-        return;
-      }
-      const existing = node2.properties?.className;
-      const classes = Array.isArray(existing) ? existing.filter((value) => typeof value === "string") : typeof existing === "string" ? [existing] : [];
-      node2.properties = {
-        ...node2.properties,
-        className: [...classes, className]
-      };
-    });
-  };
-};
-var ExampleTransformer = (userOptions) => {
-  const options = { ...defaultOptions, ...userOptions };
-  return {
-    name: "ExampleTransformer",
-    textTransform(_ctx, src) {
-      return src.endsWith("\n") ? src : `${src}
-`;
-    },
-    markdownPlugins() {
-      const plugins = [remarkHighlightToken(options.highlightToken)];
-      if (options.enableGfm) {
-        plugins.unshift(remarkGfm);
-      }
-      return plugins;
-    },
-    htmlPlugins() {
-      const plugins = [rehypeHeadingClass(options.headingClass)];
-      if (options.addHeadingSlugs) {
-        plugins.unshift(rehypeSlug);
-      }
-      return plugins;
-    },
-    externalResources() {
-      return {
-        css: [
-          {
-            content: `.${options.headingClass} { letter-spacing: 0.02em; }`,
-            inline: true
-          }
-        ],
-        js: [
-          {
-            contentType: "inline",
-            loadTime: "afterDOMReady",
-            script: "document.documentElement.dataset.exampleTransformer = 'true'"
-          }
-        ],
-        additionalHead: []
-      };
-    }
-  };
-};
+var graphCss = (accents2) => `.md-graph {
+    --graph-accent-light:${accents2[0]};
+    --graph-accent-2-light:${accents2[1]};
+    --graph-accent-3-light:${accents2[2]};
+    --graph-accent-dark:var(--graph-accent-light);
+    --graph-accent-2-dark:var(--graph-accent-2-light);
+    --graph-accent-3-dark:var(--graph-accent-3-light);
+    --graph-accent:var(--graph-accent-light);
+    --graph-accent-2:var(--graph-accent-2-light);
+    --graph-accent-3:var(--graph-accent-3-light);
+    --md-graph-accent:var(--graph-accent);
+    --md-graph-secondary:var(--graph-accent-2);
+    --md-graph-tertiary:var(--graph-accent-3);
+    --md-graph-title-gradient:linear-gradient(90deg, var(--md-graph-accent), var(--md-graph-secondary), var(--md-graph-tertiary));
+    --md-graph-ink:var(--darkgray, #d7d7d7);
+    --md-graph-muted:var(--dark, #777);
+    position:relative;
+    box-sizing:border-box;
+    margin:1.5rem 0;
+    padding:1.65rem 2rem 1.1rem;
+    border:1px dashed var(--md-graph-muted);
+    color:var(--md-graph-ink);
+    background:var(--light, transparent);
+    font-family:var(--codeFont, ui-monospace, SFMono-Regular, Consolas, monospace);
+    font-size:.875rem;
+    line-height:1.7;
+    overflow:visible
+}
 
-// src/filter.ts
-var defaultOptions2 = {
-  allowDrafts: false,
-  excludeTags: ["private"],
-  excludePathPrefixes: ["_drafts/", "_private/"]
-};
-var normalizeTag = (tag) => typeof tag === "string" ? tag.trim().toLowerCase() : "";
-var includesTag = (tags, excludedTags) => {
-  if (!Array.isArray(tags)) {
-    return false;
-  }
-  const normalizedExcluded = excludedTags.map((tag) => tag.toLowerCase());
-  return tags.some((tag) => normalizedExcluded.includes(normalizeTag(tag)));
-};
-var ExampleFilter = (userOptions) => {
-  const options = { ...defaultOptions2, ...userOptions };
-  return {
-    name: "ExampleFilter",
-    shouldPublish(_ctx, [_tree, vfile]) {
-      const frontmatter = vfile.data?.frontmatter ?? {};
-      const isDraft = frontmatter.draft === true || frontmatter.draft === "true";
-      if (isDraft && !options.allowDrafts) {
-        return false;
-      }
-      if (includesTag(frontmatter.tags, options.excludeTags)) {
-        return false;
-      }
-      const filePath = typeof vfile.data?.filePath === "string" ? vfile.data.filePath : "";
-      const normalizedPath = filePath.replace(/\\/g, "/");
-      if (options.excludePathPrefixes.some((prefix) => normalizedPath.startsWith(prefix))) {
-        return false;
-      }
-      return true;
+.md-graph :where(*) {
+    font-size: .875rem
+}
+
+.md-graph__title {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    max-width: calc(100% - 3rem);
+    padding: 0 .65rem;
+    color: var(--md-graph-accent);
+    background: var(--light, #fff);
+    font-size: .875rem;
+    font-weight: 500;
+    letter-spacing: .04em;
+    line-height: 1;
+    text-transform: uppercase;
+    transform: translate(-50%, -50%);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis
+}
+
+.md-graph__title-text::before {
+    content: "[ "
+}
+
+.md-graph__title-text::after {
+    content: " ]"
+}
+
+.md-graph__title--empty {
+    display: none
+}
+
+.md-graph__body {
+    display: block;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-size: .875rem;
+    white-space: pre;
+    overflow-x: auto
+}
+
+.md-graph__body--table {
+    overflow-x: auto;
+    white-space: normal
+}
+
+.md-graph__table {
+    width: 100%;
+    margin: 0;
+    border: 0;
+    border-spacing: 0;
+    border-collapse: collapse;
+    table-layout: auto;
+    background: none;
+    color: inherit;
+    font: inherit
+}
+
+.md-graph__table th, .md-graph__table td {
+    padding: .45rem 1rem;
+    border: 0;
+    border-right: 1px dashed var(--md-graph-muted);
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-weight: 400;
+    text-align: left;
+    white-space: nowrap
+}
+
+.md-graph__table th:first-child, .md-graph__table td:first-child {
+    padding-left: .25rem
+}
+
+.md-graph__table th:last-child, .md-graph__table td:last-child {
+    padding-right: .25rem;
+    border-right: 0
+}
+
+.md-graph__table [data-align="center"] {
+    text-align: center
+}
+
+.md-graph__table [data-align="right"] {
+    text-align: right;
+    font-variant-numeric: tabular-nums
+}
+
+.md-graph__table thead tr {
+    border-bottom: 1px dashed var(--md-graph-muted)
+}
+
+.md-graph__table thead th {
+    padding-top: 0;
+    padding-bottom: .55rem
+}
+
+.md-graph__table tbody tr:first-child td {
+    padding-top: .55rem
+}
+
+.md-graph__table tbody tr:last-child td {
+    padding-bottom: 0
+}
+
+.md-graph__table--footer tbody tr:last-child td {
+    padding-bottom: .55rem
+}
+
+.md-graph__table-summary {
+    border-top: 1px dashed var(--md-graph-muted)
+}
+
+.md-graph__table-summary td {
+    padding-top: .55rem
+}
+
+.md-graph__table tfoot tr:last-child td {
+    padding-bottom: 0
+}
+
+.md-graph__body--sheet {
+    overflow-x: auto;
+    white-space: normal
+}
+
+.md-graph__sheet-heading th {
+    padding: .65rem .25rem .3rem;
+    border: 0;
+    color: var(--md-graph-muted);
+    font: inherit;
+    font-weight: 400;
+    text-align: left
+}
+
+.md-graph__sheet-section + .md-graph__sheet-section .md-graph__sheet-heading th {
+    padding-top: .85rem;
+    border-top: 1px dashed var(--md-graph-muted)
+}
+
+.md-graph__sheet-section .md-graph__sheet-heading + tr td {
+    padding-top: .25rem
+}
+
+.md-graph__sheet-section tr:last-child td {
+    padding-bottom: 1rem
+}
+
+.md-graph__sheet-section:last-child tr:last-child td {
+    padding-bottom: 0
+}
+
+.md-graph__body--flow {
+    display: flex;
+    flex-direction: column;
+    gap: .85rem;
+    overflow: visible
+}
+
+.md-graph__flow-row {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: 1.7em
+}
+
+.md-graph__flow-node {
+    flex: 0 0 auto;
+    white-space: nowrap
+}
+
+.md-graph__flow-connector {
+    flex: 0 0 auto;
+    margin: 0 .8rem;
+    color: var(--md-graph-muted);
+    white-space: nowrap
+}
+
+.md-graph__flow-connector--stretch {
+    flex: 1 1 3rem;
+    min-width: 3rem;
+    height: 0;
+    border-top: 1px dashed currentColor;
+    font-size: 0;
+    line-height: 0
+}
+
+.md-graph__flow-connector--stretch::after {
+    content: "\u25B6";
+    position: relative;
+    float: right;
+    top: -.05rem;
+    right: -.3rem;
+    font-size: .875rem
+}
+
+.md-graph__flow-tone--accent {
+    color: var(--md-graph-accent)
+}
+
+.md-graph__flow-tone--muted {
+    color: var(--md-graph-muted)
+}
+
+.md-graph__body--tree {
+    display: flex;
+    flex-direction: column;
+    gap: .1rem;
+    overflow-x: auto;
+    white-space: normal
+}
+
+.md-graph__tree-row {
+    display: grid;
+    grid-template-columns: minmax(max-content, 1fr) max-content;
+    align-items: baseline;
+    gap: 2rem;
+    width: 100%;
+    min-width: max-content
+}
+
+.md-graph__tree-name {
+    white-space: pre
+}
+
+.md-graph__tree-branch, .md-graph__tree-meta {
+    color: var(--md-graph-muted)
+}
+
+.md-graph__tree-meta {
+    min-width: 2ch;
+    text-align: right
+}
+
+.md-graph__body--timeline {
+    display: flex;
+    flex-direction: column;
+    gap: .35rem;
+    overflow-x: auto;
+    white-space: normal
+}
+
+.md-graph__timeline-event {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1ch 6rem minmax(max-content, 1fr);
+    align-items: baseline;
+    column-gap: 1.25rem;
+    min-width: max-content;
+    min-height: 2.15rem
+}
+
+.md-graph__timeline-marker {
+    position: relative;
+    z-index: 1;
+    text-align: center
+}
+
+.md-graph__timeline-marker::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    top: 1.15rem;
+    bottom: -1.35rem;
+    left: 50%;
+    border-left: 1px solid var(--md-graph-muted);
+    transform: translateX(-50%)
+}
+
+.md-graph__timeline-event--last .md-graph__timeline-marker::after {
+    display: none
+}
+
+.md-graph__timeline-event--muted {
+    color: var(--md-graph-muted)
+}
+
+.md-graph__body--check {
+    display: flex;
+    flex-direction: column;
+    gap: .55rem;
+    overflow-x: auto
+}
+
+.md-graph__check-item {
+    display: grid;
+    grid-template-columns: max-content minmax(max-content, 1fr);
+    align-items: baseline;
+    gap: 1.25rem;
+    min-width: max-content
+}
+
+.md-graph__check-marker {
+    white-space: pre
+}
+
+.md-graph__check-copy {
+    display: flex;
+    flex-direction: column
+}
+
+.md-graph__check-item--open .md-graph__check-label,
+.md-graph__check-note {
+    color: var(--md-graph-muted)
+}
+
+.md-graph__body--stack {
+    display: flex;
+    flex-direction: column;
+    gap: .55rem;
+    width: 100%;
+    overflow-x: auto
+}
+
+.md-graph__stack-row {
+    display: grid;
+    grid-template-columns: 7rem minmax(calc(var(--md-graph-stack-ticks, 24) * 1.05rem), 1fr);
+    align-items: center;
+    gap: 1.5rem;
+    width: 100%;
+    min-width: max-content
+}
+
+.md-graph__stack-track {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    line-height: 1
+}
+
+.md-graph__stack-cell {
+    display: inline-block;
+    width: 1ch;
+    text-align: center
+}
+
+.md-graph__stack-legend {
+    display: flex;
+    gap: 1.25rem;
+    margin-top: .55rem;
+    min-width: max-content
+}
+
+.md-graph__stack-key {
+    white-space: nowrap
+}
+
+.md-graph__body--funnel {
+    display: flex;
+    flex-direction: column;
+    gap: .45rem;
+    width: 100%;
+    overflow-x: auto
+}
+
+.md-graph__funnel-row {
+    display: grid;
+    grid-template-columns: 6rem minmax(calc(var(--md-graph-funnel-ticks, 20) * 1.05rem), 1fr) 5rem 3rem;
+    align-items: center;
+    gap: 1.25rem;
+    width: 100%;
+    min-width: max-content
+}
+
+.md-graph__funnel-track {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    line-height: 1
+}
+
+.md-graph__funnel-cell {
+    display: inline-block;
+    width: 1ch;
+    text-align: center
+}
+
+.md-graph__funnel-cell--empty,
+.md-graph__funnel-percent {
+    color: var(--md-graph-muted)
+}
+
+.md-graph__funnel-value,
+.md-graph__funnel-percent {
+    text-align: right;
+    font-variant-numeric: tabular-nums
+}
+
+.md-graph__funnel-row--receded {
+    opacity: .4
+}
+
+.md-graph__body--gantt {
+    display: flex;
+    flex-direction: column;
+    gap: .35rem;
+    width: 100%;
+    overflow-x: auto
+}
+
+.md-graph__gantt-row {
+    display: grid;
+    grid-template-columns: 6rem minmax(calc(var(--md-graph-gantt-columns, 24) * 1.05rem), 1fr);
+    align-items: center;
+    gap: 1.5rem;
+    width: 100%;
+    min-width: max-content
+}
+
+.md-graph__gantt-track {
+    display: grid;
+    grid-template-columns: repeat(var(--md-graph-gantt-columns, 24), 1fr);
+    width: 100%;
+    line-height: 1
+}
+
+.md-graph__gantt-cell {
+    display: inline-block;
+    width: 1ch;
+    justify-self: center;
+    text-align: center
+}
+
+.md-graph__gantt-cell--remaining,
+.md-graph__gantt-cell--empty,
+.md-graph__gantt-axis {
+    color: var(--md-graph-muted)
+}
+
+.md-graph__gantt-row--receded {
+    opacity: .4
+}
+
+.md-graph__gantt-progress-row {
+    min-height: 1rem
+}
+
+.md-graph__gantt-axis-row {
+    margin-top: .65rem
+}
+
+.md-graph__gantt-axis {
+    position: relative;
+    height: 1.7em
+}
+
+.md-graph__gantt-tick {
+    position: absolute;
+    transform: translateX(-50%);
+    white-space: nowrap
+}
+
+.md-graph__gantt-tick:first-child {
+    transform: none
+}
+
+.md-graph__gantt-tick:last-child {
+    transform: translateX(-100%)
+}
+
+.md-graph__body--plot {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    overflow-x: auto
+}
+
+.md-graph__plot-chart {
+    display: grid;
+    grid-template-columns: 2rem minmax(calc(var(--md-graph-plot-columns, 12) * 1.5rem), 1fr);
+    gap: 1.25rem;
+    width: 100%;
+    min-width: max-content
+}
+
+.md-graph__plot-y-axis {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    color: var(--md-graph-muted);
+    line-height: 1
+}
+
+.md-graph__plot-canvas {
+    display: grid;
+    grid-template-rows: repeat(var(--md-graph-plot-height, 7), 1rem);
+    padding-bottom: .55rem;
+    border-bottom: 1px dashed var(--md-graph-muted)
+}
+
+.md-graph__plot-row {
+    display: grid;
+    grid-template-columns: repeat(var(--md-graph-plot-columns, 12), 1fr);
+    align-items: end
+}
+
+.md-graph__plot-cell {
+    width: 1ch;
+    justify-self: center;
+    text-align: center;
+    line-height: 1
+}
+
+.md-graph__plot-cell--fill {
+    color: var(--md-graph-muted)
+}
+
+.md-graph__plot-label-row {
+    display: grid;
+    grid-template-columns: 2rem minmax(calc(var(--md-graph-plot-columns, 12) * 1.5rem), 1fr);
+    gap: 1.25rem;
+    margin-top: 1.25rem;
+    color: var(--md-graph-muted);
+    width: 100%;
+    min-width: max-content
+}
+
+.md-graph__plot-x-axis {
+    display: flex;
+    justify-content: space-between;
+    width: 100%
+}
+
+.md-graph__body--waffle {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    overflow-x: auto
+}
+
+.md-graph__waffle-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--md-graph-waffle-columns, 10), 1ch);
+    justify-content: space-between;
+    row-gap: .7rem;
+    width: calc(100% - 4rem);
+    min-width: calc(var(--md-graph-waffle-columns, 10) * 2rem);
+    margin-inline: 2rem;
+    line-height: 1
+}
+
+.md-graph__waffle-cell {
+    width: 1ch;
+    text-align: center
+}
+
+.md-graph__waffle-cell--empty,
+.md-graph__waffle-label {
+    color: var(--md-graph-muted)
+}
+
+.md-graph__waffle-color--custom {
+    color: var(--md-graph-waffle-color)
+}
+
+.md-graph__waffle-percent {
+    margin-top: 1.25rem;
+    font-variant-numeric: tabular-nums
+}
+
+.md-graph__waffle-label {
+    margin-top: .65rem
+}
+
+.md-graph__body--diff {
+    display: flex;
+    flex-direction: column;
+    gap: .35rem;
+    width: 100%;
+    overflow-x: auto
+}
+
+.md-graph__diff-row {
+    display: grid;
+    grid-template-columns: 1ch minmax(max-content, 1fr) max-content;
+    align-items: baseline;
+    gap: 1rem;
+    min-width: max-content
+}
+
+.md-graph__diff-value {
+    text-align: right;
+    font-variant-numeric: tabular-nums
+}
+
+.md-graph__diff-footer {
+    margin-top: .4rem;
+    padding-top: .7rem;
+    border-top: 1px dashed var(--md-graph-muted)
+}
+
+.md-graph__body--invoice {
+    display: flex;
+    flex-direction: column;
+    gap: 1.65rem;
+    width: 100%;
+    overflow-x: auto
+}
+
+.md-graph__invoice-parties {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(12rem, 1fr));
+    gap: 2rem;
+    min-width: 28rem
+}
+
+.md-graph__invoice-party,
+.md-graph__invoice-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: .15rem
+}
+
+.md-graph__invoice-kicker,
+.md-graph__invoice-party-line,
+.md-graph__invoice-cell--header,
+.md-graph__invoice-total-label,
+.md-graph__invoice-note {
+    color: var(--md-graph-muted)
+}
+
+.md-graph__invoice-meta {
+    display: flex;
+    gap: 3rem;
+    min-width: max-content
+}
+
+.md-graph__invoice-table {
+    min-width: 30rem
+}
+
+.md-graph__invoice-table-row {
+    display: grid;
+    grid-template-columns: minmax(12rem, 1fr) 8rem;
+    column-gap: 1.5rem;
+    padding: .45rem 0
+}
+
+.md-graph__invoice--qty.md-graph__invoice--rate .md-graph__invoice-table-row {
+    grid-template-columns: minmax(12rem, 1fr) 4rem 7rem 7rem
+}
+
+.md-graph__invoice--qty:not(.md-graph__invoice--rate) .md-graph__invoice-table-row,
+.md-graph__invoice--rate:not(.md-graph__invoice--qty) .md-graph__invoice-table-row {
+    grid-template-columns: minmax(12rem, 1fr) 7rem 7rem
+}
+
+.md-graph__invoice-table-head {
+    margin-bottom: .15rem;
+    border-bottom: 1px dashed var(--md-graph-muted)
+}
+
+.md-graph__invoice-cell--numeric {
+    text-align: right;
+    font-variant-numeric: tabular-nums
+}
+
+.md-graph__invoice-totals {
+    display: flex;
+    flex-direction: column;
+    align-self: flex-end;
+    gap: .2rem;
+    width: min(50%, 22rem);
+    min-width: 18rem;
+    padding-top: .65rem;
+    border-top: 1px dashed var(--md-graph-muted)
+}
+
+.md-graph__invoice-total {
+    display: grid;
+    grid-template-columns: 1fr max-content;
+    gap: 2rem
+}
+
+.md-graph__invoice-total-value {
+    text-align: right;
+    font-variant-numeric: tabular-nums
+}
+
+.md-graph__invoice-note {
+    margin-top: .25rem
+}
+
+.md-graph__body--compare {
+    display: flex;
+    flex-direction: column;
+    gap: .35rem;
+    width: 100%;
+    overflow-x: auto
+}
+
+.md-graph__compare-row {
+    display: grid;
+    grid-template-columns: minmax(10rem, 1fr) repeat(var(--md-graph-compare-columns, 2), minmax(5rem, max-content));
+    align-items: baseline;
+    gap: 1.5rem;
+    min-width: max-content
+}
+
+.md-graph__compare-row > :not(:first-child) {
+    text-align: right;
+    font-variant-numeric: tabular-nums
+}
+
+.md-graph__compare-head {
+    margin-bottom: .45rem;
+    color: var(--md-graph-muted)
+}
+
+.md-graph__compare-value--muted {
+    color: var(--md-graph-muted)
+}
+
+.md-graph__body--matrix {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    overflow-x: auto
+}
+
+.md-graph__matrix-row {
+    display: grid;
+    grid-template-columns: minmax(10rem, 1fr) repeat(var(--md-graph-matrix-columns, 2), minmax(5rem, max-content));
+    min-width: max-content
+}
+
+.md-graph__matrix-cell {
+    padding: .45rem .75rem
+}
+
+.md-graph__matrix-cell:first-child {
+    padding-left: 0
+}
+
+.md-graph__matrix-cell--value {
+    border-left: 1px dashed var(--md-graph-muted);
+    text-align: right;
+    font-variant-numeric: tabular-nums
+}
+
+.md-graph__matrix-head {
+    color: var(--md-graph-muted);
+    border-bottom: 1px dashed var(--md-graph-muted)
+}
+
+.md-graph__body--stat {
+    display: grid;
+    grid-template-columns: repeat(var(--md-graph-stat-items, 3), minmax(max-content, 1fr));
+    gap: 2rem;
+    width: 100%;
+    overflow-x: auto
+}
+
+.md-graph__stat-item {
+    display: flex;
+    flex-direction: column;
+    min-width: max-content
+}
+
+.md-graph__stat-value {
+    font-size: 2.25rem;
+    line-height: 1.2;
+    font-variant-numeric: tabular-nums
+}
+
+.md-graph__stat-label,
+.md-graph__stat-hint {
+    color: var(--md-graph-muted)
+}
+
+.md-graph__stat-label {
+    margin-top: .35rem
+}
+
+.md-graph__body--kpi {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%
+}
+
+.md-graph__kpi-value {
+    font-size: 2.25rem;
+    line-height: 1.2;
+    font-variant-numeric: tabular-nums
+}
+
+.md-graph__kpi-meta {
+    display: flex;
+    gap: 1rem;
+    margin-top: .25rem;
+    color: var(--md-graph-muted)
+}
+
+.md-graph__kpi-spark {
+    display: flex;
+    align-items: flex-end;
+    gap: .1rem;
+    margin-top: .75rem;
+    color: var(--md-graph-muted);
+    line-height: 1
+}
+
+.md-graph__body--spec {
+    display: flex;
+    flex-direction: column;
+    gap: .35rem;
+    width: 100%;
+    overflow-x: auto
+}
+
+.md-graph__spec-row {
+    display: grid;
+    grid-template-columns: 9rem minmax(max-content, 1fr);
+    gap: 3.5rem;
+    min-width: max-content
+}
+
+.md-graph__spec-label {
+    color: var(--md-graph-muted)
+}
+
+.md-graph__body--activity {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-width: calc(var(--md-graph-activity-weeks, 13) * .75rem + 3.25rem);
+    overflow-x: auto;
+    color: var(--md-graph-muted)
+}
+
+.md-graph__body--activity-fit {
+    overflow-x: visible
+}
+
+.md-graph__activity-month-row,
+.md-graph__activity-main {
+    display: grid;
+    grid-template-columns: 2rem minmax(calc(var(--md-graph-activity-weeks, 13) * .75rem), 1fr);
+    gap: 1.25rem
+}
+
+.md-graph__activity-months {
+    display: grid;
+    grid-template-columns: repeat(var(--md-graph-activity-weeks, 13), 1ch);
+    justify-content: space-between;
+    min-height: 1.7rem
+}
+
+.md-graph__activity-months > span {
+    white-space: nowrap
+}
+
+.md-graph__activity-months > span:last-child {
+    transform: translateX(calc(-100% + 1ch))
+}
+
+.md-graph__activity-weekdays {
+    display: grid;
+    grid-template-rows: repeat(7, 1ch);
+    align-items: center;
+    row-gap: .25rem
+}
+
+.md-graph__activity-grid {
+    display: grid;
+    grid-template-rows: repeat(7, 1ch);
+    grid-auto-flow: column;
+    grid-auto-columns: 1ch;
+    justify-content: space-between;
+    row-gap: .25rem;
+    line-height: 1
+}
+
+.md-graph__activity-cell {
+    width: 1ch;
+    text-align: center
+}
+
+.md-graph__activity-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 2rem;
+    margin-top: 1.15rem;
+    min-width: max-content
+}
+
+.md-graph__activity-legend {
+    display: flex;
+    align-items: baseline
+}
+
+.md-graph__body--heatmap {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-width: max-content;
+    overflow-x: auto;
+    color: var(--md-graph-muted)
+}
+
+.md-graph__heatmap-row {
+    display: grid;
+    grid-template-columns: 7rem repeat(var(--md-graph-heatmap-columns, 4), minmax(2rem, 1fr));
+    align-items: center;
+    min-width: 36rem
+}
+
+.md-graph__heatmap-head {
+    margin-bottom: .45rem
+}
+
+.md-graph__heatmap-cell {
+    min-width: 1ch
+}
+
+.md-graph__heatmap-cell--label {
+    color: var(--md-graph-ink)
+}
+
+.md-graph__heatmap-cell--value {
+    justify-self: center;
+    width: 1ch;
+    text-align: center;
+    line-height: 1
+}
+
+.md-graph__heatmap-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 2rem;
+    margin-top: 1.15rem;
+    min-width: max-content
+}
+
+.md-graph__heatmap-legend {
+    display: flex;
+    align-items: baseline;
+    margin-left: auto
+}
+
+.md-graph__body--calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    align-items: center;
+    width: 100%;
+    row-gap: .3rem
+}
+
+.md-graph__calendar-cell {
+    justify-self: center;
+    min-width: 3ch;
+    text-align: center
+}
+
+.md-graph__calendar-weekday {
+    color: var(--md-graph-muted);
+    margin-bottom: .45rem
+}
+
+.md-graph__calendar-empty {
+    color: transparent
+}
+
+.md-graph__body--waterfall {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    overflow-x: auto
+}
+
+.md-graph__waterfall-row {
+    display: grid;
+    grid-template-columns: 6rem minmax(calc(var(--md-graph-waterfall-ticks, 24) * 1.5ch), 1fr) 4rem;
+    align-items: center;
+    gap: 2rem;
+    min-width: max-content
+}
+
+.md-graph__waterfall-row--end {
+    border-top: 1px dashed var(--md-graph-muted);
+    margin-top: .35rem;
+    padding-top: .35rem
+}
+
+.md-graph__waterfall-track {
+    display: grid;
+    grid-template-columns: repeat(var(--md-graph-waterfall-ticks, 24), 1ch);
+    justify-content: space-between;
+    min-width: calc(var(--md-graph-waterfall-ticks, 24) * 1.5ch);
+    line-height: 1
+}
+
+.md-graph__waterfall-tick {
+    width: 1ch;
+    text-align: center
+}
+
+.md-graph__waterfall-tick--empty {
+    color: var(--md-graph-muted)
+}
+
+.md-graph__waterfall-value {
+    justify-self: end
+}
+
+.md-graph__body--uptime {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    overflow-x: auto;
+    color: var(--md-graph-muted)
+}
+
+.md-graph__uptime-grid,
+.md-graph__uptime-meta {
+    width: max(calc(var(--md-graph-uptime-columns, 30) * 1.3ch), 12rem)
+}
+
+.md-graph__uptime-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--md-graph-uptime-columns, 30), 1ch);
+    justify-content: start;
+    column-gap: .15rem;
+    row-gap: .35rem;
+    line-height: 1
+}
+
+.md-graph__uptime-day {
+    width: 1ch;
+    text-align: center
+}
+
+.md-graph__uptime-meta {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 1rem;
+    margin-top: .75rem
+}
+
+.md-graph__uptime-legend {
+    display: flex;
+    align-items: baseline;
+    margin-top: 1rem
+}
+
+.md-graph__body--slope {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    overflow-x: auto
+}
+
+.md-graph__slope-row {
+    display: grid;
+    grid-template-columns: minmax(10rem, 1fr) 7rem 2rem 7rem;
+    align-items: center;
+    min-width: 32rem
+}
+
+.md-graph__slope-head {
+    color: var(--md-graph-muted);
+    margin-bottom: .55rem
+}
+
+.md-graph__slope-from {
+    color: var(--md-graph-muted)
+}
+
+.md-graph__slope-from,
+.md-graph__slope-to {
+    justify-self: end
+}
+
+.md-graph__slope-marker {
+    justify-self: center
+}
+
+.md-graph__body--bullet {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    overflow-x: auto
+}
+
+.md-graph__bullet-row {
+    display: grid;
+    grid-template-columns: 7rem 1ch minmax(calc(var(--md-graph-bullet-ticks, 20) * 1.5ch), 1fr) 1ch 6rem;
+    align-items: center;
+    gap: .5rem;
+    min-width: max-content
+}
+
+.md-graph__bullet-track {
+    display: grid;
+    grid-template-columns: repeat(var(--md-graph-bullet-ticks, 20), 1ch);
+    justify-content: space-between;
+    min-width: calc(var(--md-graph-bullet-ticks, 20) * 1.5ch);
+    line-height: 1
+}
+
+.md-graph__bullet-tick {
+    width: 1ch;
+    text-align: center
+}
+
+.md-graph__bullet-bracket,
+.md-graph__bullet-tick--muted,
+.md-graph__bullet-display {
+    color: var(--md-graph-muted)
+}
+
+.md-graph__bullet-display {
+    justify-self: end
+}
+
+.md-graph__body--timer {
+    display: flex;
+    flex-direction: column;
+    gap: .25rem;
+    overflow: visible
+}
+
+.md-graph__timer-value {
+    font-size: 2.25rem;
+    line-height: 1.25
+}
+
+.md-graph__timer-caption {
+    color: var(--md-graph-muted)
+}
+
+.md-graph__body--countdown {
+    display: flex;
+    flex-direction: column;
+    gap: .25rem;
+    overflow: visible
+}
+
+.md-graph__countdown-value {
+    font-size: 2.25rem;
+    line-height: 1.25
+}
+
+.md-graph__countdown-value--done,
+.md-graph__countdown-caption {
+    color: var(--md-graph-muted)
+}
+
+.md-graph__body--frame {
+    display: flex;
+    flex-direction: column;
+    overflow: visible;
+    white-space: normal
+}
+
+.md-graph__frame-content {
+    display: flex;
+    flex-direction: column;
+    gap: .2rem
+}
+
+.md-graph__frame-line,
+.md-graph__frame-caption {
+    white-space: pre-wrap
+}
+
+.md-graph__frame-caption {
+    margin-top: .75rem
+}
+
+.md-graph__frame-caption--divider {
+    border-top: 1px dashed var(--md-graph-muted);
+    padding-top: .75rem
+}
+
+.md-graph__body--cells {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    overflow: visible;
+    white-space: normal
+}
+
+.md-graph__cells-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center
+}
+
+.md-graph__cells-grid {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .6rem
+}
+
+.md-graph__cells-row {
+    display: flex;
+    gap: .5rem;
+    line-height: 1
+}
+
+.md-graph__cell {
+    display: inline-block;
+    width: 1ch;
+    text-align: center
+}
+
+.md-graph__cell--active {
+    color: var(--md-graph-accent)
+}
+
+.md-graph__cell--empty, .md-graph__cells-label {
+    color: var(--md-graph-muted)
+}
+
+.md-graph__cells-label {
+    margin-top: .75rem
+}
+
+.md-graph__body--meter {
+    width: 100%;
+    margin-bottom: -1.1rem;
+    padding-bottom: .65rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    touch-action: pan-x;
+    white-space: normal
+}
+
+.md-graph__meter-row {
+    display: grid;
+    grid-template-columns: minmax(12rem, 1fr) max-content;
+    align-items: center;
+    gap: .75rem;
+    width: max-content;
+    min-width: 100%
+}
+
+.md-graph__meter-bar {
+    display: grid;
+    grid-template-columns: max-content minmax(var(--md-graph-meter-width, 38.5rem), 1fr) max-content;
+    align-items: center;
+    width: 100%
+}
+
+.md-graph__meter-cells {
+    display: grid;
+    grid-template-columns: repeat(var(--md-graph-meter-ticks, 14), minmax(2.75rem, 1fr));
+    width: 100%;
+    min-width: var(--md-graph-meter-width, 38.5rem);
+    padding: 0 2rem;
+    text-align: center
+}
+
+.md-graph__meter-label, .md-graph__meter-caption {
+    color: var(--md-graph-muted)
+}
+
+.md-graph__meter-label {
+    margin-top: .65rem
+}
+
+.md-graph__meter-value {
+    min-width: max-content;
+    color: var(--md-graph-accent);
+    text-align: right;
+    font-variant-numeric: tabular-nums
+}
+
+.md-graph__body--spark {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: .55rem;
+    min-height: 4.75rem;
+    overflow-x: auto;
+    white-space: normal
+}
+
+.md-graph__sparkline {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: .125rem;
+    min-height: 1.25rem;
+    line-height: 1
+}
+
+.md-graph__spark-mark {
+    display: inline-block;
+    width: 1ch;
+    text-align: center
+}
+
+.md-graph__spark-caption {
+    color: var(--md-graph-muted);
+    line-height: 1.4;
+    text-align: center
+}
+
+.md-graph__line {
+    min-height: 1.7em
+}
+
+.md-graph__accent, .md-graph__color-0 {
+    color: var(--md-graph-accent)
+}
+
+.md-graph__color-1 {
+    color: var(--md-graph-secondary, var(--md-graph-accent))
+}
+
+.md-graph__color-2, .md-graph__color-3 {
+    color: var(--md-graph-tertiary, var(--md-graph-accent))
+}
+
+.md-graph__tone--dark {
+    color: var(--dark)
+}
+
+.md-graph__tone--light {
+    color: var(--light)
+}
+
+.md-graph__tone--ink {
+    color: var(--md-graph-ink)
+}
+
+.md-graph__tone--muted {
+    color: var(--md-graph-muted)
+}
+
+.md-graph__arrow, .md-graph__track {
+    color: var(--md-graph-muted)
+}
+
+.md-graph__arrow.md-graph__accent {
+    color: var(--md-graph-accent)
+}
+
+.md-graph__corner {
+    position: absolute;
+    z-index: 1;
+    display: grid;
+    width: 1em;
+    height: 1em;
+    place-items: center;
+    color: var(--md-graph-muted);
+    background: var(--light, transparent);
+    font-size: .875rem;
+    line-height: 1;
+    pointer-events: none
+}
+
+.md-graph__corner--tl {
+    top: 0;
+    left: 0;
+    transform: translate(-50%, -50%)
+}
+
+.md-graph__corner--tr {
+    top: 0;
+    right: 0;
+    transform: translate(50%, -50%)
+}
+
+.md-graph__corner--bl {
+    bottom: 0;
+    left: 0;
+    transform: translate(-50%, 50%)
+}
+
+.md-graph__corner--br {
+    right: 0;
+    bottom: 0;
+    transform: translate(50%, 50%)
+}
+
+.md-graph__line--bar {
+    display: grid;
+    grid-template-columns: minmax(7rem, max-content) minmax(12rem, 1fr) max-content;
+    align-items: center;
+    gap: 1.5rem;
+    width: 100%
+}
+
+.md-graph__ascii-bar {
+    display: flex;
+    align-items: center;
+    min-width: 0
+}
+
+.md-graph__bar-cells {
+    display: grid;
+    flex: 1;
+    grid-template-columns: repeat(auto-fit, minmax(.6em, 1fr));
+    padding: 0 .65rem;
+    text-align: center
+}
+
+.md-graph__bar-value {
+    min-width: 5.5em;
+    color: var(--md-graph-muted);
+    text-align: right;
+    font-variant-numeric: tabular-nums
+}
+
+.md-graph__marker {
+    color: var(--md-graph-ink)
+}
+
+@media (max-width:600px) {
+    .md-graph__line--bar {
+        grid-template-columns: minmax(5rem, max-content) minmax(10rem, 1fr);
+        gap: .75rem
     }
-  };
-};
-var defaultOptions3 = {
-  manifestSlug: "plugin-manifest",
-  includeFrontmatter: true,
-  metadata: {
-    generator: "Quartz Plugin Template"
-  }
-};
-var joinSegments = (...segments) => segments.filter((segment) => segment.length > 0).join("/").replace(/\/+/g, "/");
-var writeFile = async (outputDir, slug2, ext, content) => {
-  const outputPath = joinSegments(outputDir, `${slug2}${ext}`);
-  await fs.mkdir(path2.dirname(outputPath), { recursive: true });
-  await fs.writeFile(outputPath, content);
-  return outputPath;
-};
-var ExampleEmitter = (userOptions) => {
-  const options = { ...defaultOptions3, ...userOptions };
-  const emitManifest = async (ctx, content) => {
-    const manifest = {
-      ...options.metadata,
-      generatedAt: (/* @__PURE__ */ new Date()).toISOString(),
-      pages: content.map(([_tree, vfile]) => {
-        const frontmatter = vfile.data?.frontmatter ?? {};
-        return {
-          slug: vfile.data?.slug ?? null,
-          title: frontmatter.title ?? null,
-          tags: frontmatter.tags ?? null,
-          filePath: vfile.data?.filePath ?? null,
-          frontmatter: options.includeFrontmatter ? frontmatter : void 0
-        };
-      })
+
+    .md-graph__bar-value {
+        grid-column: 2;
+        min-width: 0;
+        text-align: right
+    }
+}
+
+.md-graph--flow[data-stretch="true"] .md-graph__line {
+    display: flex;
+    align-items: center;
+    width: 100%
+}
+
+.md-graph--flow[data-stretch="true"] .md-graph__arrow {
+    display: inline-block;
+    flex: 1 1 3rem;
+    min-width: 3rem;
+    height: 0;
+    margin: 0 .8rem;
+    border-top: 1px dashed currentColor;
+    font-size: 0;
+    line-height: 0
+}
+
+.md-graph--flow[data-stretch="true"] .md-graph__arrow::after {
+    content: "\u25B6";
+    position: relative;
+    float: right;
+    top: -.05rem;
+    right: -.3rem;
+    font-size: .875rem
+}
+
+.md-graph--bars .md-graph__body {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 3rem;
+    min-height: 6.5rem
+}
+
+.md-graph__line--bars {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end
+}
+
+.md-graph__bars-marks {
+    font-size: 2.6rem;
+    line-height: 1;
+    letter-spacing: .08em
+}
+
+.md-graph__bars-label {
+    margin-top: .5rem
+}
+
+.md-graph--bars .md-graph__line:not(.md-graph__line--bars) {
+    padding-bottom: .15rem
+}
+
+.md-graph--bars .md-graph__accent {
+    background: none
+}
+
+.md-graph--bars .md-graph__color-0 {
+    color: var(--md-graph-accent)
+}
+
+.md-graph--bars .md-graph__color-1 {
+    color: var(--md-graph-secondary, var(--md-graph-accent))
+}
+
+.md-graph--bars .md-graph__color-2, .md-graph--bars .md-graph__color-3 {
+    color: var(--md-graph-tertiary, var(--md-graph-accent))
+}
+
+.md-graph--bars .md-graph__body--bars {
+    gap: 3.75rem;
+    min-height: 9rem;
+    overflow: visible
+}
+
+.md-graph__bars-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end
+}
+
+.md-graph__bars-stacks {
+    display: flex;
+    align-items: flex-end;
+    gap: .25em;
+    font-size: .875rem;
+    line-height: .56
+}
+
+.md-graph__bars-group--sm .md-graph__bars-stacks {
+    font-size: .7rem
+}
+
+.md-graph__bars-group--lg .md-graph__bars-stacks {
+    font-size: 1rem
+}
+
+.md-graph__bars-stack {
+    display: flex;
+    flex-direction: column-reverse
+}
+
+.md-graph__bars-stack>span {
+    display: block
+}
+
+.md-graph__bars-group-label {
+    margin-top: .55rem
+}
+
+.md-graph__bars-connector {
+    align-self: flex-end;
+    margin-bottom: .15rem;
+    color: var(--md-graph-muted);
+    white-space: nowrap
+}
+
+.md-graph__bars-tone--muted {
+    color: var(--md-graph-muted)
+}
+
+.md-graph__caption {
+    margin-top: .8rem;
+    color: var(--md-graph-muted);
+    font-size: .875rem
+}
+
+.md-graph[data-frame="none"] {
+    border: 0
+}
+
+.md-graph[data-frame="none"] .md-graph__title {
+    position: static;
+    display: block;
+    padding: 0 0 .8rem;
+    transform: none;
+    background: none
+}
+
+.md-graph[data-frame="none"] .md-graph__corner {
+    display: none
+}
+
+.md-graph[data-palette-mode="duo"] {
+    --md-graph-gradient: linear-gradient(90deg, var(--md-graph-accent), var(--md-graph-secondary))
+}
+
+.md-graph[data-palette-mode="trio"] {
+    --md-graph-gradient: linear-gradient(90deg, var(--md-graph-accent), var(--md-graph-secondary), var(--md-graph-tertiary))
+}
+
+@supports (background-clip:text) {
+    .md-graph__title-text {
+        color: transparent;
+        background: var(--md-graph-title-gradient);
+        background-clip: text
+    }
+}
+
+@media (prefers-color-scheme:dark) {
+    .md-graph {
+        --graph-accent: var(--graph-accent-dark);
+        --graph-accent-2: var(--graph-accent-2-dark);
+        --graph-accent-3: var(--graph-accent-3-dark)
+    }
+
+    .md-graph__title {
+        background: var(--light, #161618)
+    }
+}
+
+.dark .md-graph {
+    --graph-accent: var(--graph-accent-dark);
+    --graph-accent-2: var(--graph-accent-2-dark);
+    --graph-accent-3: var(--graph-accent-3-dark)
+}
+
+@media (max-width:600px) {
+    .md-graph {
+        padding-right: 1rem;
+        padding-left: 1rem
+    }
+
+    .md-graph--bars .md-graph__body {
+        gap: 1.25rem
+    }
+
+    .md-graph__bars-marks {
+        font-size: 1.8rem
+    }
+}`.replace(/\n\s*/g, "").replace(/\s*{/g, "{");
+var meterScrollScript = `document.addEventListener("wheel", (event) => {
+  const meter = event.target instanceof Element
+    ? event.target.closest(".md-graph__body--meter")
+    : null;
+  if (!(meter instanceof HTMLElement) || meter.scrollWidth <= meter.clientWidth) return;
+
+  const rawDelta = Math.abs(event.deltaX) > Math.abs(event.deltaY)
+    ? event.deltaX
+    : event.deltaY;
+  if (!rawDelta) return;
+  const scale = event.deltaMode === WheelEvent.DOM_DELTA_LINE
+    ? 16
+    : event.deltaMode === WheelEvent.DOM_DELTA_PAGE
+      ? meter.clientWidth
+      : 1;
+  const previous = meter.scrollLeft;
+  meter.scrollLeft += rawDelta * scale;
+  if (meter.scrollLeft !== previous) event.preventDefault();
+}, { passive: false });`;
+var timerScript = `(() => {
+  if (window.__mdGraphTimerInterval) clearInterval(window.__mdGraphTimerInterval);
+  const pad = (value) => String(value).padStart(2, "0");
+  const duration = (milliseconds, units) => {
+    const seconds = Math.max(0, Math.floor(milliseconds / 1000));
+    const values = {
+      days: Math.floor(seconds / 86400),
+      hours: Math.floor((seconds % 86400) / 3600),
+      minutes: Math.floor((seconds % 3600) / 60),
+      seconds: seconds % 60,
     };
-    let json = `${JSON.stringify(manifest, null, 2)}
-`;
-    if (options.transformManifest) {
-      json = options.transformManifest(json);
+    if (units.length === 1 && units[0] === "days") return values.days + "d";
+    if (units.join(",") === "days,hours,minutes,seconds")
+      return values.days + "d " + pad(values.hours) + ":" + pad(values.minutes) + ":" + pad(values.seconds);
+    const suffix = { days: "d", hours: "h", minutes: "m", seconds: "s" };
+    return units.map((unit) => values[unit] + suffix[unit]).join(" ");
+  };
+  const update = () => document.querySelectorAll(".md-graph__body--timer").forEach((timer) => {
+    const output = timer.querySelector(".md-graph__timer-value");
+    if (!output) return;
+    const kind = timer.dataset.timerKind || "elapsed";
+    const format = timer.dataset.timerFormat || "24";
+    const now = Date.now();
+    if (kind === "clock") {
+      output.textContent = new Date(now).toLocaleTimeString("en-US", {
+        hour12: format === "12", hour: "2-digit", minute: "2-digit", second: "2-digit"
+      });
+      return;
     }
-    const output = await writeFile(
-      ctx.argv.output,
-      options.manifestSlug,
-      ".json",
-      json
+    const at = Number(timer.dataset.timerAt);
+    const units = (timer.dataset.timerUnits || "days,hours,minutes,seconds").split(",");
+    output.textContent = duration(now - at, units) + (kind === "ago" ? " ago" : "");
+  });
+  update();
+  window.__mdGraphTimerInterval = window.setInterval(update, 1000);
+})();`;
+var countdownScript = `(() => {
+  if (window.__mdGraphCountdownInterval) clearInterval(window.__mdGraphCountdownInterval);
+  const pad = (value) => String(value).padStart(2, "0");
+  const update = () => document.querySelectorAll(".md-graph__body--countdown").forEach((countdown) => {
+    const output = countdown.querySelector(".md-graph__countdown-value");
+    if (!output) return;
+    const remaining = Number(countdown.dataset.countdownTo) - Date.now();
+    if (remaining <= 0) {
+      output.textContent = countdown.dataset.countdownDone || "done";
+      output.classList.add("md-graph__countdown-value--done");
+      output.style.color = "var(--md-graph-muted)";
+      return;
+    }
+    const seconds = Math.floor(remaining / 1000);
+    const days = Math.floor(seconds / 86400);
+    const hours = Math.floor((seconds % 86400) / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    output.textContent = days + "d " + pad(hours) + ":" + pad(minutes) + ":" + pad(seconds % 60);
+  });
+  update();
+  window.__mdGraphCountdownInterval = window.setInterval(update, 1000);
+})();`;
+function parseGraphMeta(meta = "") {
+  return Object.fromEntries(
+    Object.entries(parseInfoAttributes(meta).attributes).map(([key, value]) => [
+      key,
+      String(value)
+    ])
+  );
+}
+var text2 = (value) => ({ type: "text", value });
+var bodyOptions = (source) => Object.fromEntries(
+  source.split(/\r?\n/).flatMap((line) => {
+    const match = /^\s*(accent|accent2|accent3|palette|glyphs|corner)\s*:\s*(.+?)\s*$/i.exec(
+      line
     );
-    return [output];
+    return match?.[1] && match[2] ? [[match[1].toLowerCase(), match[2]]] : [];
+  })
+);
+var safeCssColor = (value, fallback) => {
+  const color2 = value?.trim().replace(/;+\s*$/, "") ?? "";
+  return color2 && !/[;{}<>]/.test(color2) ? color2 : fallback;
+};
+var graphElement = (node, graph, options) => {
+  const type = node.lang.slice("graph/".length);
+  const attrs = Object.fromEntries(
+    Object.entries(graph.attributes).map(([key, value]) => [key, String(value)])
+  );
+  const bodyTitle = /^\s*title\s*:\s*(.+?)\s*$/im.exec(node.value)?.[1]?.replace(/^(?:"([\s\S]*)"|'([\s\S]*)')$/, "$1$2");
+  const title = type === "timer" && bodyTitle ? bodyTitle : type === "frame" ? attrs.title ?? "" : attrs.title || type;
+  const body = bodyOptions(node.value);
+  const requestedPalette = (body.palette || attrs.palette || options.palette).toLowerCase();
+  const palette = ["solid", "mono", "duo", "trio", "multi", ...Object.keys(graphPalettes)].includes(
+    requestedPalette
+  ) ? requestedPalette : options.palette;
+  const configuredAccents = [
+    options.accentColor,
+    options.accentColor2,
+    options.accentColor3
+  ];
+  const presetAccents = paletteAccents(palette, configuredAccents);
+  const presetDarkAccents = paletteDarkAccents(palette, configuredAccents);
+  const accentIsData = type === "stack" || type === "compare" || type === "matrix";
+  const accents2 = [
+    safeCssColor(accentIsData ? void 0 : body.accent, presetAccents[0]),
+    safeCssColor(body.accent2, presetAccents[1]),
+    safeCssColor(body.accent3, presetAccents[2])
+  ];
+  const darkAccents = [
+    safeCssColor(accentIsData ? void 0 : body.accent, presetDarkAccents[0]),
+    safeCssColor(body.accent2, presetDarkAccents[1]),
+    safeCssColor(body.accent3, presetDarkAccents[2])
+  ];
+  const corner = (body.corner || attrs.corner || "+").replace(
+    /^(?:"([\s\S]*)"|'([\s\S]*)')$/,
+    "$1$2"
+  );
+  const className = ["md-graph", `md-graph--${type}`];
+  if (attrs["x-html-class"]) className.push(...attrs["x-html-class"].split(/\s+/));
+  return {
+    type: "element",
+    tagName: "figure",
+    properties: {
+      className,
+      dataGraph: type,
+      dataFrame: attrs.frame || options.frame,
+      dataPalette: palette,
+      dataPaletteMode: paletteMode(palette),
+      style: `--graph-accent-light:${accents2[0]};--graph-accent-2-light:${accents2[1]};--graph-accent-3-light:${accents2[2]};--graph-accent-dark:${darkAccents[0]};--graph-accent-2-dark:${darkAccents[1]};--graph-accent-3-dark:${darkAccents[2]}`,
+      dataStretch: attrs.stretch === "true" || /^\s*stretch\s*:\s*true\s*$/m.test(node.value),
+      ...attrs.id ? { id: attrs.id } : {},
+      ...attrs["aria-label"] ? { ariaLabel: attrs["aria-label"] } : {}
+    },
+    children: [
+      {
+        type: "element",
+        tagName: "figcaption",
+        properties: {
+          className: ["md-graph__title", ...!title ? ["md-graph__title--empty"] : []]
+        },
+        children: [
+          {
+            type: "element",
+            tagName: "span",
+            properties: { className: ["md-graph__title-text"] },
+            children: [text2(title)]
+          }
+        ]
+      },
+      renderGraphBody(
+        type,
+        node.value,
+        palette,
+        supportedGraphTypes.includes(type) && !(options.strict && graph.diagnostics.some(({ severity }) => severity === "error")),
+        Boolean(body.palette || attrs.palette),
+        body.glyphs || attrs.glyphs
+      ),
+      ...attrs.caption ? [
+        {
+          type: "element",
+          tagName: "div",
+          properties: { className: ["md-graph__caption"] },
+          children: [text2(attrs.caption)]
+        }
+      ] : [],
+      ...["tl", "tr", "bl", "br"].map((position) => ({
+        type: "element",
+        tagName: "span",
+        properties: {
+          className: ["md-graph__corner", `md-graph__corner--${position}`],
+          ariaHidden: "true"
+        },
+        children: [text2(corner)]
+      }))
+    ]
+  };
+};
+var remarkMdGraphs = (options) => () => (tree, file) => {
+  const fileDiagnostics = [];
+  visit(tree, "code", (node) => {
+    if (!node.lang?.startsWith("graph/")) return;
+    const graph = parseGraphFence({
+      type: node.lang.slice("graph/".length),
+      meta: node.meta ?? "",
+      value: node.value,
+      strict: options.strict,
+      limits: options.limits
+    });
+    fileDiagnostics.push(...graph.diagnostics);
+    const element = graphElement(node, graph, options);
+    node.data = {
+      ...node.data,
+      graph,
+      hName: element.tagName,
+      hProperties: element.properties,
+      hChildren: element.children
+    };
+  });
+  if (fileDiagnostics.length) {
+    const data2 = file.data;
+    data2.mdGraphsDiagnostics = [...data2.mdGraphsDiagnostics ?? [], ...fileDiagnostics];
+  }
+};
+var rehypeGraphCaption = () => (tree) => {
+  visit(tree, "element", (node) => {
+    const graphChild = node.tagName === "pre" && node.children.length === 1 && node.children[0]?.type === "element" && Array.isArray(node.children[0].properties.className) && node.children[0].properties.className.includes("md-graph") ? node.children[0] : void 0;
+    if (graphChild) Object.assign(node, graphChild);
+    if (node.tagName !== "figure" || !Array.isArray(node.properties.className) || !node.properties.className.includes("md-graph"))
+      return;
+    const caption = node.children.find(
+      (child) => child.type === "element" && Array.isArray(child.properties.className) && child.properties.className.includes("md-graph__caption")
+    );
+    if (caption && !node.properties.ariaDescribedBy) {
+      const id = `${String(node.properties.id || "md-graph")}-caption`;
+      caption.properties.id = id;
+      node.properties.ariaDescribedBy = [id];
+    }
+  });
+};
+var MdGraphs = (userOptions = {}) => {
+  const options = {
+    ...defaultOptions,
+    ...userOptions,
+    limits: { ...defaultOptions.limits, ...userOptions.limits }
   };
   return {
-    name: "ExampleEmitter",
-    async emit(ctx, content, _resources) {
-      return emitManifest(ctx, content);
-    },
-    async *partialEmit(ctx, content, _resources, _changeEvents) {
-      const outputPaths = await emitManifest(ctx, content);
-      for (const outputPath of outputPaths) {
-        yield outputPath;
-      }
-    }
+    name: "MdGraphs",
+    markdownPlugins: () => [remarkMdGraphs(options)],
+    htmlPlugins: () => [rehypeGraphCaption],
+    externalResources: () => ({
+      css: [
+        {
+          content: graphCss([options.accentColor, options.accentColor2, options.accentColor3]),
+          inline: true
+        }
+      ],
+      js: [
+        {
+          contentType: "inline",
+          loadTime: "afterDOMReady",
+          spaPreserve: true,
+          script: meterScrollScript
+        },
+        {
+          contentType: "inline",
+          loadTime: "afterDOMReady",
+          spaPreserve: true,
+          script: timerScript
+        },
+        {
+          contentType: "inline",
+          loadTime: "afterDOMReady",
+          spaPreserve: true,
+          script: countdownScript
+        }
+      ],
+      additionalHead: []
+    })
   };
 };
 
-// node_modules/@quartz-community/utils/dist/lang.js
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
-}
+// src/ascii/examples.ts
+var graphExampleTypes = [
+  "table",
+  "sheet",
+  "bars",
+  "rank",
+  "cells",
+  "meter",
+  "spark",
+  "tree",
+  "timeline",
+  "check",
+  "stack",
+  "funnel",
+  "gantt",
+  "waffle",
+  "diff",
+  "invoice",
+  "compare",
+  "matrix",
+  "stat",
+  "kpi",
+  "spec",
+  "waterfall",
+  "uptime",
+  "slope",
+  "bullet"
+];
+var supplementalGraphTypes = [
+  "flow",
+  "plot",
+  "activity",
+  "heatmap",
+  "calendar",
+  "timer",
+  "countdown",
+  "frame"
+];
+var graphFence = (type, body, title) => `\`\`\`graph/${type}${title ? ` title=${JSON.stringify(title)}` : ""}
+${body.trim()}
+\`\`\``;
 
-// src/components/styles/example.scss
-var example_default = ".example-component {\n  padding: 8px 16px;\n  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\n  color: white;\n  border-radius: 4px;\n  font-weight: 600;\n  display: inline-block;\n}";
-
-// src/components/scripts/example.inline.ts
-var example_inline_default = 'function l(){let e=window.location.pathname;return e.startsWith("/")&&(e=e.slice(1)),e.endsWith("/")&&(e=e.slice(0,-1)),e||"index"}function r(){let e=document.querySelectorAll(".example-component");if(e.length===0)return;let t=[];function o(n){(n.ctrlKey||n.metaKey)&&n.shiftKey&&n.key.toLowerCase()==="e"&&(n.preventDefault(),console.log("[ExampleComponent] Keyboard shortcut triggered!"))}document.addEventListener("keydown",o),t.push(()=>document.removeEventListener("keydown",o));for(let n of e){let i=()=>{console.log("[ExampleComponent] Clicked!")};n.addEventListener("click",i),t.push(()=>n.removeEventListener("click",i))}typeof window<"u"&&window.addCleanup&&window.addCleanup(()=>{t.forEach(n=>n())}),console.log("[ExampleComponent] Initialized with",e.length,"component(s)")}document.addEventListener("nav",e=>{let t=e.detail?.url||l();console.log("[ExampleComponent] Navigation to:",t),r()});document.addEventListener("render",()=>{console.log("[ExampleComponent] Render event - re-initializing"),r()});document.addEventListener("prenav",()=>{let e=document.querySelector(".example-component");e&&sessionStorage.setItem("exampleScrollTop",e.scrollTop?.toString()||"0")});\n';
-var l;
-l = { __e: function(n2, l2, u3, t2) {
-  for (var i2, o2, r2; l2 = l2.__; ) if ((i2 = l2.__c) && !i2.__) try {
-    if ((o2 = i2.constructor) && null != o2.getDerivedStateFromError && (i2.setState(o2.getDerivedStateFromError(n2)), r2 = i2.__d), null != i2.componentDidCatch && (i2.componentDidCatch(n2, t2 || {}), r2 = i2.__d), r2) return i2.__E = i2;
-  } catch (l3) {
-    n2 = l3;
-  }
-  throw n2;
-} }, "function" == typeof Promise ? Promise.prototype.then.bind(Promise.resolve()) : setTimeout;
-
-// node_modules/preact/jsx-runtime/dist/jsxRuntime.mjs
-var f2 = 0;
-function u2(e2, t2, n2, o2, i2, u3) {
-  t2 || (t2 = {});
-  var a2, c2, p2 = t2;
-  if ("ref" in p2) for (c2 in p2 = {}, t2) "ref" == c2 ? a2 = t2[c2] : p2[c2] = t2[c2];
-  var l2 = { type: e2, props: p2, key: n2, ref: a2, __k: null, __: null, __b: 0, __e: null, __c: null, constructor: void 0, __v: --f2, __i: -1, __u: 0, __source: i2, __self: u3 };
-  return l.vnode && l.vnode(l2), l2;
-}
-
-// src/components/ExampleComponent.tsx
-var ExampleComponent_default = ((opts) => {
-  const { prefix = "", suffix = "", className = "example-component" } = opts ?? {};
-  const Component = (props) => {
-    const frontmatter = props.fileData?.frontmatter;
-    const title = frontmatter?.title ?? "Untitled";
-    const fullText = `${prefix}${title}${suffix}`;
-    return /* @__PURE__ */ u2("div", { class: classNames(className), children: fullText });
-  };
-  Component.css = example_default;
-  Component.afterDOMLoaded = example_inline_default;
-  return Component;
-});
-
-export { ExampleComponent_default as ExampleComponent, ExampleEmitter, ExampleFilter, ExampleTransformer };
+export { GLYPH_PRESETS, MdGraphs, SPARK_GLYPHS, STACK_GLYPHS, accentSets, accents, col, colWidth, dash, defaultAccents, defaultGraphLimits, fillTrack, frameAscii, getAccent, glyphAt, glyphScale, graphExampleTypes, graphFence, graphPalettes, isAccentId, legacyAccentIds, meterTrack, miniBars, padEnd, padStart, parseGraphFence, parseGraphMeta, parseInfoAttributes, rule, sparkGlyphs, supplementalGraphTypes, supportedGraphTypes, widthOf };
 //# sourceMappingURL=index.js.map
 //# sourceMappingURL=index.js.map
