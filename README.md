@@ -3,7 +3,7 @@
 <details>
   <summary>View demo...</summary>
 
-  ![demo.png](https://github.com/user-attachments/assets/494b83b4-8382-4977-93d7-8b041ad59dab)
+![demo.png](https://github.com/user-attachments/assets/494b83b4-8382-4977-93d7-8b041ad59dab)
 
 </details>
 
@@ -20,20 +20,28 @@ Quartz 5 transformer for semantic `graph/*` fenced blocks. Graphs use a quiet da
 ```ts
 import { MdGraphs } from "@quartz-community/md-graphs";
 
-MdGraphs({ palette: "duo", frame: "ascii", strict: false });
+MdGraphs({
+  palette: "duo",
+  frame: "ascii",
+  inkColor: "#d7d7d7",
+  mutedColor: "#777",
+  strict: false,
+});
 ```
 
 ## Options
 
-| Option         | Values                 | Default       |
-| -------------- | ---------------------- | ------------- |
-| `accentColor`  | Any CSS color          | Lime LAB      |
-| `accentColor2` | Any CSS color          | Green LAB     |
-| `accentColor3` | Any CSS color          | Cyan LAB      |
-| `palette`      | Mode or named preset   | `duo`         |
-| `frame`        | `ascii`, `none`        | `ascii`       |
-| `strict`       | Boolean                | `false`       |
-| `limits`       | Parser resource limits | Safe defaults |
+| Option         | Values                 | Default         |
+| -------------- | ---------------------- | --------------- |
+| `accentColor`  | Any CSS color          | Lime LAB        |
+| `accentColor2` | Any CSS color          | Green LAB       |
+| `accentColor3` | Any CSS color          | Cyan LAB        |
+| `inkColor`     | Any CSS color          | Quartz darkgray |
+| `mutedColor`   | Any CSS color          | Quartz dark     |
+| `palette`      | Mode or named preset   | `duo`           |
+| `frame`        | `ascii`, `none`        | `ascii`         |
+| `strict`       | Boolean                | `false`         |
+| `limits`       | Parser resource limits | Safe defaults   |
 
 Block attributes override plugin defaults. Palette modes are `solid`, `duo`, and `trio`; deprecated `mono` and `multi` remain aliases for backward compatibility. Named three-color presets are `greenday`, `orange`, `smelly`, `bluebee`, `indigosea`, `purple`, `pink`, `fire`, `deepsea`, `pinkteam`, `burning`, and `blueteam`.
 
@@ -49,6 +57,8 @@ accent3: lab(77.5288% -33.8221 -35.2522);
 ```
 
 The title gradient always uses all three supplied accents. The selected palette mode independently controls series coloring.
+
+`inkColor` controls primary text and neutral values. `mutedColor` controls secondary labels, empty tracks, separators, and frame borders. Their defaults continue to follow Quartz's `--darkgray` and `--dark` theme variables. They can be configured alongside the other plugin options in `quartz.config.yml`.
 
 Flow graphs accept repeated structured `nodes` groups. A node's `tone` can be `default`, `accent`, or `muted`; `stretch: true` stretches the connector entering that node. The legacy `a -> b` syntax remains supported.
 

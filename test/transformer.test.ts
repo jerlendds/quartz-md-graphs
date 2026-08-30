@@ -32,6 +32,13 @@ const content = (node: any): string =>
         .join(node.properties?.className?.includes("md-graph__body") ? "\n" : "");
 
 describe("MdGraphs", () => {
+  it("configures ink and muted colors through plugin options", () => {
+    const css =
+      MdGraphs({ inkColor: "#eeeeee", mutedColor: "#555555" }).externalResources?.({} as any)
+        ?.css?.[0]?.content ?? "";
+    expect(css).toContain("--md-graph-ink:#eeeeee");
+    expect(css).toContain("--md-graph-muted:#555555");
+  });
   it("parses quoted and token attributes", () =>
     expect(parseGraphMeta('title="SHIP WEEK" palette=duo aria-label=chart')).toEqual({
       title: "SHIP WEEK",

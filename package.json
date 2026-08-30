@@ -104,6 +104,8 @@
       "accentColor": "lab(92.9449% -44.411 80.292)",
       "accentColor2": "lab(89.622% -60.7933 21.1414)",
       "accentColor3": "lab(77.5288% -33.8221 -35.2522)",
+      "inkColor": "var(--darkgray, #d7d7d7)",
+      "mutedColor": "var(--dark, #777)",
       "frame": "ascii",
       "palette": "duo",
       "strict": false,
@@ -157,6 +159,12 @@
         "type": "string"
       },
       "accentColor3": {
+        "type": "string"
+      },
+      "inkColor": {
+        "type": "string"
+      },
+      "mutedColor": {
         "type": "string"
       },
       "frame": {

@@ -18,13 +18,15 @@ const defaultOptions: MdGraphsOptions = {
   accentColor: defaultAccents[0],
   accentColor2: defaultAccents[1],
   accentColor3: defaultAccents[2],
+  inkColor: "var(--darkgray, #d7d7d7)",
+  mutedColor: "var(--dark, #777)",
   frame: "ascii",
   palette: "duo",
   strict: false,
   limits: defaultGraphLimits,
 };
 
-const graphCss = (accents: readonly string[]) =>
+const graphCss = (accents: readonly string[], ink: string, muted: string) =>
   `.md-graph {
     --graph-accent-light:${accents[0]};
     --graph-accent-2-light:${accents[1]};
@@ -39,8 +41,8 @@ const graphCss = (accents: readonly string[]) =>
     --md-graph-secondary:var(--graph-accent-2);
     --md-graph-tertiary:var(--graph-accent-3);
     --md-graph-title-gradient:linear-gradient(90deg, var(--md-graph-accent), var(--md-graph-secondary), var(--md-graph-tertiary));
-    --md-graph-ink:var(--darkgray, #d7d7d7);
-    --md-graph-muted:var(--dark, #777);
+    --md-graph-ink:${ink};
+    --md-graph-muted:${muted};
     position:relative;
     box-sizing:border-box;
     margin:1.5rem 0;
@@ -1980,7 +1982,11 @@ export const MdGraphs: QuartzTransformerPlugin<Partial<MdGraphsOptions>> = (user
     externalResources: () => ({
       css: [
         {
-          content: graphCss([options.accentColor, options.accentColor2, options.accentColor3]),
+          content: graphCss(
+            [options.accentColor, options.accentColor2, options.accentColor3],
+            safeCssColor(options.inkColor, defaultOptions.inkColor),
+            safeCssColor(options.mutedColor, defaultOptions.mutedColor),
+          ),
           inline: true,
         },
       ],
