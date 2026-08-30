@@ -127,11 +127,15 @@ const graphCss = (accents: readonly string[], ink: string, muted: string) =>
     border: 0;
     border-right: 1px dashed var(--md-graph-muted);
     background: none;
-    color: inherit;
+    color: var(--md-graph-ink);
     font: inherit;
     font-weight: 400;
     text-align: left;
     white-space: nowrap
+}
+
+.md-graph__table tr {
+    border: 0
 }
 
 .md-graph__table th:first-child, .md-graph__table td:first-child {

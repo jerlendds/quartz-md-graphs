@@ -38,6 +38,8 @@ describe("MdGraphs", () => {
         ?.css?.[0]?.content ?? "";
     expect(css).toContain("--md-graph-ink:#eeeeee");
     expect(css).toContain("--md-graph-muted:#555555");
+    expect(css).toContain("color:var(--md-graph-ink)");
+    expect(css).toContain(".md-graph__table tr{border:0}");
   });
   it("applies named and custom list palettes to every graph", () => {
     const named = render('```graph/frame title="NAMED"\npalette: orange\ncontent: hello\n```')
